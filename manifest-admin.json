@@ -1,0 +1,24 @@
+{
+  "name": "Thiru Stay Admin",
+  "short_name": "Thiru Admin",
+  "description": "Admin and visitor portal for Thiru Stay — rooms, tenants, staff, expenses and reports.",
+  "start_url": "./admin.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#241C42",
+  "theme_color": "#241C42",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

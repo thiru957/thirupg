@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiru Stay — Admin Portal</title>
+
+<!-- PWA: installability -->
+<link rel="manifest" href="manifest-admin.json">
+<meta name="theme-color" content="#241C42">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Thiru Admin">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pine: #3E2E6B; --pine-deep:#241C42;
+    --rust:#FF6B4A; --marigold:#FFC145; --teal:#17A398; --pink:#E8447A; --blue:#2E6FE8;
+    --paper:#FFFFFF; --ivory:#F8F7FA; --ink:#241E33; --line:#E4E0EA; --muted:#6E6580;
+    --ok:#1F9D55; --bad:#D64545; --warn:#C98A12;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:'Work Sans',sans-serif; background:var(--ivory); color:var(--ink); }
+  h1,h2,h3,.brand{ font-family:'Fraunces',serif; font-weight:600; color:var(--pine-deep); margin:0; }
+  .hidden{ display:none !important; }
+  button{ font-family:inherit; cursor:pointer; }
+  input, select, textarea{ font-family:inherit; font-size:0.92rem; padding:9px 11px; border:1px solid var(--line); border-radius:4px; background:var(--paper); color:var(--ink); }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--rust); }
+  .btn{ display:inline-block; border:none; border-radius:4px; padding:10px 18px; font-size:0.9rem; font-weight:500; color:#fff; background:var(--pine); }
+  .btn:hover{ opacity:0.92; }
+  .btn-rust{ background:var(--rust); } .btn-teal{ background:var(--teal); } .btn-blue{ background:var(--blue); }
+  .btn-outline{ background:transparent; color:var(--pine); border:1px solid var(--line); }
+  .btn-danger{ background:var(--bad); }
+  .btn-sm{ padding:6px 12px; font-size:0.8rem; }
+
+  /* ---------- Login screen ---------- */
+  #loginScreen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:
+      linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%),
+      url('building.jpg');
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    padding:24px;
+  }
+  .login-card{
+    background:var(--paper); border-radius:8px; padding:40px 36px; max-width:400px; width:100%;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  }
+  .login-brand{ display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+  .namam-mark{ width:34px; height:34px; border-radius:7px; background:var(--pine-deep); display:flex; align-items:center; justify-content:center; padding:5px; flex:none; }
+  .namam-mark svg{ width:100%; height:100%; }
+  .login-brand .brand{ font-size:1.3rem; }
+  .role-tabs{ display:flex; gap:8px; margin-bottom:20px; }
+  .role-tab{ flex:1; padding:10px; text-align:center; border:1px solid var(--line); border-radius:5px; background:var(--ivory); font-weight:500; font-size:0.9rem; color:var(--muted); }
+  .role-tab.active{ background:var(--pine); color:#fff; border-color:var(--pine); }
+  .field{ margin-bottom:14px; display:flex; flex-direction:column; gap:6px; }
+  .field label{ font-size:0.85rem; font-weight:500; }
+  .error-msg{ color:var(--bad); font-size:0.85rem; margin-top:-6px; margin-bottom:10px; display:none; }
+  .login-note{ font-size:0.78rem; color:var(--muted); margin-top:16px; line-height:1.5; }
+
+  /* ---------- App shell ---------- */
+  .app-header{
+    background:
+      linear-gradient(90deg, rgba(36,28,66,0.93), rgba(36,28,66,0.88)),
+      url('building.jpg');
+    background-size:cover;
+    background-position:center 20%;
+    color:#fff; padding:16px 0;
+  }
+  .app-header .wrap{ max-width:1180px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:space-between; }
+  .app-header .brand{ color:#fff; font-size:1.2rem; }
+  .app-header .brand span{ color:var(--marigold); }
+  .app-header-left{ display:flex; align-items:center; gap:10px; }
+  .wrap-main{ max-width:1180px; margin:0 auto; padding:28px 24px 60px; }
+
+  .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:26px; flex-wrap:wrap; }
+  .tab-btn{ border:none; background:none; padding:12px 18px; font-size:0.92rem; font-weight:500; color:var(--muted); border-bottom:2px solid transparent; }
+  .tab-btn.active{ color:var(--pine-deep); border-bottom-color:var(--rust); }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  .card{ background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:22px; margin-bottom:22px; }
+  .card h3{ font-size:1.05rem; margin-bottom:16px; }
+  .form-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:14px; align-items:end; }
+
+  table{ width:100%; border-collapse:collapse; font-size:0.88rem; }
+  th, td{ text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  th{ color:var(--muted); font-weight:600; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.03em; }
+  tr:hover td{ background:var(--ivory); }
+  .table-wrap{ overflow-x:auto; }
+
+  .badge{ display:inline-block; padding:4px 10px; border-radius:20px; font-size:0.76rem; font-weight:600; }
+  .badge-ok{ background:#E4F6EB; color:var(--ok); }
+  .badge-bad{ background:#FBE7E7; color:var(--bad); }
+  .badge-warn{ background:#FDF2DC; color:var(--warn); }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; margin-bottom:24px; }
+  .stat-card{ background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--rust); border-radius:6px; padding:18px; }
+  .stat-card:nth-child(2){ border-top-color:var(--teal); }
+  .stat-card:nth-child(3){ border-top-color:var(--blue); }
+  .stat-card:nth-child(4){ border-top-color:var(--pink); }
+  .stat-card .num{ font-family:'Fraunces',serif; font-size:1.8rem; font-weight:600; color:var(--pine-deep); }
+  .stat-card .label{ font-size:0.82rem; color:var(--muted); margin-top:4px; }
+
+  .room-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(90px,1fr)); gap:10px; margin-bottom:20px; }
+  .room-tile{ aspect-ratio:1/1; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:0.85rem; border:none; }
+  .room-tile.available{ background:var(--ok); }
+  .room-tile.occupied{ background:var(--bad); }
+  .room-tile small{ font-weight:400; font-size:0.7rem; opacity:0.9; margin-top:2px; }
+  .detail-panel{ background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:18px 20px; }
+  .detail-panel.empty{ color:var(--muted); font-size:0.9rem; }
+
+  .actions-cell{ display:flex; gap:6px; flex-wrap:wrap; }
+
+  /* ---------- Visitor view ---------- */
+  .visitor-rooms{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px; margin-bottom:32px; }
+  .visitor-room-card{ background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--teal); border-radius:6px; padding:18px; }
+  .visitor-room-card h3{ font-size:1.05rem; }
+  .visitor-room-card .price{ font-family:'Fraunces',serif; font-weight:600; font-size:1.3rem; color:var(--rust); margin:8px 0; }
+  .visitor-room-card .facilities{ font-size:0.85rem; color:var(--muted); }
+
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:600px){ .field-row{ grid-template-columns:1fr; } }
+  .confirm-msg{ background:#E4F6EB; color:var(--ok); padding:12px 16px; border-radius:5px; font-size:0.9rem; margin-bottom:16px; display:none; }
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="namam-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand">Thiru Stay</span>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" id="roleTabAdmin" onclick="switchRoleTab('admin')">Admin</button>
+      <button class="role-tab" id="roleTabVisitor" onclick="switchRoleTab('visitor')">Visitor</button>
+    </div>
+
+    <div id="adminLoginForm">
+      <div class="field">
+        <label for="adminPassword">Admin password</label>
+        <input type="password" id="adminPassword" placeholder="Enter admin password">
+      </div>
+      <div class="error-msg" id="loginError">Incorrect password. Please try again.</div>
+      <button class="btn btn-rust" style="width:100%;" onclick="attemptAdminLogin()">Log in as Admin</button>
+    </div>
+
+    <div id="visitorLoginForm" class="hidden">
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;">Browse available rooms and send us an enquiry — no login needed.</p>
+      <button class="btn btn-teal" style="width:100%;" onclick="enterVisitorView()">Continue as Visitor</button>
+    </div>
+
+    <div class="login-note">
+      Demo note: this is a front-end prototype. Data is saved only in this browser's local storage, and the admin password is not securely encrypted — replace with a real backend before handling actual guest data.
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN APP ================= -->
+<div id="adminApp" class="hidden">
+  <div class="app-header">
+    <div class="wrap">
+      <div class="app-header-left">
+        <span class="namam-mark" aria-hidden="true">
+          <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+            <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+            <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand">Thiru <span>Stay</span> — Admin</span>
+      </div>
+      <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Log out</button>
+    </div>
+  </div>
+
+  <div class="wrap-main">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="rooms" onclick="switchTab('rooms')">Rooms</button>
+      <button class="tab-btn" data-tab="occupancy" onclick="switchTab('occupancy')">Occupancy</button>
+      <button class="tab-btn" data-tab="tenants" onclick="switchTab('tenants')">Tenants</button>
+      <button class="tab-btn" data-tab="staff" onclick="switchTab('staff')">Staff</button>
+      <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">Expenses</button>
+      <button class="tab-btn" data-tab="reports" onclick="switchTab('reports')">Reports</button>
+      <button class="tab-btn" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries</button>
+    </div>
+
+    <!-- ROOMS TAB -->
+    <div class="tab-panel active" id="tab-rooms">
+      <div class="card">
+        <h3 id="roomFormTitle">Add a room</h3>
+        <div class="form-grid">
+          <div class="field"><label>Room number</label><input type="text" id="roomNumber" placeholder="e.g. 101"></div>
+          <div class="field"><label>Room type</label>
+            <select id="roomType">
+              <option>Single Stay — AC</option>
+              <option>Single Stay — Non-AC</option>
+              <option>Family Stay — AC</option>
+              <option>Family Stay — Non-AC</option>
+              <option>Twin Sharing — AC</option>
+              <option>Twin Sharing — Non-AC</option>
+              <option>Day Stay — AC</option>
+              <option>Day Stay — Non-AC</option>
+            </select>
+          </div>
+          <div class="field"><label>Price (₹ / month)</label><input type="number" id="roomPrice" placeholder="e.g. 15000"></div>
+          <div class="field"><label>Facilities</label><input type="text" id="roomFacilities" placeholder="WiFi, Kitchen, AC, Attached bathroom"></div>
+          <div class="field">
+            <button class="btn btn-rust" id="roomSubmitBtn" onclick="submitRoom()">Add Room</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>All rooms</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Room No.</th><th>Type</th><th>Price / mo</th><th>Facilities</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="roomsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- OCCUPANCY TAB -->
+    <div class="tab-panel" id="tab-occupancy">
+      <div class="stat-grid" id="occupancyStats"></div>
+      <div class="card">
+        <h3>Click a room to see details</h3>
+        <div class="room-grid" id="occupancyGrid"></div>
+        <div class="detail-panel empty" id="occupancyDetail">Select a room above to see its status.</div>
+      </div>
+    </div>
+
+    <!-- TENANTS TAB -->
+    <div class="tab-panel" id="tab-tenants">
+      <div class="card">
+        <h3 id="tenantFormTitle">Add a tenant</h3>
+        <div class="form-grid">
+          <div class="field"><label>Tenant name</label><input type="text" id="tenantName" placeholder="Full name"></div>
+          <div class="field"><label>Phone</label><input type="text" id="tenantPhone" placeholder="+91 XXXXX XXXXX"></div>
+          <div class="field"><label>Room number</label><select id="tenantRoom"></select></div>
+          <div class="field"><label>Stay type</label>
+            <select id="tenantStayType" onchange="onStayTypeChange()">
+              <option value="month">Month stay</option>
+              <option value="day">Day stay</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of people staying</label><input type="number" id="tenantGuests" min="1" value="1"></div>
+          <div class="field"><label>Check-in date</label><input type="date" id="tenantCheckin" onchange="onCheckinChange()"></div>
+          <div class="field"><label>Planned checkout</label><input type="date" id="tenantCheckout"></div>
+          <div class="field"><label id="tenantRentLabel">Monthly rent (₹)</label><input type="number" id="tenantRent" placeholder="Auto-fills from room"></div>
+          <div class="field"><label>Amount paid (₹)</label><input type="number" id="tenantPaid" placeholder="e.g. 15000"></div>
+          <div class="field"><label>ID card (any format)</label><input type="file" id="tenantIdFile" accept="image/*,.pdf,.doc,.docx"></div>
+          <div class="field"><label>Electricity meter — at check-in</label><input type="number" id="tenantMeterStart" placeholder="e.g. 4820"></div>
+          <div class="field"><label>Electricity meter — at check-out</label><input type="number" id="tenantMeterEnd" placeholder="Fill when tenant leaves"></div>
+          <div class="field"><label>Electricity rate (₹ / unit)</label><input type="number" id="tenantMeterRate" value="8"></div>
+          <div class="field" style="flex-direction:row; align-items:center; gap:8px;">
+            <input type="checkbox" id="tenantExtend" style="width:auto;">
+            <label for="tenantExtend" style="margin:0;">Wants to extend stay</label>
+          </div>
+          <div class="field">
+            <button class="btn btn-rust" id="tenantSubmitBtn" onclick="submitTenant()">Add Tenant</button>
+          </div>
+        </div>
+        <p class="form-note" id="idFileNote" style="font-size:0.78rem; color:var(--muted); margin-top:12px;">ID files are stored in this browser only (max ~2 MB each). Editing a tenant without choosing a new file keeps their existing ID on record.</p>
+      </div>
+      <div class="card">
+        <h3>Current tenants</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Room</th><th>Guests</th><th>Stay type</th><th>Check-in</th><th>Checkout</th><th>Days left</th><th>Rent</th><th>Paid</th><th>Due</th><th>ID</th><th>Extend?</th><th>Actions</th></tr></thead>
+            <tbody id="tenantsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">Final bill</h3>
+          <button class="btn btn-outline" onclick="window.print()">Print bill</button>
+        </div>
+        <div class="detail-panel empty" id="billPanel">Click "Bill" next to any tenant above to generate their final bill.</div>
+      </div>
+    </div>
+
+    <!-- STAFF TAB -->
+    <div class="tab-panel" id="tab-staff">
+      <div class="card">
+        <h3 id="staffFormTitle">Add staff member</h3>
+        <div class="form-grid">
+          <div class="field"><label>Name</label><input type="text" id="staffName" placeholder="Full name"></div>
+          <div class="field"><label>Phone</label><input type="text" id="staffPhone" placeholder="+91 XXXXX XXXXX"></div>
+          <div class="field"><label>Role</label>
+            <select id="staffRole">
+              <option>Manager</option><option>Housekeeping</option><option>Security</option>
+              <option>Cook</option><option>Maintenance</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Joining date</label><input type="date" id="staffJoining"></div>
+          <div class="field"><label>Monthly salary (₹)</label><input type="number" id="staffSalary" placeholder="e.g. 15000"></div>
+          <div class="field"><label>Status</label>
+            <select id="staffStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+          </div>
+          <div class="field"><button class="btn btn-rust" id="staffSubmitBtn" onclick="submitStaff()">Add Staff</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>All staff</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Joined</th><th>Salary / mo</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="staffTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mark attendance</h3>
+        <div class="form-grid">
+          <div class="field"><label>Staff</label><select id="attStaff"></select></div>
+          <div class="field"><label>Date</label><input type="date" id="attDate"></div>
+          <div class="field"><label>Status</label>
+            <select id="attStatus"><option value="present">Present</option><option value="half">Half day</option><option value="absent">Absent</option></select>
+          </div>
+          <div class="field"><button class="btn btn-rust" onclick="submitAttendance()">Add Attendance</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Recent attendance</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Staff</th><th>Date</th><th>Status</th><th></th></tr></thead>
+            <tbody id="attendanceTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">Monthly salary statement</h3>
+          <button class="btn btn-outline" onclick="window.print()">Print statement</button>
+        </div>
+        <div class="form-grid" style="margin-bottom:18px;">
+          <div class="field"><label>Staff</label><select id="salaryStaff"></select></div>
+          <div class="field"><label>Month</label><input type="month" id="salaryMonth"></div>
+          <div class="field"><button class="btn btn-blue" onclick="generateSalaryStatement()">Generate statement</button></div>
+        </div>
+        <div class="detail-panel empty" id="salaryPanel">Choose a staff member and month to see their salary statement.</div>
+      </div>
+
+      <div class="card">
+        <h3>Salary payment history</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Staff</th><th>Month</th><th>Days worked</th><th>Amount paid</th><th>Paid on</th></tr></thead>
+            <tbody id="salaryHistoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPENSES TAB -->
+    <div class="tab-panel" id="tab-expenses">
+      <div class="card">
+        <h3>Add expense</h3>
+        <div class="form-grid">
+          <div class="field"><label>Type</label>
+            <select id="expType"><option>Electricity bill</option><option>Water bill</option><option>Maintenance bill</option><option>Other</option></select>
+          </div>
+          <div class="field"><label>Amount (₹)</label><input type="number" id="expAmount" placeholder="e.g. 4500"></div>
+          <div class="field"><label>Date</label><input type="date" id="expDate"></div>
+          <div class="field"><label>Notes</label><input type="text" id="expNotes" placeholder="Optional"></div>
+          <div class="field"><button class="btn btn-rust" onclick="submitExpense()">Add Expense</button></div>
+        </div>
+      </div>
+      <div class="stat-grid" id="expenseStats"></div>
+      <div class="card">
+        <h3>All expenses</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Amount</th><th>Date</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="expensesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS TAB -->
+    <div class="tab-panel" id="tab-reports">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">Lodge reports</h3>
+        <button class="btn btn-outline" onclick="window.print()">Print reports</button>
+      </div>
+      <div class="stat-grid" id="reportStats"></div>
+
+      <div class="card">
+        <h3>Upcoming checkouts (next 7 days)</h3>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Checkout date</th><th>Extend requested?</th></tr></thead><tbody id="upcomingCheckoutsBody"></tbody></table></div>
+      </div>
+
+      <div class="card">
+        <h3>Extension requests</h3>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Current checkout</th></tr></thead><tbody id="extensionsBody"></tbody></table></div>
+      </div>
+
+      <div class="card">
+        <h3>Pending dues</h3>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Rent</th><th>Paid</th><th>Due</th></tr></thead><tbody id="pendingDuesBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ENQUIRIES TAB -->
+    <div class="tab-panel" id="tab-enquiries">
+      <div class="card">
+        <h3>Visitor enquiries</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Phone</th><th>Room type</th><th>Move-in date</th><th>Message</th><th>Submitted</th><th></th></tr></thead>
+            <tbody id="enquiriesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= VISITOR APP ================= -->
+<div id="visitorApp" class="hidden">
+  <div class="app-header">
+    <div class="wrap">
+      <div class="app-header-left">
+        <span class="namam-mark" aria-hidden="true">
+          <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+            <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+            <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand">Thiru <span>Stay</span></span>
+      </div>
+      <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Back to login</button>
+    </div>
+  </div>
+  <div class="wrap-main">
+    <h2 style="margin-bottom:6px;">Available rooms</h2>
+    <p style="color:var(--muted); margin-top:0; margin-bottom:20px;">Rooms currently open for booking.</p>
+    <div class="visitor-rooms" id="visitorRoomsGrid"></div>
+
+    <div class="card" style="max-width:560px;">
+      <h3>Send us an enquiry</h3>
+      <div class="confirm-msg" id="enquiryConfirm">Thanks! Your enquiry has been sent — we'll get back to you soon.</div>
+      <div class="field"><label>Full name</label><input type="text" id="visName" placeholder="Your name"></div>
+      <div class="field-row">
+        <div class="field"><label>Phone</label><input type="text" id="visPhone" placeholder="+91 XXXXX XXXXX"></div>
+        <div class="field"><label>Move-in date</label><input type="date" id="visMoveIn"></div>
+      </div>
+      <div class="field"><label>Room type interested in</label>
+        <select id="visRoomType">
+          <option>Single Stay — AC</option>
+          <option>Single Stay — Non-AC</option>
+          <option>Family Stay — AC</option>
+          <option>Family Stay — Non-AC</option>
+          <option>Twin Sharing — AC</option>
+          <option>Twin Sharing — Non-AC</option>
+          <option>Day Stay — AC</option>
+          <option>Day Stay — Non-AC</option>
+          <option>Not sure yet</option>
+        </select>
+      </div>
+      <div class="field"><label>Message (optional)</label><textarea id="visMessage" rows="3" placeholder="Anything else we should know?"></textarea></div>
+      <button class="btn btn-rust" onclick="submitEnquiry()">Send enquiry</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "thiru2026"; // demo only — change before real use; visible in page source
+  let selectedRole = "admin";
+  let editingRoomId = null;
+  let editingTenantId = null;
+
+  // ---------- Storage helpers ----------
+  function load(key, fallback){
+    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch(e){ return fallback; }
+  }
+  function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+  function seedIfEmpty(){
+    if (load('thirustay_rooms', null) === null){
+      save('thirustay_rooms', [
+        {id:'r1', number:'101', type:'Single Stay — AC', price:15000, facilities:'WiFi, Kitchen, AC, Attached bathroom', status:'available'},
+        {id:'r2', number:'102', type:'Twin Sharing — AC', price:9000, facilities:'WiFi, Kitchen, AC, Attached bathroom', status:'available'},
+        {id:'r3', number:'103', type:'Family Stay — Non-AC', price:13000, facilities:'WiFi, Kitchen, Attached bathroom', status:'available'}
+      ]);
+    }
+    if (load('thirustay_tenants', null) === null) save('thirustay_tenants', []);
+    if (load('thirustay_enquiries', null) === null) save('thirustay_enquiries', []);
+    if (load('thirustay_staff', null) === null) save('thirustay_staff', []);
+    if (load('thirustay_attendance', null) === null) save('thirustay_attendance', []);
+    if (load('thirustay_salaryPayments', null) === null) save('thirustay_salaryPayments', []);
+    if (load('thirustay_expenses', null) === null) save('thirustay_expenses', []);
+  }
+  seedIfEmpty();
+
+  function getRooms(){ return load('thirustay_rooms', []); }
+  function getTenants(){ return load('thirustay_tenants', []); }
+  function getEnquiries(){ return load('thirustay_enquiries', []); }
+  function getStaff(){ return load('thirustay_staff', []); }
+  function getAttendance(){ return load('thirustay_attendance', []); }
+  function getSalaryPayments(){ return load('thirustay_salaryPayments', []); }
+  function getExpenses(){ return load('thirustay_expenses', []); }
+
+  function uid(){ return 'id' + Date.now() + Math.floor(Math.random()*1000); }
+  function fmtDate(d){ if(!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }
+  function daysBetween(dateStr){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const target = new Date(dateStr); target.setHours(0,0,0,0);
+    return Math.round((target - today) / (1000*60*60*24));
+  }
+
+  // ---------- Login ----------
+  function switchRoleTab(role){
+    selectedRole = role;
+    document.getElementById('roleTabAdmin').classList.toggle('active', role==='admin');
+    document.getElementById('roleTabVisitor').classList.toggle('active', role==='visitor');
+    document.getElementById('adminLoginForm').classList.toggle('hidden', role!=='admin');
+    document.getElementById('visitorLoginForm').classList.toggle('hidden', role!=='visitor');
+  }
+  function attemptAdminLogin(){
+    const pass = document.getElementById('adminPassword').value;
+    if (pass === ADMIN_PASSWORD){
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('hidden');
+      renderAll();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+  function enterVisitorView(){
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('visitorApp').classList.remove('hidden');
+    renderVisitorRooms();
+  }
+  function logout(){
+    document.getElementById('adminApp').classList.add('hidden');
+    document.getElementById('visitorApp').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('adminPassword').value = '';
+    document.getElementById('loginError').style.display = 'none';
+  }
+
+  // ---------- Tabs ----------
+  function switchTab(tab){
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-'+tab));
+    if (tab==='occupancy') renderOccupancy();
+    if (tab==='reports') renderReports();
+    if (tab==='enquiries') renderEnquiries();
+    if (tab==='tenants') renderTenantRoomOptions();
+    if (tab==='staff') renderStaffTab();
+    if (tab==='expenses') renderExpensesTab();
+  }
+
+  function renderAll(){
+    renderRoomsTable();
+    renderTenantRoomOptions();
+    renderTenantsTable();
+    renderOccupancy();
+    renderReports();
+    renderEnquiries();
+    renderStaffTab();
+    renderExpensesTab();
+  }
+
+  // ---------- Rooms ----------
+  function submitRoom(){
+    const number = document.getElementById('roomNumber').value.trim();
+    const type = document.getElementById('roomType').value;
+    const price = parseFloat(document.getElementById('roomPrice').value) || 0;
+    const facilities = document.getElementById('roomFacilities').value.trim();
+    if (!number){ alert('Please enter a room number.'); return; }
+
+    let rooms = getRooms();
+    if (editingRoomId){
+      rooms = rooms.map(r => r.id===editingRoomId ? {...r, number, type, price, facilities} : r);
+      editingRoomId = null;
+      document.getElementById('roomSubmitBtn').textContent = 'Add Room';
+      document.getElementById('roomFormTitle').textContent = 'Add a room';
+    } else {
+      if (rooms.some(r => r.number === number)){ alert('A room with this number already exists.'); return; }
+      rooms.push({id:uid(), number, type, price, facilities, status:'available'});
+    }
+    save('thirustay_rooms', rooms);
+    document.getElementById('roomNumber').value = '';
+    document.getElementById('roomPrice').value = '';
+    document.getElementById('roomFacilities').value = '';
+    renderRoomsTable();
+    renderTenantRoomOptions();
+  }
+  function editRoom(id){
+    const room = getRooms().find(r => r.id===id);
+    if (!room) return;
+    editingRoomId = id;
+    document.getElementById('roomNumber').value = room.number;
+    document.getElementById('roomType').value = room.type;
+    document.getElementById('roomPrice').value = room.price;
+    document.getElementById('roomFacilities').value = room.facilities;
+    document.getElementById('roomSubmitBtn').textContent = 'Save changes';
+    document.getElementById('roomFormTitle').textContent = 'Edit room';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function deleteRoom(id){
+    if (!confirm('Delete this room? This will not remove any tenant record already linked to it.')) return;
+    save('thirustay_rooms', getRooms().filter(r => r.id!==id));
+    renderRoomsTable();
+    renderTenantRoomOptions();
+  }
+  function renderRoomsTable(){
+    const rooms = getRooms();
+    const tbody = document.getElementById('roomsTableBody');
+    tbody.innerHTML = rooms.map(r => `
+      <tr>
+        <td>${r.number}</td>
+        <td>${r.type}</td>
+        <td>₹${Number(r.price).toLocaleString('en-IN')}</td>
+        <td>${r.facilities || '—'}</td>
+        <td><span class="badge ${r.status==='occupied' ? 'badge-bad' : 'badge-ok'}">${r.status==='occupied' ? 'Occupied' : 'Available'}</span></td>
+        <td class="actions-cell">
+          <button class="btn btn-outline btn-sm" onclick="editRoom('${r.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRoom('${r.id}')">Delete</button>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">No rooms added yet.</td></tr>`;
+  }
+
+  // ---------- Occupancy ----------
+  function renderOccupancy(){
+    const rooms = getRooms();
+    const total = rooms.length;
+    const occupied = rooms.filter(r => r.status==='occupied').length;
+    const available = total - occupied;
+    const rate = total ? Math.round((occupied/total)*100) : 0;
+
+    document.getElementById('occupancyStats').innerHTML = `
+      <div class="stat-card"><div class="num">${total}</div><div class="label">Total rooms</div></div>
+      <div class="stat-card"><div class="num">${occupied}</div><div class="label">Occupied</div></div>
+      <div class="stat-card"><div class="num">${available}</div><div class="label">Available</div></div>
+      <div class="stat-card"><div class="num">${rate}%</div><div class="label">Occupancy rate</div></div>
+    `;
+
+    const grid = document.getElementById('occupancyGrid');
+    grid.innerHTML = rooms.map(r => `
+      <button class="room-tile ${r.status}" onclick="showRoomDetail('${r.id}')">
+        ${r.number}<small>${r.status==='occupied' ? 'Occupied' : 'Free'}</small>
+      </button>`).join('') || `<p style="color:var(--muted);">Add rooms first from the Rooms tab.</p>`;
+    document.getElementById('occupancyDetail').innerHTML = 'Select a room above to see its status.';
+    document.getElementById('occupancyDetail').classList.add('empty');
+  }
+  function showRoomDetail(roomId){
+    const room = getRooms().find(r => r.id===roomId);
+    const panel = document.getElementById('occupancyDetail');
+    if (!room){ panel.textContent = 'Room not found.'; return; }
+    panel.classList.remove('empty');
+    if (room.status === 'occupied'){
+      const tenant = getTenants().find(t => t.roomNumber === room.number);
+      if (tenant){
+        panel.innerHTML = `
+          <strong>Room ${room.number} — Occupied</strong><br>
+          Tenant: ${tenant.name} (${tenant.phone || 'no phone on file'})<br>
+          Stay: ${fmtDate(tenant.checkin)} → ${fmtDate(tenant.checkout)}<br>
+          Rent: ₹${Number(tenant.rent).toLocaleString('en-IN')} · Paid: ₹${Number(tenant.paid).toLocaleString('en-IN')}<br>
+          Extension requested: ${tenant.extend ? 'Yes' : 'No'}`;
+      } else {
+        panel.innerHTML = `<strong>Room ${room.number} — marked occupied</strong>, but no tenant record found. Check the Tenants tab.`;
+      }
+    } else {
+      panel.innerHTML = `
+        <strong>Room ${room.number} — Available</strong><br>
+        Type: ${room.type} · Price: ₹${Number(room.price).toLocaleString('en-IN')}/mo<br>
+        Facilities: ${room.facilities || '—'}<br>
+        <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${room.number}'; updateRentFromRoom();">Add tenant to this room</button>`;
+    }
+  }
+
+  // ---------- Tenants ----------
+  function renderTenantRoomOptions(){
+    const rooms = getRooms();
+    const select = document.getElementById('tenantRoom');
+    const current = select.value;
+    select.innerHTML = rooms.map(r => `<option value="${r.number}">${r.number} — ${r.type} (₹${Number(r.price).toLocaleString('en-IN')})</option>`).join('');
+    if (current) select.value = current;
+    select.onchange = updateRentFromRoom;
+    if (!editingTenantId) updateRentFromRoom();
+  }
+  function updateRentFromRoom(){
+    const roomNumber = document.getElementById('tenantRoom').value;
+    const room = getRooms().find(r => r.number === roomNumber);
+    if (room) document.getElementById('tenantRent').value = room.price;
+  }
+  function onStayTypeChange(){
+    const isDay = document.getElementById('tenantStayType').value === 'day';
+    document.getElementById('tenantRentLabel').textContent = isDay ? 'Day rate (₹)' : 'Monthly rent (₹)';
+    onCheckinChange();
+  }
+  function onCheckinChange(){
+    const isDay = document.getElementById('tenantStayType').value === 'day';
+    const checkin = document.getElementById('tenantCheckin').value;
+    if (isDay && checkin){
+      const d = new Date(checkin);
+      d.setDate(d.getDate() + 1);
+      document.getElementById('tenantCheckout').value = d.toISOString().slice(0,10);
+    }
+  }
+  function submitTenant(){
+    const name = document.getElementById('tenantName').value.trim();
+    const phone = document.getElementById('tenantPhone').value.trim();
+    const roomNumber = document.getElementById('tenantRoom').value;
+    const stayType = document.getElementById('tenantStayType').value;
+    const guests = parseInt(document.getElementById('tenantGuests').value) || 1;
+    const checkin = document.getElementById('tenantCheckin').value;
+    const checkout = document.getElementById('tenantCheckout').value;
+    const rent = parseFloat(document.getElementById('tenantRent').value) || 0;
+    const paid = parseFloat(document.getElementById('tenantPaid').value) || 0;
+    const extend = document.getElementById('tenantExtend').checked;
+    const fileInput = document.getElementById('tenantIdFile');
+    const file = fileInput.files[0];
+    const meterStart = document.getElementById('tenantMeterStart').value;
+    const meterEnd = document.getElementById('tenantMeterEnd').value;
+    const meterRate = parseFloat(document.getElementById('tenantMeterRate').value) || 8;
+
+    if (!name || !roomNumber){ alert('Please enter the tenant name and choose a room.'); return; }
+    if (file && file.size > 2*1024*1024){ alert('That file is larger than 2 MB. Please choose a smaller file — large files can fill up this browser\'s storage quickly.'); return; }
+
+    if (file){
+      const reader = new FileReader();
+      reader.onload = () => finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardData: reader.result, idCardName: file.name});
+      reader.readAsDataURL(file);
+    } else {
+      let existingId = null, existingName = null;
+      if (editingTenantId){
+        const prev = getTenants().find(t => t.id === editingTenantId);
+        if (prev){ existingId = prev.idCardData || null; existingName = prev.idCardName || null; }
+      }
+      finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardData: existingId, idCardName: existingName});
+    }
+  }
+  function finishTenantSave(data){
+    let rooms = getRooms();
+    let tenants = getTenants();
+
+    if (editingTenantId){
+      const prevTenant = tenants.find(t => t.id === editingTenantId);
+      tenants = tenants.map(t => t.id===editingTenantId ? {...t, ...data} : t);
+      if (prevTenant && prevTenant.roomNumber !== data.roomNumber){
+        rooms = rooms.map(r => r.number===prevTenant.roomNumber ? {...r, status:'available'} : r);
+        rooms = rooms.map(r => r.number===data.roomNumber ? {...r, status:'occupied'} : r);
+      }
+      editingTenantId = null;
+      document.getElementById('tenantSubmitBtn').textContent = 'Add Tenant';
+      document.getElementById('tenantFormTitle').textContent = 'Add a tenant';
+    } else {
+      const roomTaken = rooms.find(r => r.number===data.roomNumber && r.status==='occupied');
+      if (roomTaken && !confirm('This room is already marked occupied. Add tenant anyway?')) return;
+      tenants.push({id:uid(), ...data});
+      rooms = rooms.map(r => r.number===data.roomNumber ? {...r, status:'occupied'} : r);
+    }
+    try{
+      save('thirustay_tenants', tenants);
+    } catch(e){
+      alert('Could not save — this browser\'s storage is full, likely from large ID files. Try a smaller file or remove an old one.');
+      return;
+    }
+    save('thirustay_rooms', rooms);
+
+    document.getElementById('tenantName').value = '';
+    document.getElementById('tenantPhone').value = '';
+    document.getElementById('tenantGuests').value = '1';
+    document.getElementById('tenantStayType').value = 'month';
+    document.getElementById('tenantRentLabel').textContent = 'Monthly rent (₹)';
+    document.getElementById('tenantCheckin').value = '';
+    document.getElementById('tenantCheckout').value = '';
+    document.getElementById('tenantPaid').value = '';
+    document.getElementById('tenantExtend').checked = false;
+    document.getElementById('tenantIdFile').value = '';
+    document.getElementById('tenantMeterStart').value = '';
+    document.getElementById('tenantMeterEnd').value = '';
+    document.getElementById('tenantMeterRate').value = '8';
+
+    renderRoomsTable();
+    renderTenantsTable();
+  }
+  function editTenant(id){
+    const t = getTenants().find(x => x.id===id);
+    if (!t) return;
+    editingTenantId = id;
+    document.getElementById('tenantName').value = t.name;
+    document.getElementById('tenantPhone').value = t.phone;
+    renderTenantRoomOptions();
+    document.getElementById('tenantRoom').value = t.roomNumber;
+    document.getElementById('tenantStayType').value = t.stayType || 'month';
+    onStayTypeChange();
+    document.getElementById('tenantGuests').value = t.guests || 1;
+    document.getElementById('tenantCheckin').value = t.checkin;
+    document.getElementById('tenantCheckout').value = t.checkout;
+    document.getElementById('tenantRent').value = t.rent;
+    document.getElementById('tenantPaid').value = t.paid;
+    document.getElementById('tenantExtend').checked = !!t.extend;
+    document.getElementById('tenantIdFile').value = '';
+    document.getElementById('tenantMeterStart').value = t.meterStart || '';
+    document.getElementById('tenantMeterEnd').value = t.meterEnd || '';
+    document.getElementById('tenantMeterRate').value = t.meterRate || 8;
+    document.getElementById('tenantSubmitBtn').textContent = 'Save changes';
+    document.getElementById('tenantFormTitle').textContent = 'Edit tenant';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function vacateTenant(id){
+    const t = getTenants().find(x => x.id===id);
+    if (!t) return;
+    if (!confirm(`Mark ${t.name} as checked out and free up room ${t.roomNumber}?`)) return;
+    save('thirustay_tenants', getTenants().filter(x => x.id!==id));
+    save('thirustay_rooms', getRooms().map(r => r.number===t.roomNumber ? {...r, status:'available'} : r));
+    renderRoomsTable();
+    renderTenantsTable();
+  }
+  function toggleExtend(id){
+    const tenants = getTenants().map(t => t.id===id ? {...t, extend: !t.extend} : t);
+    save('thirustay_tenants', tenants);
+    renderTenantsTable();
+  }
+  function generateBill(id){
+    const t = getTenants().find(x => x.id===id);
+    if (!t) return;
+    const room = getRooms().find(r => r.number === t.roomNumber);
+    const meterStart = parseFloat(t.meterStart) || 0;
+    const meterEnd = parseFloat(t.meterEnd) || 0;
+    const rate = parseFloat(t.meterRate) || 8;
+    const hasReadings = t.meterStart !== '' && t.meterStart != null && t.meterEnd !== '' && t.meterEnd != null;
+    const units = hasReadings ? Math.max(0, meterEnd - meterStart) : 0;
+    const elecCharge = hasReadings ? units * rate : 0;
+    const rent = Number(t.rent || 0);
+    const total = rent + elecCharge;
+    const paid = Number(t.paid || 0);
+    const balance = Math.max(0, total - paid);
+
+    document.getElementById('billPanel').classList.remove('empty');
+    document.getElementById('billPanel').innerHTML = `
+      <h3 style="margin-bottom:4px;">Bill — ${t.name}</h3>
+      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Room ${t.roomNumber} (${room ? room.type : '—'}) · ${t.stayType==='day' ? 'Day stay' : 'Month stay'} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}</p>
+      <table style="max-width:520px;">
+        <tr><td>Rent</td><td style="text-align:right;">₹${rent.toLocaleString('en-IN')}</td></tr>
+        <tr><td>Electricity ${hasReadings ? `(${units} units × ₹${rate})` : '(meter readings not entered)'}</td><td style="text-align:right;">₹${elecCharge.toLocaleString('en-IN')}</td></tr>
+        <tr style="font-weight:600;"><td>Total bill</td><td style="text-align:right;">₹${total.toLocaleString('en-IN')}</td></tr>
+        <tr><td>Amount paid</td><td style="text-align:right;">₹${paid.toLocaleString('en-IN')}</td></tr>
+        <tr style="font-weight:600;"><td>Balance due</td><td style="text-align:right; color:${balance>0 ? 'var(--bad)' : 'var(--ok)'};">₹${balance.toLocaleString('en-IN')}</td></tr>
+      </table>`;
+    document.getElementById('billPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  function viewId(id){
+    const t = getTenants().find(x => x.id===id);
+    if (!t || !t.idCardData) return;
+    const w = window.open();
+    if (!w) { alert('Please allow pop-ups to view the ID file.'); return; }
+    if (t.idCardData.startsWith('data:image')){
+      w.document.write(`<title>${t.name} — ID</title><img src="${t.idCardData}" style="max-width:100%;">`);
+    } else {
+      w.location = t.idCardData;
+    }
+  }
+  function renderTenantsTable(){
+    const tenants = getTenants();
+    const tbody = document.getElementById('tenantsTableBody');
+    tbody.innerHTML = tenants.map(t => {
+      const daysLeft = t.checkout ? daysBetween(t.checkout) : null;
+      const due = Math.max(0, (t.rent||0) - (t.paid||0));
+      let daysBadge = '—';
+      if (daysLeft !== null){
+        if (daysLeft < 0) daysBadge = `<span class="badge badge-bad">Overdue ${Math.abs(daysLeft)}d</span>`;
+        else if (daysLeft <= 3) daysBadge = `<span class="badge badge-warn">${daysLeft}d left</span>`;
+        else daysBadge = `<span class="badge badge-ok">${daysLeft}d left</span>`;
+      }
+      return `<tr>
+        <td>${t.name}</td>
+        <td>${t.roomNumber}</td>
+        <td>${t.guests || 1}</td>
+        <td>${t.stayType === 'day' ? 'Day stay' : 'Month stay'}</td>
+        <td>${fmtDate(t.checkin)}</td>
+        <td>${fmtDate(t.checkout)}</td>
+        <td>${daysBadge}</td>
+        <td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td>
+        <td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td>
+        <td>${due>0 ? `<span class="badge badge-bad">₹${due.toLocaleString('en-IN')}</span>` : `<span class="badge badge-ok">Paid</span>`}</td>
+        <td>${t.idCardData ? `<button class="btn btn-outline btn-sm" onclick="viewId('${t.id}')">View ID</button>` : '—'}</td>
+        <td><button class="btn btn-sm ${t.extend ? 'btn-teal' : 'btn-outline'}" onclick="toggleExtend('${t.id}')">${t.extend ? 'Yes' : 'No'}</button></td>
+        <td class="actions-cell">
+          <button class="btn btn-outline btn-sm" onclick="editTenant('${t.id}')">Edit</button>
+          <button class="btn btn-blue btn-sm" onclick="generateBill('${t.id}')">Bill</button>
+          <button class="btn btn-danger btn-sm" onclick="vacateTenant('${t.id}')">Vacate</button>
+        </td>
+      </tr>`;
+    }).join('') || `<tr><td colspan="13" style="color:var(--muted);">No tenants yet.</td></tr>`;
+  }
+
+  // ---------- Reports ----------
+  function renderReports(){
+    const tenants = getTenants();
+    const rooms = getRooms();
+    const totalCollected = tenants.reduce((s,t) => s + (t.paid||0), 0);
+    const totalDue = tenants.reduce((s,t) => s + Math.max(0, (t.rent||0)-(t.paid||0)), 0);
+    const occupied = rooms.filter(r => r.status==='occupied').length;
+    const rate = rooms.length ? Math.round((occupied/rooms.length)*100) : 0;
+
+    document.getElementById('reportStats').innerHTML = `
+      <div class="stat-card"><div class="num">₹${totalCollected.toLocaleString('en-IN')}</div><div class="label">Total collected</div></div>
+      <div class="stat-card"><div class="num">₹${totalDue.toLocaleString('en-IN')}</div><div class="label">Total pending dues</div></div>
+      <div class="stat-card"><div class="num">${occupied}/${rooms.length}</div><div class="label">Rooms occupied</div></div>
+      <div class="stat-card"><div class="num">${rate}%</div><div class="label">Occupancy rate</div></div>
+    `;
+
+    const upcoming = tenants.filter(t => t.checkout && daysBetween(t.checkout) >= 0 && daysBetween(t.checkout) <= 7);
+    document.getElementById('upcomingCheckoutsBody').innerHTML = upcoming.map(t => `
+      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>${fmtDate(t.checkout)}</td><td>${t.extend ? 'Yes' : 'No'}</td></tr>
+    `).join('') || `<tr><td colspan="4" style="color:var(--muted);">No checkouts in the next 7 days.</td></tr>`;
+
+    const extensions = tenants.filter(t => t.extend);
+    document.getElementById('extensionsBody').innerHTML = extensions.map(t => `
+      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>${fmtDate(t.checkout)}</td></tr>
+    `).join('') || `<tr><td colspan="3" style="color:var(--muted);">No pending extension requests.</td></tr>`;
+
+    const dues = tenants.filter(t => ((t.rent||0)-(t.paid||0)) > 0);
+    document.getElementById('pendingDuesBody').innerHTML = dues.map(t => `
+      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td><td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td><td>₹${((t.rent||0)-(t.paid||0)).toLocaleString('en-IN')}</td></tr>
+    `).join('') || `<tr><td colspan="5" style="color:var(--muted);">No pending dues.</td></tr>`;
+  }
+
+  // ---------- Enquiries ----------
+  function renderEnquiries(){
+    const enquiries = getEnquiries();
+    document.getElementById('enquiriesTableBody').innerHTML = enquiries.map(e => `
+      <tr>
+        <td>${e.name}</td><td>${e.phone}</td><td>${e.roomType}</td><td>${fmtDate(e.moveIn)}</td>
+        <td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button></td>
+      </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">No enquiries yet.</td></tr>`;
+  }
+  function deleteEnquiry(id){
+    save('thirustay_enquiries', getEnquiries().filter(e => e.id!==id));
+    renderEnquiries();
+  }
+
+  // ---------- Staff ----------
+  let editingStaffId = null;
+  function renderStaffTab(){
+    renderStaffTable();
+    renderAttendanceStaffOptions();
+    renderAttendanceTable();
+    renderSalaryStaffOptions();
+    renderSalaryHistory();
+  }
+  function submitStaff(){
+    const name = document.getElementById('staffName').value.trim();
+    const phone = document.getElementById('staffPhone').value.trim();
+    const role = document.getElementById('staffRole').value;
+    const joiningDate = document.getElementById('staffJoining').value;
+    const salary = parseFloat(document.getElementById('staffSalary').value) || 0;
+    const status = document.getElementById('staffStatus').value;
+    if (!name){ alert('Please enter the staff member\'s name.'); return; }
+
+    let staff = getStaff();
+    if (editingStaffId){
+      staff = staff.map(s => s.id===editingStaffId ? {...s, name, phone, role, joiningDate, salary, status} : s);
+      editingStaffId = null;
+      document.getElementById('staffSubmitBtn').textContent = 'Add Staff';
+      document.getElementById('staffFormTitle').textContent = 'Add staff member';
+    } else {
+      staff.push({id:uid(), name, phone, role, joiningDate, salary, status});
+    }
+    save('thirustay_staff', staff);
+    document.getElementById('staffName').value = '';
+    document.getElementById('staffPhone').value = '';
+    document.getElementById('staffJoining').value = '';
+    document.getElementById('staffSalary').value = '';
+    document.getElementById('staffStatus').value = 'active';
+    renderStaffTab();
+  }
+  function editStaff(id){
+    const s = getStaff().find(x => x.id===id);
+    if (!s) return;
+    editingStaffId = id;
+    document.getElementById('staffName').value = s.name;
+    document.getElementById('staffPhone').value = s.phone;
+    document.getElementById('staffRole').value = s.role;
+    document.getElementById('staffJoining').value = s.joiningDate;
+    document.getElementById('staffSalary').value = s.salary;
+    document.getElementById('staffStatus').value = s.status;
+    document.getElementById('staffSubmitBtn').textContent = 'Save changes';
+    document.getElementById('staffFormTitle').textContent = 'Edit staff member';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function deleteStaff(id){
+    if (!confirm('Remove this staff member? Their attendance and salary history will stay on record.')) return;
+    save('thirustay_staff', getStaff().filter(s => s.id!==id));
+    renderStaffTab();
+  }
+  function renderStaffTable(){
+    const staff = getStaff();
+    document.getElementById('staffTableBody').innerHTML = staff.map(s => `
+      <tr>
+        <td>${s.name}</td><td>${s.role}</td><td>${s.phone || '—'}</td><td>${fmtDate(s.joiningDate)}</td>
+        <td>₹${Number(s.salary||0).toLocaleString('en-IN')}</td>
+        <td><span class="badge ${s.status==='active' ? 'badge-ok' : 'badge-bad'}">${s.status==='active' ? 'Active' : 'Inactive'}</span></td>
+        <td class="actions-cell">
+          <button class="btn btn-outline btn-sm" onclick="editStaff('${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStaff('${s.id}')">Delete</button>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">No staff added yet.</td></tr>`;
+  }
+
+  // ---------- Attendance ----------
+  function renderAttendanceStaffOptions(){
+    const staff = getStaff();
+    const options = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+    document.getElementById('attStaff').innerHTML = options;
+  }
+  function submitAttendance(){
+    const staffId = document.getElementById('attStaff').value;
+    const date = document.getElementById('attDate').value;
+    const status = document.getElementById('attStatus').value;
+    if (!staffId){ alert('Please add a staff member first.'); return; }
+    if (!date){ alert('Please choose a date.'); return; }
+    const attendance = getAttendance();
+    attendance.push({id:uid(), staffId, date, status});
+    save('thirustay_attendance', attendance);
+    document.getElementById('attDate').value = '';
+    renderAttendanceTable();
+  }
+  function deleteAttendance(id){
+    save('thirustay_attendance', getAttendance().filter(a => a.id!==id));
+    renderAttendanceTable();
+  }
+  function renderAttendanceTable(){
+    const staff = getStaff();
+    const attendance = [...getAttendance()].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 30);
+    document.getElementById('attendanceTableBody').innerHTML = attendance.map(a => {
+      const s = staff.find(x => x.id === a.staffId);
+      const label = a.status === 'present' ? 'Present' : a.status === 'half' ? 'Half day' : 'Absent';
+      const cls = a.status === 'present' ? 'badge-ok' : a.status === 'half' ? 'badge-warn' : 'badge-bad';
+      return `<tr><td>${s ? s.name : 'Unknown'}</td><td>${fmtDate(a.date)}</td><td><span class="badge ${cls}">${label}</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteAttendance('${a.id}')">Delete</button></td></tr>`;
+    }).join('') || `<tr><td colspan="4" style="color:var(--muted);">No attendance recorded yet.</td></tr>`;
+  }
+
+  // ---------- Salary ----------
+  function renderSalaryStaffOptions(){
+    const staff = getStaff();
+    document.getElementById('salaryStaff').innerHTML = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+  }
+  function generateSalaryStatement(){
+    const staffId = document.getElementById('salaryStaff').value;
+    const month = document.getElementById('salaryMonth').value;
+    const staff = getStaff().find(s => s.id === staffId);
+    const panel = document.getElementById('salaryPanel');
+    if (!staff){ panel.innerHTML = 'Please add a staff member first.'; return; }
+    if (!month){ panel.innerHTML = 'Please choose a month.'; return; }
+
+    const [year, mon] = month.split('-').map(Number);
+    const daysInMonth = new Date(year, mon, 0).getDate();
+    const attendance = getAttendance().filter(a => a.staffId === staffId && a.date && a.date.startsWith(month));
+    const daysWorked = attendance.reduce((sum, a) => sum + (a.status==='present' ? 1 : a.status==='half' ? 0.5 : 0), 0);
+    const calculatedSalary = Math.round((staff.salary || 0) / daysInMonth * daysWorked);
+
+    const payment = getSalaryPayments().find(p => p.staffId === staffId && p.month === month);
+
+    panel.classList.remove('empty');
+    panel.innerHTML = `
+      <h3 style="margin-bottom:4px;">${staff.name} — ${month}</h3>
+      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Joined ${fmtDate(staff.joiningDate)} · ${staff.role} · Monthly salary ₹${Number(staff.salary||0).toLocaleString('en-IN')}</p>
+      <table style="max-width:520px;">
+        <tr><td>Days in month</td><td style="text-align:right;">${daysInMonth}</td></tr>
+        <tr><td>Days worked</td><td style="text-align:right;">${daysWorked}</td></tr>
+        <tr style="font-weight:600;"><td>Calculated salary</td><td style="text-align:right;">₹${calculatedSalary.toLocaleString('en-IN')}</td></tr>
+        <tr><td>Payment status</td><td style="text-align:right;">${payment ? `<span class="badge badge-ok">Paid ₹${Number(payment.amountPaid).toLocaleString('en-IN')} on ${fmtDate(payment.paidDate)}</span>` : `<span class="badge badge-bad">Not paid yet</span>`}</td></tr>
+      </table>
+      ${!payment ? `<button class="btn btn-teal btn-sm" style="margin-top:14px;" onclick="markSalaryPaid('${staffId}', '${month}', ${calculatedSalary}, ${daysWorked})">Mark salary paid</button>` : ''}
+    `;
+  }
+  function markSalaryPaid(staffId, month, calculatedSalary, daysWorked){
+    const amountStr = prompt('Amount paid (₹):', calculatedSalary);
+    if (amountStr === null) return;
+    const amountPaid = parseFloat(amountStr) || 0;
+    const paidDate = new Date().toISOString().slice(0,10);
+    const payments = getSalaryPayments();
+    payments.push({id:uid(), staffId, month, amountPaid, paidDate, daysWorked});
+    save('thirustay_salaryPayments', payments);
+    generateSalaryStatement();
+    renderSalaryHistory();
+  }
+  function renderSalaryHistory(){
+    const staff = getStaff();
+    const payments = [...getSalaryPayments()].sort((a,b) => new Date(b.paidDate) - new Date(a.paidDate));
+    document.getElementById('salaryHistoryBody').innerHTML = payments.map(p => {
+      const s = staff.find(x => x.id === p.staffId);
+      return `<tr><td>${s ? s.name : 'Unknown'}</td><td>${p.month}</td><td>${p.daysWorked}</td><td>₹${Number(p.amountPaid).toLocaleString('en-IN')}</td><td>${fmtDate(p.paidDate)}</td></tr>`;
+    }).join('') || `<tr><td colspan="5" style="color:var(--muted);">No salary payments recorded yet.</td></tr>`;
+  }
+
+  // ---------- Expenses ----------
+  function renderExpensesTab(){
+    renderExpensesTable();
+    renderExpenseStats();
+  }
+  function submitExpense(){
+    const type = document.getElementById('expType').value;
+    const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+    const date = document.getElementById('expDate').value;
+    const notes = document.getElementById('expNotes').value.trim();
+    if (!amount || !date){ alert('Please enter an amount and date.'); return; }
+    const expenses = getExpenses();
+    expenses.push({id:uid(), type, amount, date, notes});
+    save('thirustay_expenses', expenses);
+    document.getElementById('expAmount').value = '';
+    document.getElementById('expDate').value = '';
+    document.getElementById('expNotes').value = '';
+    renderExpensesTab();
+  }
+  function deleteExpense(id){
+    save('thirustay_expenses', getExpenses().filter(e => e.id!==id));
+    renderExpensesTab();
+  }
+  function renderExpensesTable(){
+    const expenses = [...getExpenses()].sort((a,b) => new Date(b.date) - new Date(a.date));
+    document.getElementById('expensesTableBody').innerHTML = expenses.map(e => `
+      <tr><td>${e.type}</td><td>₹${Number(e.amount).toLocaleString('en-IN')}</td><td>${fmtDate(e.date)}</td><td>${e.notes || '—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteExpense('${e.id}')">Delete</button></td></tr>`).join('')
+        || `<tr><td colspan="5" style="color:var(--muted);">No expenses recorded yet.</td></tr>`;
+  }
+  function renderExpenseStats(){
+    const expenses = getExpenses();
+    const now = new Date();
+    const thisMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    const thisMonthTotal = expenses.filter(e => e.date && e.date.startsWith(thisMonth)).reduce((s,e) => s+Number(e.amount||0), 0);
+    const allTimeTotal = expenses.reduce((s,e) => s+Number(e.amount||0), 0);
+    const elecTotal = expenses.filter(e => e.type==='Electricity bill').reduce((s,e) => s+Number(e.amount||0), 0);
+    const waterTotal = expenses.filter(e => e.type==='Water bill').reduce((s,e) => s+Number(e.amount||0), 0);
+    document.getElementById('expenseStats').innerHTML = `
+      <div class="stat-card"><div class="num">₹${thisMonthTotal.toLocaleString('en-IN')}</div><div class="label">This month</div></div>
+      <div class="stat-card"><div class="num">₹${allTimeTotal.toLocaleString('en-IN')}</div><div class="label">All time</div></div>
+      <div class="stat-card"><div class="num">₹${elecTotal.toLocaleString('en-IN')}</div><div class="label">Total electricity</div></div>
+      <div class="stat-card"><div class="num">₹${waterTotal.toLocaleString('en-IN')}</div><div class="label">Total water</div></div>
+    `;
+  }
+
+  // ---------- Visitor view ----------
+  function renderVisitorRooms(){
+    const rooms = getRooms().filter(r => r.status !== 'occupied');
+    document.getElementById('visitorRoomsGrid').innerHTML = rooms.map(r => `
+      <div class="visitor-room-card">
+        <h3>${r.type}</h3>
+        <div class="price">₹${Number(r.price).toLocaleString('en-IN')} / mo</div>
+        <div class="facilities">${r.facilities || 'Contact us for details'}</div>
+      </div>`).join('') || `<p style="color:var(--muted);">No rooms currently available — please send an enquiry and we'll notify you.</p>`;
+  }
+  function submitEnquiry(){
+    const name = document.getElementById('visName').value.trim();
+    const phone = document.getElementById('visPhone').value.trim();
+    const moveIn = document.getElementById('visMoveIn').value;
+    const roomType = document.getElementById('visRoomType').value;
+    const message = document.getElementById('visMessage').value.trim();
+    if (!name || !phone){ alert('Please enter your name and phone number.'); return; }
+
+    const enquiries = getEnquiries();
+    enquiries.push({id:uid(), name, phone, moveIn, roomType, message, submittedAt: new Date().toISOString()});
+    save('thirustay_enquiries', enquiries);
+
+    document.getElementById('enquiryConfirm').style.display = 'block';
+    document.getElementById('visName').value = '';
+    document.getElementById('visPhone').value = '';
+    document.getElementById('visMoveIn').value = '';
+    document.getElementById('visMessage').value = '';
+  }
+</script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(() => {
+        /* fails silently on file:// or unsupported browsers */
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

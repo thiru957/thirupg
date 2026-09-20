@@ -1,0 +1,41 @@
+const CACHE_NAME = "thirustay-cache-v2";
+const ASSETS_TO_CACHE = [
+  "./index.html",
+  "./admin.html",
+  "./manifest.json",
+  "./manifest-admin.json",
+  "./building.jpg",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-180.png"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).catch(() => {
+        const fallback = event.request.url.includes("admin.html") ? "./admin.html" : "./index.html";
+        return caches.match(fallback);
+      });
+    })
+  );
+});
