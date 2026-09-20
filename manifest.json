@@ -1,7 +1,7 @@
 {
-  "name": "Thiru Stay",
-  "short_name": "Thiru Stay",
-  "description": "PG accommodation in Carmelaram, Sarjapur Road, Bengaluru — rooms, pricing and booking.",
+  "name": "Codekasa — A Luxury Living",
+  "short_name": "Codekasa",
+  "description": "Luxury PG accommodation in Carmelaram, Sarjapur Road, Bengaluru — rooms, pricing and booking.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

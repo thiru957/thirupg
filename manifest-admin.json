@@ -1,7 +1,7 @@
 {
-  "name": "Thiru Stay Admin",
-  "short_name": "Thiru Admin",
-  "description": "Admin and visitor portal for Thiru Stay — rooms, tenants, staff, expenses and reports.",
+  "name": "Codekasa Admin",
+  "short_name": "Codekasa Admin",
+  "description": "Admin and visitor portal for Codekasa — rooms, tenants, staff, expenses and reports.",
   "start_url": "./admin.html",
   "scope": "./",
   "display": "standalone",
