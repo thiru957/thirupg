@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Codekasa — A Luxury Living</title>
+<title>CodeKasa — A Luxury Living</title>
 
 <!-- PWA: installability -->
 <link rel="manifest" href="manifest.json">
@@ -13,25 +13,25 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Codekasa">
+<meta name="apple-mobile-web-app-title" content="CodeKasa">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 
   :root{
-    --pine:      #3E2E6B;
-    --pine-deep: #241C42;
-    --rust:      #FF6B4A;
-    --marigold:  #FFC145;
-    --ivory:     #FBF3EF;
+    --pine:      #1C1A18;
+    --pine-deep: #0E0C0A;
+    --rust:      #B8935A;
+    --marigold:  #E8CFA0;
+    --ivory:     #F5F1EA;
     --paper:     #FFFFFF;
-    --ink:       #241E33;
-    --line:      #ECE2E9;
-    --muted:     #6E6580;
-    --teal:      #17A398;
-    --pink:      #E8447A;
-    --blue:      #2E6FE8;
+    --ink:       #1E1B18;
+    --line:      #E5E0D8;
+    --muted:     #7A7268;
+    --teal:      #8A7B5C;
+    --pink:      #A67C52;
+    --blue:      #6B5B3E;
   }
 
   *{ box-sizing:border-box; }
@@ -114,16 +114,19 @@
   .brand span{ color:var(--rust); }
   .nav-links{
     display:flex;
-    gap:28px;
+    gap:30px;
     list-style:none;
     margin:0; padding:0;
-    font-size:0.95rem;
+    font-size:0.78rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
   }
   .nav-links a{
     text-decoration:none;
     color:var(--ink);
     padding-bottom:3px;
-    border-bottom:2px solid transparent;
+    border-bottom:1px solid transparent;
+    font-weight:500;
   }
   .nav-links a:hover{ border-bottom-color:var(--rust); }
   .nav-cta{
@@ -165,87 +168,79 @@
 
   /* ---------- Hero ---------- */
   .hero{
-    background:linear-gradient(135deg, #3E2E6B 0%, #2E6FE8 55%, #17A398 100%);
+    background:
+      linear-gradient(rgba(14,12,10,0.35), rgba(14,12,10,0.75)),
+      url('building.jpg');
+    background-size:cover;
+    background-position:center 25%;
     color:var(--paper);
-    padding:88px 0 76px;
+    padding:150px 0 130px;
     position:relative;
     overflow:hidden;
-  }
-  .hero .wrap{
-    display:grid;
-    grid-template-columns:1.15fr 0.85fr;
-    gap:48px;
+    min-height:78vh;
+    display:flex;
     align-items:center;
+  }
+  .hero-content{
+    max-width:640px;
+    position:relative;
+    z-index:1;
   }
   .hero-eyebrow{
     color:var(--marigold);
-    font-size:0.95rem;
-    margin-bottom:14px;
+    font-size:0.82rem;
+    margin-bottom:18px;
     font-weight:600;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
   }
   .hero h1{
     color:var(--paper);
-    font-size:clamp(2.1rem, 3.8vw, 3.1rem);
-    line-height:1.12;
-    max-width:18ch;
+    font-size:clamp(2.6rem, 5vw, 4.2rem);
+    line-height:1.08;
+    font-weight:500;
   }
-  .hero p{
-    max-width:46ch;
-    margin-top:20px;
-    color:#C9CDD2;
-    font-size:1.05rem;
+  .hero-sub{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--marigold);
+    margin-top:14px;
+    font-weight:400;
+  }
+  .hero p:not(.hero-sub){
+    max-width:48ch;
+    margin-top:22px;
+    color:#D8D3C9;
+    font-size:1.02rem;
+    line-height:1.65;
   }
   .hero-actions{
-    margin-top:32px;
+    margin-top:38px;
     display:flex;
-    gap:14px;
+    gap:16px;
     flex-wrap:wrap;
   }
   .btn{
     display:inline-block;
     text-decoration:none;
-    padding:13px 24px;
+    padding:15px 30px;
     font-weight:500;
-    font-size:0.96rem;
-    border-radius:2px;
+    font-size:0.82rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    border-radius:1px;
     cursor:pointer;
     border:1px solid transparent;
   }
-  .btn-primary{ background:var(--rust); color:var(--paper); }
-  .btn-primary:hover{ background:#A5501F; }
-  .btn-ghost{ border-color:#565C63; color:var(--paper); background:transparent; }
-  .btn-ghost:hover{ border-color:var(--paper); }
-
-  .hero-art{
-    aspect-ratio:4/5;
-    border-radius:4px;
-    position:relative;
-    overflow:hidden;
-    display:flex;
-    align-items:flex-end;
-    background:#101A2B;
-  }
-  .hero-art img{
-    position:absolute;
-    inset:0;
-    width:100%; height:100%;
-    object-fit:contain;
-  }
-  .hero-art .tag{
-    position:relative;
-    z-index:1;
-    margin:22px;
-    background:rgba(20,23,27,0.55);
-    border:1px solid rgba(227,195,129,0.5);
-    color:var(--paper);
-    font-size:0.82rem;
-    padding:8px 12px;
-    border-radius:2px;
-  }
+  .btn-primary{ background:var(--rust); color:#1A1714; }
+  .btn-teal{ background:var(--teal); color:var(--paper); }
+  .btn-primary:hover{ background:#CBA872; }
+  .btn-ghost{ border-color:rgba(255,255,255,0.5); color:var(--paper); background:transparent; }
+  .btn-ghost:hover{ border-color:var(--paper); background:rgba(255,255,255,0.08); }
 
   @media (max-width:800px){
-    .hero .wrap{ grid-template-columns:1fr; }
-    .hero-art{ order:-1; aspect-ratio:16/9; }
+    .hero{ padding:110px 0 90px; min-height:auto; }
   }
 
   /* ---------- Section shell ---------- */
@@ -256,9 +251,11 @@
   }
   .section-eyebrow{
     color:var(--rust);
-    font-size:0.85rem;
+    font-size:0.78rem;
     font-weight:600;
-    margin-bottom:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:12px;
   }
   .section-head h2{
     font-size:clamp(1.7rem, 3vw, 2.2rem);
@@ -269,6 +266,12 @@
   }
 
   .alt{ background:var(--ivory); }
+
+  /* ---------- Single-page navigation ---------- */
+  .page-section{ display:none; }
+  .page-section.active{ display:block; }
+  .back-btn{ margin-bottom:20px; }
+  #homeDivider.hidden-nav{ display:none; }
 
   /* ---------- Facilities ---------- */
   .facility-grid{
@@ -287,7 +290,7 @@
   .facility:nth-child(2) svg{ color:var(--teal); }
   .facility:nth-child(3) svg{ color:var(--pink); }
   .facility:nth-child(4) svg{ color:var(--blue); }
-  .facility:nth-child(5) svg{ color:#FFB627; }
+  .facility:nth-child(5) svg{ color:var(--marigold); }
   .facility:nth-child(6) svg{ color:var(--pine); }
   .facility:nth-child(7) svg{ color:var(--teal); }
   .facility:nth-child(8) svg{ color:var(--pink); }
@@ -317,13 +320,14 @@
   .room-row:nth-child(2) .room-num{ color:var(--teal); }
   .room-row:nth-child(3) .room-num{ color:var(--blue); }
   .room-row:nth-child(4) .room-num{ color:var(--pink); }
-  .room-row:nth-child(5) .room-num{ color:#FFC145; }
+  .room-row:nth-child(5) .room-num{ color:var(--marigold); }
   .room-row:nth-child(6) .room-num{ color:var(--pine); }
   .room-row h3{ font-size:1.15rem; }
   .room-row .desc{ color:var(--muted); font-size:0.92rem; margin-top:6px; }
   .room-price{ color:var(--muted); font-size:0.92rem; }
   .room-price strong{ display:block; font-size:1.2rem; color:var(--pine-deep); font-family:'Fraunces',serif; font-weight:600; }
   .room-row .btn{ padding:10px 18px; font-size:0.88rem; white-space:nowrap; }
+  .room-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
 
   @media (max-width:700px){
     .room-row{ grid-template-columns:1fr; gap:8px; }
@@ -352,14 +356,14 @@
   .shot img{ width:100%; height:100%; object-fit:cover; }
   .shot.contain{ background:#101A2B; }
   .shot.contain img{ object-fit:contain; }
-  .shot:nth-child(1){ background:linear-gradient(160deg,#FF6B4A,#C6461F); }
-  .shot:nth-child(2){ background:linear-gradient(160deg,#17A398,#0E6D66); }
-  .shot:nth-child(3){ background:linear-gradient(160deg,#2E6FE8,#1B4BB0); }
-  .shot:nth-child(4){ background:linear-gradient(160deg,#FFC145,#D99A1E); color:#2A2209; }
-  .shot:nth-child(5){ background:linear-gradient(160deg,#E8447A,#B22B57); }
-  .shot:nth-child(6){ background:linear-gradient(160deg,#3E2E6B,#241C42); }
-  .shot:nth-child(7){ background:linear-gradient(160deg,#17A398,#2E6FE8); }
-  .shot:nth-child(8){ background:linear-gradient(160deg,#14171B,#262B31); }
+  .shot:nth-child(1){ background:linear-gradient(160deg,#B8935A,#8A6B3E); }
+  .shot:nth-child(2){ background:linear-gradient(160deg,#2A2621,#171512); }
+  .shot:nth-child(3){ background:linear-gradient(160deg,#8A7B5C,#5C513A); }
+  .shot:nth-child(4){ background:linear-gradient(160deg,#E8CFA0,#C6A15B); color:#2A2209; }
+  .shot:nth-child(5){ background:linear-gradient(160deg,#3D362C,#1C1A18); }
+  .shot:nth-child(6){ background:linear-gradient(160deg,#5C513A,#2A2621); }
+  .shot:nth-child(7){ background:linear-gradient(160deg,#A67C52,#7A5A38); }
+  .shot:nth-child(8){ background:linear-gradient(160deg,#14130F,#262019); }
 
   @media (max-width:700px){
     .gallery{ grid-template-columns:repeat(2,1fr); }
@@ -487,16 +491,16 @@
   }
   .wa-float svg{ width:26px; height:26px; color:var(--marigold); }
 .flash-banner{
-    background:linear-gradient(90deg, #FF6B4A, #E8447A);
-    color:#FFFFFF;
+    background:linear-gradient(90deg, #1C1A18, #3D362C);
+    color:#F5F1EA;
     text-align:center;
-    font-size:0.9rem;
-    font-weight:600;
+    font-size:0.85rem;
+    font-weight:500;
+    letter-spacing:0.03em;
     padding:11px 44px 11px 16px;
     position:relative;
-    letter-spacing:0.01em;
   }
-  .flash-banner strong{ font-weight:700; }
+  .flash-banner strong{ font-weight:700; color:var(--marigold); }
   .flash-close{
     position:absolute;
     top:50%; right:14px;
@@ -524,7 +528,7 @@
 
 <header>
   <div class="wrap nav">
-    <a href="#top" class="brand-link">
+    <a href="#top" class="brand-link" onclick="event.preventDefault(); showHome();">
       <span class="namam-mark" aria-hidden="true">
         <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
           <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
@@ -533,54 +537,50 @@
         </svg>
       </span>
       <span style="display:flex; flex-direction:column; line-height:1.15;">
-        <span class="brand">Code<span>kasa</span></span>
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
         <span style="font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
       </span>
     </a>
     <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">☰</button>
     <ul class="nav-links" id="navLinks">
-      <li><a href="#facilities">Facilities</a></li>
-      <li><a href="#rooms">Rooms</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#location">Location</a></li>
-      <li><a href="#payment">Payment</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#facilities" onclick="event.preventDefault(); showPage('facilities');">Facilities</a></li>
+      <li><a href="#rooms" onclick="event.preventDefault(); showPage('rooms');">Rooms</a></li>
+      <li><a href="#gallery" onclick="event.preventDefault(); showPage('gallery');">Gallery</a></li>
+      <li><a href="#location" onclick="event.preventDefault(); showPage('location');">Location</a></li>
+      <li><a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a></li>
+      <li><a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a></li>
       <li><a href="admin.html">Login</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Enquire now</a>
+    <a href="#contact" class="nav-cta" onclick="event.preventDefault(); showPage('contact');">Enquire now</a>
   </div>
 </header>
 
 <section class="hero" id="top">
-  <div class="wrap">
-    <div>
-      <div class="hero-eyebrow">Codekasa · A Luxury Living</div>
-      <h1>The Elevated PG Living — just minutes away from Sarjapur tech corridor.</h1>
-      <p>Codekasa offers furnished single, family and shared rooms with kitchen access, daily housekeeping and round-the-clock security. Convenient stay for working professionals and students — feel at home in a new city.</p>
-      <div class="hero-actions">
-        <a href="#rooms" class="btn btn-primary">See rooms &amp; pricing</a>
-        <a href="#contact" class="btn btn-ghost">Book a visit</a>
-      </div>
-    </div>
-    <div class="hero-art">
-      <img src="building.jpg" alt="Codekasa building exterior at night">
-      <span class="tag">Codekasa — A Luxury Living</span>
+  <div class="wrap hero-content">
+    <div class="hero-eyebrow">CodeKasa · A Luxury Living</div>
+    <h1>The Elevated PG Living</h1>
+    <p class="hero-sub">Just minutes away from the Sarjapur tech corridor</p>
+    <p>CodeKasa offers furnished single, family and shared rooms with kitchen access, daily housekeeping and round-the-clock security — a refined stay for professionals and students settling into a new city.</p>
+    <div class="hero-actions">
+      <a href="#rooms" class="btn btn-primary" onclick="event.preventDefault(); showPage('rooms');">See Rooms &amp; Pricing</a>
+      <a href="#contact" class="btn btn-ghost" onclick="event.preventDefault(); showPage('contact');">Book a Visit</a>
     </div>
   </div>
 </section>
 
-<div class="arch-row" aria-hidden="true">
-  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#FF6B4A" stroke-width="1.4" fill="none"/></svg>
-  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#17A398" stroke-width="1.4" fill="none"/></svg>
-  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#FFC145" stroke-width="1.4" fill="none"/></svg>
+<div class="arch-row" id="homeDivider" aria-hidden="true">
+  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
+  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
+  <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
 </div>
 
-<section id="facilities">
+<section id="facilities" class="page-section">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">What's included</div>
       <h2>Everything you need, nothing you have to arrange yourself</h2>
-      <p>Every room at Codekasa comes with these facilities as standard — no separate charges unless noted on the room listing.</p>
+      <p>Every room at CodeKasa comes with these facilities as standard — no separate charges unless noted on the room listing.</p>
     </div>
   </div>
   <div class="wrap" style="padding:0;">
@@ -624,8 +624,9 @@
   </div>
 </section>
 
-<section class="alt" id="rooms">
+<section class="alt page-section" id="rooms">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">Rooms &amp; pricing</div>
       <h2>Choose the room that fits your stay</h2>
@@ -639,7 +640,7 @@
           <div class="desc">Private room, attached bathroom, kitchen included, study table, wardrobe.</div>
         </div>
         <div class="room-price">Starting from<strong>₹15,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Single%20Stay%20%E2%80%94%20AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">02</div>
@@ -648,7 +649,7 @@
           <div class="desc">Private room, attached bathroom, kitchen included, study table, wardrobe.</div>
         </div>
         <div class="room-price">Starting from<strong>₹13,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Single%20Stay%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">03</div>
@@ -657,7 +658,7 @@
           <div class="desc">Larger private room for families, attached bathroom, kitchen included.</div>
         </div>
         <div class="room-price">Starting from<strong>₹18,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Family%20Stay%20%E2%80%94%20AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">04</div>
@@ -666,7 +667,7 @@
           <div class="desc">Larger private room for families, attached bathroom, kitchen included.</div>
         </div>
         <div class="room-price">Starting from<strong>₹13,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Family%20Stay%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">05</div>
@@ -675,7 +676,7 @@
           <div class="desc">Shared with one roommate, attached bathroom, two study desks.</div>
         </div>
         <div class="room-price">Starting from<strong>₹9,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Twin%20Sharing%20%E2%80%94%20AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">06</div>
@@ -684,7 +685,7 @@
           <div class="desc">Shared with one roommate, attached bathroom, two study desks.</div>
         </div>
         <div class="room-price">Starting from<strong>₹7,000 / mo</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Twin%20Sharing%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
     </div>
     <p class="form-note" style="margin-top:18px;">Note: for monthly stays, one month's rent is required in advance to confirm your booking.</p>
@@ -701,7 +702,7 @@
           <div class="desc">24-hour stay, attached bathroom, kitchen access.</div>
         </div>
         <div class="room-price">Per day<strong>₹1,800</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Day%20Stay%20%E2%80%94%20AC" class="btn btn-teal">Book Now</a></div>
       </div>
       <div class="room-row">
         <div class="room-num">08</div>
@@ -710,14 +711,15 @@
           <div class="desc">24-hour stay, attached bathroom, kitchen access.</div>
         </div>
         <div class="room-price">Per day<strong>₹1,200</strong></div>
-        <a href="#contact" class="btn btn-primary">Enquire</a>
+        <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Day%20Stay%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="gallery">
+<section id="gallery" class="page-section">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">A look inside</div>
       <h2>Gallery</h2>
@@ -731,13 +733,14 @@
       <div class="shot"><span>Entrance</span></div>
       <div class="shot"><span>Study area</span></div>
       <div class="shot"><span>Balcony / terrace</span></div>
-      <div class="shot contain"><img src="building.jpg" alt="Codekasa building exterior"></div>
+      <div class="shot contain"><img src="building.jpg" alt="CodeKasa building exterior"></div>
     </div>
   </div>
 </section>
 
-<section class="alt" id="location">
+<section class="alt page-section" id="location">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">Find us</div>
       <h2>Location</h2>
@@ -747,11 +750,11 @@
         src="https://www.google.com/maps?q=Petra+Pebbles,+Ambalipura-Sarjapur+Rd,+Carmelaram,+Mullur,+Karnataka+560035&output=embed"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
-        title="Map showing Codekasa location"></iframe>
+        title="Map showing CodeKasa location"></iframe>
       <div>
         <div class="addr-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div>Codekasa, Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035</div>
+          <div>CodeKasa, Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035</div>
         </div>
         <div class="addr-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8 9.9a16 16 0 006 6l1.4-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.8 2z"/></svg>
@@ -759,15 +762,16 @@
         </div>
         <div class="addr-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg>
-          <div>hello@codekasa.in</div>
+          <div>info@codekasa.com</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="payment">
+<section id="payment" class="page-section">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">Booking deposit</div>
       <h2>Pay however suits you</h2>
@@ -788,7 +792,7 @@
       <div class="pay-card">
         <h3>Bank transfer</h3>
         <ul class="bank-list">
-          <li><span>Account name</span><span>Codekasa</span></li>
+          <li><span>Account name</span><span>CodeKasa</span></li>
           <li><span>Account no.</span><span>XXXXXXXXXXXX</span></li>
           <li><span>IFSC</span><span>XXXX0XXXXXX</span></li>
         </ul>
@@ -796,29 +800,30 @@
       <div class="pay-card">
         <h3>Cash on visit</h3>
         <p>Prefer to pay in person? Bring the deposit when you come see the room — no online step needed.</p>
-        <a href="#contact" class="btn btn-ghost" style="border-color:var(--line); color:var(--ink);">Schedule a visit</a>
+        <a href="#contact" class="btn btn-ghost" style="border-color:var(--line); color:var(--ink);" onclick="event.preventDefault(); showPage('contact');">Schedule a visit</a>
       </div>
     </div>
   </div>
 </section>
 
-<section class="alt" id="contact">
+<section class="alt page-section" id="contact">
   <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
       <div class="section-eyebrow">Get in touch</div>
       <h2>Send an enquiry</h2>
       <p>Tell us what you're looking for and we'll reply within a day — or message us directly on WhatsApp.</p>
     </div>
     <div class="contact-grid">
-      <form>
+      <form id="enquiryForm" onsubmit="sendEnquiryEmail(event)">
         <div class="field-row">
           <div class="field">
             <label for="name">Full name</label>
-            <input type="text" id="name" placeholder="Your name">
+            <input type="text" id="name" placeholder="Your name" required>
           </div>
           <div class="field">
             <label for="phone">Phone number</label>
-            <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX">
+            <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required>
           </div>
         </div>
         <div class="field-row">
@@ -846,7 +851,7 @@
           <textarea id="message" placeholder="Anything else we should know?"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Send enquiry</button>
-        <p class="form-note">This form doesn't send anywhere yet — connect it to a form service (e.g. Formspree) or your booking builder's built-in form before going live.</p>
+        <p class="form-note">Submitting opens your email app with this enquiry addressed to info@codekasa.com — just hit send there to reach us.</p>
       </form>
       <div class="contact-side">
         <h3>Prefer to talk directly?</h3>
@@ -856,7 +861,7 @@
         </div>
         <div class="contact-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg>
-          <div>Or write to us at hello@codekasa.in — we typically reply within a few hours.</div>
+          <div>Or write to us at info@codekasa.com — we typically reply within a few hours.</div>
         </div>
       </div>
     </div>
@@ -875,29 +880,29 @@
               <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
             </svg>
           </span>
-          <div class="brand">Code<span>kasa</span></div>
+          <div class="brand">Code<span style="color:#E5342E;">K</span>asa</div>
         </div>
         <p style="max-width:32ch; margin-top:10px;">A Luxury Living — Carmelaram, Sarjapur Road, Bengaluru.</p>
       </div>
       <div>
         <div style="color:var(--paper); margin-bottom:10px; font-weight:500;">Quick links</div>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          <a href="#rooms">Rooms &amp; pricing</a>
-          <a href="#facilities">Facilities</a>
-          <a href="#payment">Payment</a>
-          <a href="#contact">Contact</a>
+          <a href="#rooms" onclick="event.preventDefault(); showPage('rooms');">Rooms &amp; pricing</a>
+          <a href="#facilities" onclick="event.preventDefault(); showPage('facilities');">Facilities</a>
+          <a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a>
+          <a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a>
         </div>
       </div>
       <div>
         <div style="color:var(--paper); margin-bottom:10px; font-weight:500;">Reach us</div>
         <div style="display:flex; flex-direction:column; gap:8px;">
           <span>+91 81068 12341</span>
-          <span>hello@codekasa.in</span>
+          <span>info@codekasa.com</span>
         </div>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Codekasa. All rights reserved.</span>
+      <span>© 2026 CodeKasa. All rights reserved.</span>
       <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a> · Placeholder content — replace with your details before publishing.</span>
     </div>
   </div>
@@ -911,6 +916,49 @@
   const flashBanner = document.getElementById('flashBanner');
   const flashClose = document.getElementById('flashClose');
   flashClose.addEventListener('click', () => flashBanner.classList.add('hidden'));
+
+  function sendEnquiryEmail(event){
+    event.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const roomType = document.getElementById('room-type').value;
+    const moveIn = document.getElementById('move-in').value;
+    const message = document.getElementById('message').value.trim();
+
+    if (!name || !phone){
+      alert('Please enter your name and phone number.');
+      return;
+    }
+
+    const subject = `Enquiry from ${name} — ${roomType}`;
+    const bodyLines = [
+      `Name: ${name}`,
+      `Phone: ${phone}`,
+      `Room type: ${roomType}`,
+      `Preferred move-in date: ${moveIn || 'Not specified'}`,
+      `Message: ${message || '(none)'}`
+    ];
+    const body = bodyLines.join('\n');
+    const mailtoUrl = `mailto:info@codekasa.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  }
+
+  function showPage(id){
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    document.getElementById('top').style.display = 'none';
+    document.getElementById('homeDivider').classList.add('hidden-nav');
+    window.scrollTo({top:0, behavior:'instant'});
+    navLinks.classList.remove('open');
+  }
+  function showHome(){
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('top').style.display = '';
+    document.getElementById('homeDivider').classList.remove('hidden-nav');
+    window.scrollTo({top:0, behavior:'instant'});
+    navLinks.classList.remove('open');
+  }
 
   const menuBtn = document.getElementById('menuBtn');
   const navLinks = document.getElementById('navLinks');

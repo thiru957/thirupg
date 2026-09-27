@@ -1,4 +1,4 @@
-const CACHE_NAME = "thirustay-cache-v2";
+const CACHE_NAME = "codekasa-cache-v3";
 const ASSETS_TO_CACHE = [
   "./index.html",
   "./admin.html",
@@ -28,14 +28,28 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Network-first for pages (HTML), so edits/updates are picked up immediately.
+// Cache-first for everything else (images, icons, manifests), for speed.
 self.addEventListener("fetch", (event) => {
+  const isHTML = event.request.mode === "navigate" || event.request.url.endsWith(".html");
+
+  if (isHTML) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => {
+          const fallback = event.request.url.includes("admin.html") ? "./admin.html" : "./index.html";
+          return caches.match(fallback);
+        })
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).catch(() => {
-        const fallback = event.request.url.includes("admin.html") ? "./admin.html" : "./index.html";
-        return caches.match(fallback);
-      });
-    })
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
   );
 });

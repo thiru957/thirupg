@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Codekasa — Admin Portal</title>
+<title>CodeKasa — Admin Portal</title>
 
 <!-- PWA: installability -->
 <link rel="manifest" href="manifest-admin.json">
@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Codekasa Admin">
+<meta name="apple-mobile-web-app-title" content="CodeKasa Admin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -146,7 +146,7 @@
         </svg>
       </span>
       <span style="display:flex; flex-direction:column; line-height:1.15;">
-        <span class="brand">Code<span>kasa</span></span>
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
         <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
       </span>
     </div>
@@ -166,13 +166,66 @@
     </div>
 
     <div id="visitorLoginForm" class="hidden">
-      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;">Browse available rooms and send us an enquiry — no login needed.</p>
-      <button class="btn btn-teal" style="width:100%;" onclick="enterVisitorView()">Continue as Visitor</button>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;" id="visitorFormNote">Browse available rooms and send us an enquiry — no login needed.</p>
+      <button class="btn btn-teal" style="width:100%;" onclick="enterVisitorView()" id="visitorContinueBtn">Continue as Visitor</button>
     </div>
 
     <div class="login-note">
       Demo note: this is a front-end prototype. Data is saved only in this browser's local storage, and the admin password is not securely encrypted — replace with a real backend before handling actual guest data.
     </div>
+  </div>
+</div>
+
+<!-- ================= BOOKING REGISTRATION SCREEN ================= -->
+<div id="bookingScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
+  <div class="login-card" style="max-width:460px;">
+    <div class="login-brand">
+      <span class="namam-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span style="display:flex; flex-direction:column; line-height:1.15;">
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
+        <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
+      </span>
+    </div>
+    <h3 style="margin-bottom:4px;">Book: <span id="bookRoomTypeLabel" style="color:var(--rust);"></span></h3>
+    <p style="font-size:0.85rem; color:var(--muted); margin-top:0; margin-bottom:18px;">Fill in your details to register and confirm your booking request. Fields marked * are required.</p>
+
+    <div class="error-msg" id="bookingError">Please fill in all required fields.</div>
+
+    <div class="field"><label>Full name *</label><input type="text" id="bkName" placeholder="Your name"></div>
+    <div class="field"><label>Phone *</label><input type="text" id="bkPhone" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="field"><label>Email *</label><input type="email" id="bkEmail" placeholder="you@example.com"></div>
+    <div class="field-row">
+      <div class="field"><label>Move-in date *</label><input type="date" id="bkMoveIn"></div>
+      <div class="field"><label>Guests</label><input type="number" id="bkGuests" min="1" value="1"></div>
+    </div>
+    <div class="field"><label>ID card (optional, any format)</label><input type="file" id="bkIdFile" accept="image/*,.pdf,.doc,.docx"></div>
+
+    <button class="btn btn-rust" style="width:100%; margin-top:6px;" onclick="submitBooking()">Register &amp; Confirm Booking</button>
+    <div class="login-note">
+      Demo note: this booking is saved in this browser's local storage only. For it to reach the admin's dashboard on a different device, this needs a real backend — see the note at the end of your conversation with Claude for how to set that up.
+    </div>
+  </div>
+</div>
+
+<!-- ================= BOOKING CONFIRMATION SCREEN ================= -->
+<div id="bookingConfirmScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
+  <div class="login-card" style="max-width:460px; text-align:center;">
+    <div style="font-size:2.4rem; margin-bottom:6px;">✅</div>
+    <h3 style="margin-bottom:6px;">Booking request confirmed</h3>
+    <p style="font-size:0.88rem; color:var(--muted); margin-top:0; margin-bottom:18px;">We've received your details — our team will contact you shortly to finalise your stay.</p>
+    <table style="width:100%; text-align:left; font-size:0.88rem; margin-bottom:18px;">
+      <tr><td style="padding:6px 0; color:var(--muted);">Reference</td><td style="padding:6px 0; text-align:right; font-weight:600;" id="confRef"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">Name</td><td style="padding:6px 0; text-align:right;" id="confName"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">Room</td><td style="padding:6px 0; text-align:right;" id="confRoom"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">Move-in date</td><td style="padding:6px 0; text-align:right;" id="confMoveIn"></td></tr>
+    </table>
+    <button class="btn btn-teal" style="width:100%;" onclick="window.location.href='index.html'">Back to CodeKasa website</button>
   </div>
 </div>
 
@@ -188,7 +241,7 @@
             <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
           </svg>
         </span>
-        <span class="brand">Code<span>kasa</span> — Admin</span>
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa — Admin</span>
       </div>
       <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Log out</button>
     </div>
@@ -433,6 +486,15 @@
     <!-- ENQUIRIES TAB -->
     <div class="tab-panel" id="tab-enquiries">
       <div class="card">
+        <h3>Room bookings (from "Book Now")</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ref</th><th>Name</th><th>Phone</th><th>Email</th><th>Room type</th><th>Move-in</th><th>Guests</th><th>ID</th><th>Submitted</th><th></th></tr></thead>
+            <tbody id="bookingsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
         <h3>Visitor enquiries</h3>
         <div class="table-wrap">
           <table>
@@ -457,7 +519,7 @@
             <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
           </svg>
         </span>
-        <span class="brand">Code<span>kasa</span></span>
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
       </div>
       <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Back to login</button>
     </div>
@@ -521,6 +583,7 @@
     if (load('thirustay_attendance', null) === null) save('thirustay_attendance', []);
     if (load('thirustay_salaryPayments', null) === null) save('thirustay_salaryPayments', []);
     if (load('thirustay_expenses', null) === null) save('thirustay_expenses', []);
+    if (load('thirustay_bookings', null) === null) save('thirustay_bookings', []);
   }
   seedIfEmpty();
 
@@ -531,6 +594,62 @@
   function getAttendance(){ return load('thirustay_attendance', []); }
   function getSalaryPayments(){ return load('thirustay_salaryPayments', []); }
   function getExpenses(){ return load('thirustay_expenses', []); }
+  function getBookings(){ return load('thirustay_bookings', []); }
+
+  // ---------- Booking flow (from "Book Now" on the main site) ----------
+  let pendingBookRoom = null;
+  (function checkBookingParam(){
+    const params = new URLSearchParams(window.location.search);
+    const bookRoom = params.get('book');
+    if (bookRoom){
+      pendingBookRoom = bookRoom;
+      switchRoleTab('visitor');
+      document.getElementById('visitorFormNote').textContent = `You're booking: ${bookRoom}. Continue as a visitor to register your details.`;
+      document.getElementById('visitorContinueBtn').textContent = 'Continue to Booking';
+    }
+  })();
+  function submitBooking(){
+    const roomType = document.getElementById('bookRoomTypeLabel').textContent;
+    const name = document.getElementById('bkName').value.trim();
+    const phone = document.getElementById('bkPhone').value.trim();
+    const email = document.getElementById('bkEmail').value.trim();
+    const moveIn = document.getElementById('bkMoveIn').value;
+    const guests = parseInt(document.getElementById('bkGuests').value) || 1;
+    const fileInput = document.getElementById('bkIdFile');
+    const file = fileInput.files[0];
+    const errorEl = document.getElementById('bookingError');
+
+    if (!name || !phone || !email || !moveIn){
+      errorEl.style.display = 'block';
+      return;
+    }
+    errorEl.style.display = 'none';
+
+    if (file && file.size > 2*1024*1024){ alert('That file is larger than 2 MB. Please choose a smaller file, or leave it blank and share your ID at check-in.'); return; }
+
+    const finish = (idCardData, idCardName) => {
+      const bookings = getBookings();
+      const booking = {id: uid(), name, phone, email, roomType, moveIn, guests, idCardData: idCardData || null, idCardName: idCardName || null, submittedAt: new Date().toISOString()};
+      bookings.push(booking);
+      save('thirustay_bookings', bookings);
+      showBookingConfirmation(booking);
+    };
+    if (file){
+      const reader = new FileReader();
+      reader.onload = () => finish(reader.result, file.name);
+      reader.readAsDataURL(file);
+    } else {
+      finish(null, null);
+    }
+  }
+  function showBookingConfirmation(booking){
+    document.getElementById('bookingScreen').classList.add('hidden');
+    document.getElementById('bookingConfirmScreen').classList.remove('hidden');
+    document.getElementById('confRef').textContent = booking.id;
+    document.getElementById('confName').textContent = booking.name;
+    document.getElementById('confRoom').textContent = booking.roomType;
+    document.getElementById('confMoveIn').textContent = fmtDate(booking.moveIn);
+  }
 
   function uid(){ return 'id' + Date.now() + Math.floor(Math.random()*1000); }
   function fmtDate(d){ if(!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }
@@ -560,6 +679,12 @@
     }
   }
   function enterVisitorView(){
+    if (pendingBookRoom){
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('bookingScreen').classList.remove('hidden');
+      document.getElementById('bookRoomTypeLabel').textContent = pendingBookRoom;
+      return;
+    }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('visitorApp').classList.remove('hidden');
     renderVisitorRooms();
@@ -963,10 +1088,38 @@
         <td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button></td>
       </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">No enquiries yet.</td></tr>`;
+    renderBookings();
   }
   function deleteEnquiry(id){
     save('thirustay_enquiries', getEnquiries().filter(e => e.id!==id));
     renderEnquiries();
+  }
+  function renderBookings(){
+    const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => `
+      <tr>
+        <td style="font-family:monospace; font-size:0.78rem;">${b.id}</td>
+        <td>${b.name}</td><td>${b.phone}</td><td>${b.email}</td><td>${b.roomType}</td>
+        <td>${fmtDate(b.moveIn)}</td><td>${b.guests}</td>
+        <td>${b.idCardData ? `<button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View</button>` : '—'}</td>
+        <td>${fmtDate(b.submittedAt)}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button></td>
+      </tr>`).join('') || `<tr><td colspan="10" style="color:var(--muted);">No bookings yet.</td></tr>`;
+  }
+  function deleteBooking(id){
+    save('thirustay_bookings', getBookings().filter(b => b.id!==id));
+    renderBookings();
+  }
+  function viewBookingId(id){
+    const b = getBookings().find(x => x.id===id);
+    if (!b || !b.idCardData) return;
+    const w = window.open();
+    if (!w) { alert('Please allow pop-ups to view the ID file.'); return; }
+    if (b.idCardData.startsWith('data:image')){
+      w.document.write(`<title>${b.name} — ID</title><img src="${b.idCardData}" style="max-width:100%;">`);
+    } else {
+      w.location = b.idCardData;
+    }
   }
 
   // ---------- Staff ----------
