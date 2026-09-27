@@ -1,10 +1,11 @@
-const CACHE_NAME = "codekasa-cache-v3";
+const CACHE_NAME = "codekasa-cache-v4";
 const ASSETS_TO_CACHE = [
   "./index.html",
   "./admin.html",
   "./manifest.json",
   "./manifest-admin.json",
   "./building.jpg",
+  "./room-tour.mp4",
   "./icon-192.png",
   "./icon-512.png",
   "./icon-180.png"

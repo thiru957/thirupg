@@ -7,7 +7,7 @@
 
 <!-- PWA: installability -->
 <link rel="manifest" href="manifest-admin.json">
-<meta name="theme-color" content="#241C42">
+<meta name="theme-color" content="#0E0C0A">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,9 +19,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --pine: #3E2E6B; --pine-deep:#241C42;
-    --rust:#FF6B4A; --marigold:#FFC145; --teal:#17A398; --pink:#E8447A; --blue:#2E6FE8;
-    --paper:#FFFFFF; --ivory:#F8F7FA; --ink:#241E33; --line:#E4E0EA; --muted:#6E6580;
+    --pine: #1C1A18; --pine-deep:#0E0C0A;
+    --rust:#B8935A; --marigold:#E8CFA0; --teal:#8A7B5C; --pink:#A67C52; --blue:#6B5B3E;
+    --paper:#FFFFFF; --ivory:#F5F1EA; --ink:#1E1B18; --line:#E5E0D8; --muted:#7A7268;
     --ok:#1F9D55; --bad:#D64545; --warn:#C98A12;
   }
   *{ box-sizing:border-box; }
@@ -42,7 +42,7 @@
   #loginScreen{
     min-height:100vh; display:flex; align-items:center; justify-content:center;
     background:
-      linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%),
+      linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%),
       url('building.jpg');
     background-size:cover;
     background-position:center;
@@ -69,7 +69,7 @@
   /* ---------- App shell ---------- */
   .app-header{
     background:
-      linear-gradient(90deg, rgba(36,28,66,0.93), rgba(36,28,66,0.88)),
+      linear-gradient(90deg, rgba(14,12,10,0.93), rgba(14,12,10,0.88)),
       url('building.jpg');
     background-size:cover;
     background-position:center 20%;
@@ -158,10 +158,14 @@
 
     <div id="adminLoginForm">
       <div class="field">
+        <label for="adminEmail">Admin email</label>
+        <input type="email" id="adminEmail" placeholder="you@codekasa.com">
+      </div>
+      <div class="field">
         <label for="adminPassword">Admin password</label>
         <input type="password" id="adminPassword" placeholder="Enter admin password">
       </div>
-      <div class="error-msg" id="loginError">Incorrect password. Please try again.</div>
+      <div class="error-msg" id="loginError">Incorrect email or password. Please try again.</div>
       <button class="btn btn-rust" style="width:100%;" onclick="attemptAdminLogin()">Log in as Admin</button>
     </div>
 
@@ -171,13 +175,13 @@
     </div>
 
     <div class="login-note">
-      Demo note: this is a front-end prototype. Data is saved only in this browser's local storage, and the admin password is not securely encrypted — replace with a real backend before handling actual guest data.
+      Connected to a live Firebase database — rooms, tenants, bookings and staff data sync in real time across every device.
     </div>
   </div>
 </div>
 
 <!-- ================= BOOKING REGISTRATION SCREEN ================= -->
-<div id="bookingScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
+<div id="bookingScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
   <div class="login-card" style="max-width:460px;">
     <div class="login-brand">
       <span class="namam-mark" aria-hidden="true">
@@ -208,13 +212,13 @@
 
     <button class="btn btn-rust" style="width:100%; margin-top:6px;" onclick="submitBooking()">Register &amp; Confirm Booking</button>
     <div class="login-note">
-      Demo note: this booking is saved in this browser's local storage only. For it to reach the admin's dashboard on a different device, this needs a real backend — see the note at the end of your conversation with Claude for how to set that up.
+      This booking is saved to CodeKasa's live database and will appear on the admin dashboard immediately.
     </div>
   </div>
 </div>
 
 <!-- ================= BOOKING CONFIRMATION SCREEN ================= -->
-<div id="bookingConfirmScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(62,46,107,0.88) 0%, rgba(46,111,232,0.82) 55%, rgba(23,163,152,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
+<div id="bookingConfirmScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
   <div class="login-card" style="max-width:460px; text-align:center;">
     <div style="font-size:2.4rem; margin-bottom:6px;">✅</div>
     <h3 style="margin-bottom:6px;">Booking request confirmed</h3>
@@ -335,7 +339,7 @@
             <button class="btn btn-rust" id="tenantSubmitBtn" onclick="submitTenant()">Add Tenant</button>
           </div>
         </div>
-        <p class="form-note" id="idFileNote" style="font-size:0.78rem; color:var(--muted); margin-top:12px;">ID files are stored in this browser only (max ~2 MB each). Editing a tenant without choosing a new file keeps their existing ID on record.</p>
+        <p class="form-note" id="idFileNote" style="font-size:0.78rem; color:var(--muted); margin-top:12px;">ID files are uploaded to secure cloud storage (max ~5 MB each). Editing a tenant without choosing a new file keeps their existing ID on record.</p>
       </div>
       <div class="card">
         <h3>Current tenants</h3>
@@ -556,45 +560,123 @@
   </div>
 </div>
 
-<script>
-  const ADMIN_PASSWORD = "thiru2026"; // demo only — change before real use; visible in page source
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import {
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+  import {
+    getStorage, ref as storageRef, uploadBytes, getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU",
+    authDomain: "codekasa.firebaseapp.com",
+    projectId: "codekasa",
+    storageBucket: "codekasa.firebasestorage.app",
+    messagingSenderId: "725605223433",
+    appId: "1:725605223433:web:fd9a635676e810eba57cd8",
+    measurementId: "G-52RYWXF9PB"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+  const auth = getAuth(fbApp);
+  const storage = getStorage(fbApp);
+
   let selectedRole = "admin";
   let editingRoomId = null;
   let editingTenantId = null;
+  let editingStaffId = null;
+  let adminListenersAttached = false;
 
-  // ---------- Storage helpers ----------
-  function load(key, fallback){
-    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-    catch(e){ return fallback; }
+  // ---------- Local real-time caches (kept in sync by Firestore onSnapshot) ----------
+  let roomsCache = [];
+  let tenantsCache = [];
+  let enquiriesCache = [];
+  let bookingsCache = [];
+  let staffCache = [];
+  let attendanceCache = [];
+  let salaryPaymentsCache = [];
+  let expensesCache = [];
+
+  function getRooms(){ return roomsCache; }
+  function getTenants(){ return tenantsCache; }
+  function getEnquiries(){ return enquiriesCache; }
+  function getBookings(){ return bookingsCache; }
+  function getStaff(){ return staffCache; }
+  function getAttendance(){ return attendanceCache; }
+  function getSalaryPayments(){ return salaryPaymentsCache; }
+  function getExpenses(){ return expensesCache; }
+
+  function snapToArray(snapshot){
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   }
-  function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-  function seedIfEmpty(){
-    if (load('thirustay_rooms', null) === null){
-      save('thirustay_rooms', [
-        {id:'r1', number:'101', type:'Single Stay — AC', price:15000, facilities:'WiFi, Kitchen, AC, Attached bathroom', status:'available'},
-        {id:'r2', number:'102', type:'Twin Sharing — AC', price:9000, facilities:'WiFi, Kitchen, AC, Attached bathroom', status:'available'},
-        {id:'r3', number:'103', type:'Family Stay — Non-AC', price:13000, facilities:'WiFi, Kitchen, Attached bathroom', status:'available'}
-      ]);
-    }
-    if (load('thirustay_tenants', null) === null) save('thirustay_tenants', []);
-    if (load('thirustay_enquiries', null) === null) save('thirustay_enquiries', []);
-    if (load('thirustay_staff', null) === null) save('thirustay_staff', []);
-    if (load('thirustay_attendance', null) === null) save('thirustay_attendance', []);
-    if (load('thirustay_salaryPayments', null) === null) save('thirustay_salaryPayments', []);
-    if (load('thirustay_expenses', null) === null) save('thirustay_expenses', []);
-    if (load('thirustay_bookings', null) === null) save('thirustay_bookings', []);
+  // Rooms are publicly readable (visitors browse them), so this listener runs from page load.
+  onSnapshot(collection(db, 'rooms'), (snap) => {
+    roomsCache = snapToArray(snap);
+    renderRoomsTable();
+    renderTenantRoomOptions();
+    renderOccupancy();
+    if (!document.getElementById('visitorApp').classList.contains('hidden')) renderVisitorRooms();
+  }, (err) => console.error('rooms listener error', err));
+
+  // Everything else is admin-only per security rules; only attach after successful login.
+  function attachAdminListeners(){
+    if (adminListenersAttached) return;
+    adminListenersAttached = true;
+
+    onSnapshot(collection(db, 'tenants'), (snap) => {
+      tenantsCache = snapToArray(snap);
+      renderTenantsTable();
+      renderOccupancy();
+      renderReports();
+    }, (err) => console.error('tenants listener error', err));
+
+    onSnapshot(collection(db, 'enquiries'), (snap) => {
+      enquiriesCache = snapToArray(snap);
+      renderEnquiries();
+    }, (err) => console.error('enquiries listener error', err));
+
+    onSnapshot(collection(db, 'bookings'), (snap) => {
+      bookingsCache = snapToArray(snap);
+      renderBookings();
+    }, (err) => console.error('bookings listener error', err));
+
+    onSnapshot(collection(db, 'staff'), (snap) => {
+      staffCache = snapToArray(snap);
+      renderStaffTable();
+      renderAttendanceStaffOptions();
+      renderSalaryStaffOptions();
+    }, (err) => console.error('staff listener error', err));
+
+    onSnapshot(collection(db, 'attendance'), (snap) => {
+      attendanceCache = snapToArray(snap);
+      renderAttendanceTable();
+    }, (err) => console.error('attendance listener error', err));
+
+    onSnapshot(collection(db, 'salaryPayments'), (snap) => {
+      salaryPaymentsCache = snapToArray(snap);
+      renderSalaryHistory();
+    }, (err) => console.error('salaryPayments listener error', err));
+
+    onSnapshot(collection(db, 'expenses'), (snap) => {
+      expensesCache = snapToArray(snap);
+      renderExpensesTab();
+    }, (err) => console.error('expenses listener error', err));
   }
-  seedIfEmpty();
 
-  function getRooms(){ return load('thirustay_rooms', []); }
-  function getTenants(){ return load('thirustay_tenants', []); }
-  function getEnquiries(){ return load('thirustay_enquiries', []); }
-  function getStaff(){ return load('thirustay_staff', []); }
-  function getAttendance(){ return load('thirustay_attendance', []); }
-  function getSalaryPayments(){ return load('thirustay_salaryPayments', []); }
-  function getExpenses(){ return load('thirustay_expenses', []); }
-  function getBookings(){ return load('thirustay_bookings', []); }
+  // ---------- File uploads (Firebase Storage) ----------
+  async function uploadIdFile(file, pathPrefix){
+    if (!file) return null;
+    const path = `${pathPrefix}/${Date.now()}_${file.name}`;
+    const fileRef = storageRef(storage, path);
+    await uploadBytes(fileRef, file);
+    return await getDownloadURL(fileRef);
+  }
 
   // ---------- Booking flow (from "Book Now" on the main site) ----------
   let pendingBookRoom = null;
@@ -608,7 +690,7 @@
       document.getElementById('visitorContinueBtn').textContent = 'Continue to Booking';
     }
   })();
-  function submitBooking(){
+  async function submitBooking(){
     const roomType = document.getElementById('bookRoomTypeLabel').textContent;
     const name = document.getElementById('bkName').value.trim();
     const phone = document.getElementById('bkPhone').value.trim();
@@ -624,22 +706,16 @@
       return;
     }
     errorEl.style.display = 'none';
+    if (file && file.size > 5*1024*1024){ alert('That file is larger than 5 MB. Please choose a smaller file, or leave it blank and share your ID at check-in.'); return; }
 
-    if (file && file.size > 2*1024*1024){ alert('That file is larger than 2 MB. Please choose a smaller file, or leave it blank and share your ID at check-in.'); return; }
-
-    const finish = (idCardData, idCardName) => {
-      const bookings = getBookings();
-      const booking = {id: uid(), name, phone, email, roomType, moveIn, guests, idCardData: idCardData || null, idCardName: idCardName || null, submittedAt: new Date().toISOString()};
-      bookings.push(booking);
-      save('thirustay_bookings', bookings);
-      showBookingConfirmation(booking);
-    };
-    if (file){
-      const reader = new FileReader();
-      reader.onload = () => finish(reader.result, file.name);
-      reader.readAsDataURL(file);
-    } else {
-      finish(null, null);
+    try{
+      const idCardUrl = await uploadIdFile(file, 'id-cards/bookings');
+      const booking = {name, phone, email, roomType, moveIn, guests, idCardUrl: idCardUrl || null, submittedAt: new Date().toISOString()};
+      const docRef = await addDoc(collection(db, 'bookings'), booking);
+      showBookingConfirmation({ id: docRef.id, ...booking });
+    } catch(e){
+      console.error(e);
+      alert('Something went wrong sending your booking. Please check your connection and try again.');
     }
   }
   function showBookingConfirmation(booking){
@@ -651,7 +727,6 @@
     document.getElementById('confMoveIn').textContent = fmtDate(booking.moveIn);
   }
 
-  function uid(){ return 'id' + Date.now() + Math.floor(Math.random()*1000); }
   function fmtDate(d){ if(!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }
   function daysBetween(dateStr){
     const today = new Date(); today.setHours(0,0,0,0);
@@ -667,14 +742,16 @@
     document.getElementById('adminLoginForm').classList.toggle('hidden', role!=='admin');
     document.getElementById('visitorLoginForm').classList.toggle('hidden', role!=='visitor');
   }
-  function attemptAdminLogin(){
+  async function attemptAdminLogin(){
+    const email = document.getElementById('adminEmail').value.trim();
     const pass = document.getElementById('adminPassword').value;
-    if (pass === ADMIN_PASSWORD){
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
       document.getElementById('loginError').style.display = 'none';
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('adminApp').classList.remove('hidden');
-      renderAll();
-    } else {
+      attachAdminListeners();
+    } catch(e){
       document.getElementById('loginError').style.display = 'block';
     }
   }
@@ -690,12 +767,22 @@
     renderVisitorRooms();
   }
   function logout(){
+    signOut(auth).catch(() => {});
     document.getElementById('adminApp').classList.add('hidden');
     document.getElementById('visitorApp').classList.add('hidden');
     document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('adminPassword').value = '';
     document.getElementById('loginError').style.display = 'none';
   }
+
+  onAuthStateChanged(auth, (user) => {
+    if (pendingBookRoom) return;
+    if (user){
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('hidden');
+      attachAdminListeners();
+    }
+  });
 
   // ---------- Tabs ----------
   function switchTab(tab){
@@ -709,41 +796,29 @@
     if (tab==='expenses') renderExpensesTab();
   }
 
-  function renderAll(){
-    renderRoomsTable();
-    renderTenantRoomOptions();
-    renderTenantsTable();
-    renderOccupancy();
-    renderReports();
-    renderEnquiries();
-    renderStaffTab();
-    renderExpensesTab();
-  }
-
   // ---------- Rooms ----------
-  function submitRoom(){
+  async function submitRoom(){
     const number = document.getElementById('roomNumber').value.trim();
     const type = document.getElementById('roomType').value;
     const price = parseFloat(document.getElementById('roomPrice').value) || 0;
     const facilities = document.getElementById('roomFacilities').value.trim();
     if (!number){ alert('Please enter a room number.'); return; }
 
-    let rooms = getRooms();
-    if (editingRoomId){
-      rooms = rooms.map(r => r.id===editingRoomId ? {...r, number, type, price, facilities} : r);
-      editingRoomId = null;
-      document.getElementById('roomSubmitBtn').textContent = 'Add Room';
-      document.getElementById('roomFormTitle').textContent = 'Add a room';
-    } else {
-      if (rooms.some(r => r.number === number)){ alert('A room with this number already exists.'); return; }
-      rooms.push({id:uid(), number, type, price, facilities, status:'available'});
-    }
-    save('thirustay_rooms', rooms);
+    try{
+      if (editingRoomId){
+        await updateDoc(doc(db, 'rooms', editingRoomId), { number, type, price, facilities });
+        editingRoomId = null;
+        document.getElementById('roomSubmitBtn').textContent = 'Add Room';
+        document.getElementById('roomFormTitle').textContent = 'Add a room';
+      } else {
+        if (getRooms().some(r => r.number === number)){ alert('A room with this number already exists.'); return; }
+        await addDoc(collection(db, 'rooms'), { number, type, price, facilities, status:'available' });
+      }
+    } catch(e){ console.error(e); alert('Could not save this room. Please try again.'); return; }
+
     document.getElementById('roomNumber').value = '';
     document.getElementById('roomPrice').value = '';
     document.getElementById('roomFacilities').value = '';
-    renderRoomsTable();
-    renderTenantRoomOptions();
   }
   function editRoom(id){
     const room = getRooms().find(r => r.id===id);
@@ -757,11 +832,9 @@
     document.getElementById('roomFormTitle').textContent = 'Edit room';
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  function deleteRoom(id){
+  async function deleteRoom(id){
     if (!confirm('Delete this room? This will not remove any tenant record already linked to it.')) return;
-    save('thirustay_rooms', getRooms().filter(r => r.id!==id));
-    renderRoomsTable();
-    renderTenantRoomOptions();
+    try{ await deleteDoc(doc(db, 'rooms', id)); } catch(e){ console.error(e); alert('Could not delete this room.'); }
   }
   function renderRoomsTable(){
     const rooms = getRooms();
@@ -858,7 +931,7 @@
       document.getElementById('tenantCheckout').value = d.toISOString().slice(0,10);
     }
   }
-  function submitTenant(){
+  async function submitTenant(){
     const name = document.getElementById('tenantName').value.trim();
     const phone = document.getElementById('tenantPhone').value.trim();
     const roomNumber = document.getElementById('tenantRoom').value;
@@ -876,48 +949,41 @@
     const meterRate = parseFloat(document.getElementById('tenantMeterRate').value) || 8;
 
     if (!name || !roomNumber){ alert('Please enter the tenant name and choose a room.'); return; }
-    if (file && file.size > 2*1024*1024){ alert('That file is larger than 2 MB. Please choose a smaller file — large files can fill up this browser\'s storage quickly.'); return; }
+    if (file && file.size > 5*1024*1024){ alert('That file is larger than 5 MB. Please choose a smaller file.'); return; }
 
+    let idCardUrl = null;
     if (file){
-      const reader = new FileReader();
-      reader.onload = () => finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardData: reader.result, idCardName: file.name});
-      reader.readAsDataURL(file);
-    } else {
-      let existingId = null, existingName = null;
-      if (editingTenantId){
-        const prev = getTenants().find(t => t.id === editingTenantId);
-        if (prev){ existingId = prev.idCardData || null; existingName = prev.idCardName || null; }
-      }
-      finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardData: existingId, idCardName: existingName});
+      try{ idCardUrl = await uploadIdFile(file, 'id-cards/tenants'); }
+      catch(e){ console.error(e); alert('Could not upload the ID file. Please try again.'); return; }
+    } else if (editingTenantId){
+      const prev = getTenants().find(t => t.id === editingTenantId);
+      idCardUrl = prev ? (prev.idCardUrl || null) : null;
     }
-  }
-  function finishTenantSave(data){
-    let rooms = getRooms();
-    let tenants = getTenants();
 
-    if (editingTenantId){
-      const prevTenant = tenants.find(t => t.id === editingTenantId);
-      tenants = tenants.map(t => t.id===editingTenantId ? {...t, ...data} : t);
-      if (prevTenant && prevTenant.roomNumber !== data.roomNumber){
-        rooms = rooms.map(r => r.number===prevTenant.roomNumber ? {...r, status:'available'} : r);
-        rooms = rooms.map(r => r.number===data.roomNumber ? {...r, status:'occupied'} : r);
-      }
-      editingTenantId = null;
-      document.getElementById('tenantSubmitBtn').textContent = 'Add Tenant';
-      document.getElementById('tenantFormTitle').textContent = 'Add a tenant';
-    } else {
-      const roomTaken = rooms.find(r => r.number===data.roomNumber && r.status==='occupied');
-      if (roomTaken && !confirm('This room is already marked occupied. Add tenant anyway?')) return;
-      tenants.push({id:uid(), ...data});
-      rooms = rooms.map(r => r.number===data.roomNumber ? {...r, status:'occupied'} : r);
-    }
+    await finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardUrl});
+  }
+  async function finishTenantSave(data){
     try{
-      save('thirustay_tenants', tenants);
-    } catch(e){
-      alert('Could not save — this browser\'s storage is full, likely from large ID files. Try a smaller file or remove an old one.');
-      return;
-    }
-    save('thirustay_rooms', rooms);
+      if (editingTenantId){
+        const prevTenant = getTenants().find(t => t.id === editingTenantId);
+        await updateDoc(doc(db, 'tenants', editingTenantId), data);
+        if (prevTenant && prevTenant.roomNumber !== data.roomNumber){
+          const oldRoom = getRooms().find(r => r.number === prevTenant.roomNumber);
+          const newRoom = getRooms().find(r => r.number === data.roomNumber);
+          if (oldRoom) await updateDoc(doc(db, 'rooms', oldRoom.id), { status:'available' });
+          if (newRoom) await updateDoc(doc(db, 'rooms', newRoom.id), { status:'occupied' });
+        }
+        editingTenantId = null;
+        document.getElementById('tenantSubmitBtn').textContent = 'Add Tenant';
+        document.getElementById('tenantFormTitle').textContent = 'Add a tenant';
+      } else {
+        const roomTaken = getRooms().find(r => r.number===data.roomNumber && r.status==='occupied');
+        if (roomTaken && !confirm('This room is already marked occupied. Add tenant anyway?')) return;
+        await addDoc(collection(db, 'tenants'), data);
+        const room = getRooms().find(r => r.number === data.roomNumber);
+        if (room) await updateDoc(doc(db, 'rooms', room.id), { status:'occupied' });
+      }
+    } catch(e){ console.error(e); alert('Could not save this tenant. Please try again.'); return; }
 
     document.getElementById('tenantName').value = '';
     document.getElementById('tenantPhone').value = '';
@@ -932,9 +998,6 @@
     document.getElementById('tenantMeterStart').value = '';
     document.getElementById('tenantMeterEnd').value = '';
     document.getElementById('tenantMeterRate').value = '8';
-
-    renderRoomsTable();
-    renderTenantsTable();
   }
   function editTenant(id){
     const t = getTenants().find(x => x.id===id);
@@ -960,19 +1023,21 @@
     document.getElementById('tenantFormTitle').textContent = 'Edit tenant';
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  function vacateTenant(id){
+  async function vacateTenant(id){
     const t = getTenants().find(x => x.id===id);
     if (!t) return;
     if (!confirm(`Mark ${t.name} as checked out and free up room ${t.roomNumber}?`)) return;
-    save('thirustay_tenants', getTenants().filter(x => x.id!==id));
-    save('thirustay_rooms', getRooms().map(r => r.number===t.roomNumber ? {...r, status:'available'} : r));
-    renderRoomsTable();
-    renderTenantsTable();
+    try{
+      await deleteDoc(doc(db, 'tenants', id));
+      const room = getRooms().find(r => r.number === t.roomNumber);
+      if (room) await updateDoc(doc(db, 'rooms', room.id), { status:'available' });
+    } catch(e){ console.error(e); alert('Could not vacate this tenant.'); }
   }
-  function toggleExtend(id){
-    const tenants = getTenants().map(t => t.id===id ? {...t, extend: !t.extend} : t);
-    save('thirustay_tenants', tenants);
-    renderTenantsTable();
+  async function toggleExtend(id){
+    const t = getTenants().find(x => x.id===id);
+    if (!t) return;
+    try{ await updateDoc(doc(db, 'tenants', id), { extend: !t.extend }); }
+    catch(e){ console.error(e); }
   }
   function generateBill(id){
     const t = getTenants().find(x => x.id===id);
@@ -1004,14 +1069,8 @@
   }
   function viewId(id){
     const t = getTenants().find(x => x.id===id);
-    if (!t || !t.idCardData) return;
-    const w = window.open();
-    if (!w) { alert('Please allow pop-ups to view the ID file.'); return; }
-    if (t.idCardData.startsWith('data:image')){
-      w.document.write(`<title>${t.name} — ID</title><img src="${t.idCardData}" style="max-width:100%;">`);
-    } else {
-      w.location = t.idCardData;
-    }
+    if (!t || !t.idCardUrl) return;
+    window.open(t.idCardUrl, '_blank');
   }
   function renderTenantsTable(){
     const tenants = getTenants();
@@ -1036,7 +1095,7 @@
         <td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td>
         <td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td>
         <td>${due>0 ? `<span class="badge badge-bad">₹${due.toLocaleString('en-IN')}</span>` : `<span class="badge badge-ok">Paid</span>`}</td>
-        <td>${t.idCardData ? `<button class="btn btn-outline btn-sm" onclick="viewId('${t.id}')">View ID</button>` : '—'}</td>
+        <td>${t.idCardUrl ? `<button class="btn btn-outline btn-sm" onclick="viewId('${t.id}')">View ID</button>` : '—'}</td>
         <td><button class="btn btn-sm ${t.extend ? 'btn-teal' : 'btn-outline'}" onclick="toggleExtend('${t.id}')">${t.extend ? 'Yes' : 'No'}</button></td>
         <td class="actions-cell">
           <button class="btn btn-outline btn-sm" onclick="editTenant('${t.id}')">Edit</button>
@@ -1088,11 +1147,9 @@
         <td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button></td>
       </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">No enquiries yet.</td></tr>`;
-    renderBookings();
   }
-  function deleteEnquiry(id){
-    save('thirustay_enquiries', getEnquiries().filter(e => e.id!==id));
-    renderEnquiries();
+  async function deleteEnquiry(id){
+    try{ await deleteDoc(doc(db, 'enquiries', id)); } catch(e){ console.error(e); }
   }
   function renderBookings(){
     const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
@@ -1101,29 +1158,21 @@
         <td style="font-family:monospace; font-size:0.78rem;">${b.id}</td>
         <td>${b.name}</td><td>${b.phone}</td><td>${b.email}</td><td>${b.roomType}</td>
         <td>${fmtDate(b.moveIn)}</td><td>${b.guests}</td>
-        <td>${b.idCardData ? `<button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View</button>` : '—'}</td>
+        <td>${b.idCardUrl ? `<button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View</button>` : '—'}</td>
         <td>${fmtDate(b.submittedAt)}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button></td>
       </tr>`).join('') || `<tr><td colspan="10" style="color:var(--muted);">No bookings yet.</td></tr>`;
   }
-  function deleteBooking(id){
-    save('thirustay_bookings', getBookings().filter(b => b.id!==id));
-    renderBookings();
+  async function deleteBooking(id){
+    try{ await deleteDoc(doc(db, 'bookings', id)); } catch(e){ console.error(e); }
   }
   function viewBookingId(id){
     const b = getBookings().find(x => x.id===id);
-    if (!b || !b.idCardData) return;
-    const w = window.open();
-    if (!w) { alert('Please allow pop-ups to view the ID file.'); return; }
-    if (b.idCardData.startsWith('data:image')){
-      w.document.write(`<title>${b.name} — ID</title><img src="${b.idCardData}" style="max-width:100%;">`);
-    } else {
-      w.location = b.idCardData;
-    }
+    if (!b || !b.idCardUrl) return;
+    window.open(b.idCardUrl, '_blank');
   }
 
   // ---------- Staff ----------
-  let editingStaffId = null;
   function renderStaffTab(){
     renderStaffTable();
     renderAttendanceStaffOptions();
@@ -1131,7 +1180,7 @@
     renderSalaryStaffOptions();
     renderSalaryHistory();
   }
-  function submitStaff(){
+  async function submitStaff(){
     const name = document.getElementById('staffName').value.trim();
     const phone = document.getElementById('staffPhone').value.trim();
     const role = document.getElementById('staffRole').value;
@@ -1140,22 +1189,22 @@
     const status = document.getElementById('staffStatus').value;
     if (!name){ alert('Please enter the staff member\'s name.'); return; }
 
-    let staff = getStaff();
-    if (editingStaffId){
-      staff = staff.map(s => s.id===editingStaffId ? {...s, name, phone, role, joiningDate, salary, status} : s);
-      editingStaffId = null;
-      document.getElementById('staffSubmitBtn').textContent = 'Add Staff';
-      document.getElementById('staffFormTitle').textContent = 'Add staff member';
-    } else {
-      staff.push({id:uid(), name, phone, role, joiningDate, salary, status});
-    }
-    save('thirustay_staff', staff);
+    try{
+      if (editingStaffId){
+        await updateDoc(doc(db, 'staff', editingStaffId), { name, phone, role, joiningDate, salary, status });
+        editingStaffId = null;
+        document.getElementById('staffSubmitBtn').textContent = 'Add Staff';
+        document.getElementById('staffFormTitle').textContent = 'Add staff member';
+      } else {
+        await addDoc(collection(db, 'staff'), { name, phone, role, joiningDate, salary, status });
+      }
+    } catch(e){ console.error(e); alert('Could not save this staff member.'); return; }
+
     document.getElementById('staffName').value = '';
     document.getElementById('staffPhone').value = '';
     document.getElementById('staffJoining').value = '';
     document.getElementById('staffSalary').value = '';
     document.getElementById('staffStatus').value = 'active';
-    renderStaffTab();
   }
   function editStaff(id){
     const s = getStaff().find(x => x.id===id);
@@ -1171,10 +1220,9 @@
     document.getElementById('staffFormTitle').textContent = 'Edit staff member';
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  function deleteStaff(id){
+  async function deleteStaff(id){
     if (!confirm('Remove this staff member? Their attendance and salary history will stay on record.')) return;
-    save('thirustay_staff', getStaff().filter(s => s.id!==id));
-    renderStaffTab();
+    try{ await deleteDoc(doc(db, 'staff', id)); } catch(e){ console.error(e); }
   }
   function renderStaffTable(){
     const staff = getStaff();
@@ -1193,24 +1241,21 @@
   // ---------- Attendance ----------
   function renderAttendanceStaffOptions(){
     const staff = getStaff();
-    const options = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
-    document.getElementById('attStaff').innerHTML = options;
+    document.getElementById('attStaff').innerHTML = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
   }
-  function submitAttendance(){
+  async function submitAttendance(){
     const staffId = document.getElementById('attStaff').value;
     const date = document.getElementById('attDate').value;
     const status = document.getElementById('attStatus').value;
     if (!staffId){ alert('Please add a staff member first.'); return; }
     if (!date){ alert('Please choose a date.'); return; }
-    const attendance = getAttendance();
-    attendance.push({id:uid(), staffId, date, status});
-    save('thirustay_attendance', attendance);
-    document.getElementById('attDate').value = '';
-    renderAttendanceTable();
+    try{
+      await addDoc(collection(db, 'attendance'), { staffId, date, status });
+      document.getElementById('attDate').value = '';
+    } catch(e){ console.error(e); alert('Could not save attendance.'); }
   }
-  function deleteAttendance(id){
-    save('thirustay_attendance', getAttendance().filter(a => a.id!==id));
-    renderAttendanceTable();
+  async function deleteAttendance(id){
+    try{ await deleteDoc(doc(db, 'attendance', id)); } catch(e){ console.error(e); }
   }
   function renderAttendanceTable(){
     const staff = getStaff();
@@ -1258,16 +1303,15 @@
       ${!payment ? `<button class="btn btn-teal btn-sm" style="margin-top:14px;" onclick="markSalaryPaid('${staffId}', '${month}', ${calculatedSalary}, ${daysWorked})">Mark salary paid</button>` : ''}
     `;
   }
-  function markSalaryPaid(staffId, month, calculatedSalary, daysWorked){
+  async function markSalaryPaid(staffId, month, calculatedSalary, daysWorked){
     const amountStr = prompt('Amount paid (₹):', calculatedSalary);
     if (amountStr === null) return;
     const amountPaid = parseFloat(amountStr) || 0;
     const paidDate = new Date().toISOString().slice(0,10);
-    const payments = getSalaryPayments();
-    payments.push({id:uid(), staffId, month, amountPaid, paidDate, daysWorked});
-    save('thirustay_salaryPayments', payments);
-    generateSalaryStatement();
-    renderSalaryHistory();
+    try{
+      await addDoc(collection(db, 'salaryPayments'), { staffId, month, amountPaid, paidDate, daysWorked });
+      generateSalaryStatement();
+    } catch(e){ console.error(e); alert('Could not record this payment.'); }
   }
   function renderSalaryHistory(){
     const staff = getStaff();
@@ -1283,23 +1327,21 @@
     renderExpensesTable();
     renderExpenseStats();
   }
-  function submitExpense(){
+  async function submitExpense(){
     const type = document.getElementById('expType').value;
     const amount = parseFloat(document.getElementById('expAmount').value) || 0;
     const date = document.getElementById('expDate').value;
     const notes = document.getElementById('expNotes').value.trim();
     if (!amount || !date){ alert('Please enter an amount and date.'); return; }
-    const expenses = getExpenses();
-    expenses.push({id:uid(), type, amount, date, notes});
-    save('thirustay_expenses', expenses);
-    document.getElementById('expAmount').value = '';
-    document.getElementById('expDate').value = '';
-    document.getElementById('expNotes').value = '';
-    renderExpensesTab();
+    try{
+      await addDoc(collection(db, 'expenses'), { type, amount, date, notes });
+      document.getElementById('expAmount').value = '';
+      document.getElementById('expDate').value = '';
+      document.getElementById('expNotes').value = '';
+    } catch(e){ console.error(e); alert('Could not save this expense.'); }
   }
-  function deleteExpense(id){
-    save('thirustay_expenses', getExpenses().filter(e => e.id!==id));
-    renderExpensesTab();
+  async function deleteExpense(id){
+    try{ await deleteDoc(doc(db, 'expenses', id)); } catch(e){ console.error(e); }
   }
   function renderExpensesTable(){
     const expenses = [...getExpenses()].sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1334,7 +1376,7 @@
         <div class="facilities">${r.facilities || 'Contact us for details'}</div>
       </div>`).join('') || `<p style="color:var(--muted);">No rooms currently available — please send an enquiry and we'll notify you.</p>`;
   }
-  function submitEnquiry(){
+  async function submitEnquiry(){
     const name = document.getElementById('visName').value.trim();
     const phone = document.getElementById('visPhone').value.trim();
     const moveIn = document.getElementById('visMoveIn').value;
@@ -1342,17 +1384,26 @@
     const message = document.getElementById('visMessage').value.trim();
     if (!name || !phone){ alert('Please enter your name and phone number.'); return; }
 
-    const enquiries = getEnquiries();
-    enquiries.push({id:uid(), name, phone, moveIn, roomType, message, submittedAt: new Date().toISOString()});
-    save('thirustay_enquiries', enquiries);
-
-    document.getElementById('enquiryConfirm').style.display = 'block';
-    document.getElementById('visName').value = '';
-    document.getElementById('visPhone').value = '';
-    document.getElementById('visMoveIn').value = '';
-    document.getElementById('visMessage').value = '';
+    try{
+      await addDoc(collection(db, 'enquiries'), { name, phone, moveIn, roomType, message, submittedAt: new Date().toISOString() });
+      document.getElementById('enquiryConfirm').style.display = 'block';
+      document.getElementById('visName').value = '';
+      document.getElementById('visPhone').value = '';
+      document.getElementById('visMoveIn').value = '';
+      document.getElementById('visMessage').value = '';
+    } catch(e){ console.error(e); alert('Something went wrong sending your enquiry. Please try again.'); }
   }
+
+  // ---------- Expose functions used by inline HTML event handlers ----------
+  Object.assign(window, {
+    attemptAdminLogin, deleteAttendance, deleteBooking, deleteEnquiry, deleteExpense, deleteRoom,
+    deleteStaff, editRoom, editStaff, editTenant, enterVisitorView, generateBill, generateSalaryStatement,
+    logout, markSalaryPaid, onCheckinChange, onStayTypeChange, showRoomDetail, submitAttendance,
+    submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
+    switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom
+  });
 </script>
+
 
 <script>
   if ("serviceWorker" in navigator) {
