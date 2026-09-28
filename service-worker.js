@@ -1,4 +1,4 @@
-const CACHE_NAME = "codekasa-cache-v4";
+const CACHE_NAME = "codekasa-cache-v5";
 const ASSETS_TO_CACHE = [
   "./index.html",
   "./admin.html",
@@ -32,6 +32,9 @@ self.addEventListener("activate", (event) => {
 // Network-first for pages (HTML), so edits/updates are picked up immediately.
 // Cache-first for everything else (images, icons, manifests), for speed.
 self.addEventListener("fetch", (event) => {
+  // Only handle GET requests for our own files. Anything else (Firebase, form service, fonts) goes straight to the network.
+  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
+
   const isHTML = event.request.mode === "navigate" || event.request.url.endsWith(".html");
 
   if (isHTML) {

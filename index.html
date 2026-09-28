@@ -847,16 +847,27 @@
             </select>
           </div>
           <div class="field">
-            <label for="move-in">Preferred move-in date</label>
+            <label for="move-in">Check-in date</label>
             <input type="date" id="move-in">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="enq-email">Email (optional)</label>
+            <input type="email" id="enq-email" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="enq-guests">Number of people</label>
+            <input type="number" id="enq-guests" min="1" value="1">
           </div>
         </div>
         <div class="field">
           <label for="message">Message (optional)</label>
           <textarea id="message" placeholder="Anything else we should know?"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Send enquiry</button>
-        <p class="form-note">Submitting opens your email app with this enquiry addressed to info@codekasa.com — just hit send there to reach us.</p>
+        <button type="submit" class="btn btn-primary" id="enqSubmitBtn" style="align-self:flex-start;">Send enquiry</button>
+        <div id="enquiryStatus" role="status" style="display:none; padding:12px 14px; border-radius:3px; font-size:0.9rem;"></div>
+        <p class="form-note">Your enquiry goes straight to the CodeKasa team — no email app needed. We'll contact you shortly.</p>
       </form>
       <div class="contact-side">
         <h3>Prefer to talk directly?</h3>
@@ -922,30 +933,88 @@
   const flashClose = document.getElementById('flashClose');
   flashClose.addEventListener('click', () => flashBanner.classList.add('hidden'));
 
-  function sendEnquiryEmail(event){
+  // ---------- Enquiry form: saves to Firebase + emails info@codekasa.com ----------
+  // Paste your Formspree endpoint here (looks like https://formspree.io/f/abcdwxyz).
+  // Until you do, enquiries are still saved to the admin dashboard, but no email is sent.
+  const EMAIL_ENDPOINT = "https://formspree.io/f/mzezkqko";
+
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU",
+    authDomain: "codekasa.firebaseapp.com",
+    projectId: "codekasa",
+    storageBucket: "codekasa.firebasestorage.app",
+    messagingSenderId: "725605223433",
+    appId: "1:725605223433:web:fd9a635676e810eba57cd8"
+  };
+
+  function showEnquiryStatus(text, ok){
+    const el = document.getElementById('enquiryStatus');
+    el.textContent = text;
+    el.style.display = 'block';
+    el.style.background = ok ? '#E4F6EB' : '#FBE7E7';
+    el.style.color = ok ? '#1F9D55' : '#D64545';
+  }
+
+  async function sendEnquiryEmail(event){
     event.preventDefault();
+    const btn = document.getElementById('enqSubmitBtn');
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('enq-email').value.trim();
+    const guests = parseInt(document.getElementById('enq-guests').value) || 1;
     const roomType = document.getElementById('room-type').value;
     const moveIn = document.getElementById('move-in').value;
     const message = document.getElementById('message').value.trim();
 
     if (!name || !phone){
-      alert('Please enter your name and phone number.');
+      showEnquiryStatus('Please enter your name and phone number.', false);
       return;
     }
 
-    const subject = `Enquiry from ${name} — ${roomType}`;
-    const bodyLines = [
-      `Name: ${name}`,
-      `Phone: ${phone}`,
-      `Room type: ${roomType}`,
-      `Preferred move-in date: ${moveIn || 'Not specified'}`,
-      `Message: ${message || '(none)'}`
-    ];
-    const body = bodyLines.join('\n');
-    const mailtoUrl = `mailto:info@codekasa.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const enquiry = { name, phone, email, guests, roomType, moveIn, message, source: 'website', submittedAt: new Date().toISOString() };
+    let saved = false, emailed = false;
+
+    // 1) Save to the admin dashboard (Firebase)
+    try{
+      const { initializeApp, getApps, getApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
+      const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js');
+      const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
+      await addDoc(collection(getFirestore(app), 'enquiries'), enquiry);
+      saved = true;
+    } catch(e){ console.error('Could not save enquiry to database', e); }
+
+    // 2) Email info@codekasa.com (via form service)
+    if (EMAIL_ENDPOINT){
+      try{
+        const payload = {
+          _subject: `New enquiry from ${name} — ${roomType}`,
+          name, phone, guests, roomType,
+          checkInDate: moveIn || 'Not specified',
+          message: message || '(none)'
+        };
+        if (email) payload.email = email;
+        const res = await fetch(EMAIL_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        emailed = res.ok;
+      } catch(e){ console.error('Could not send enquiry email', e); }
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Send enquiry';
+
+    if (saved || emailed){
+      showEnquiryStatus(`Thank you, ${name}! Your enquiry has been received — we'll contact you shortly.`, true);
+      document.getElementById('enquiryForm').reset();
+      document.getElementById('enq-guests').value = '1';
+    } else {
+      showEnquiryStatus("Sorry, we couldn't send your enquiry just now. Please call or WhatsApp us on +91 81068 12341 or email info@codekasa.com.", false);
+    }
   }
 
   function showPage(id){

@@ -259,7 +259,7 @@
       <button class="tab-btn" data-tab="staff" onclick="switchTab('staff')">Staff</button>
       <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">Expenses</button>
       <button class="tab-btn" data-tab="reports" onclick="switchTab('reports')">Reports</button>
-      <button class="tab-btn" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries</button>
+      <button class="tab-btn" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries &amp; Bookings</button>
     </div>
 
     <!-- ROOMS TAB -->
@@ -493,7 +493,7 @@
         <h3>Room bookings (from "Book Now")</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Ref</th><th>Name</th><th>Phone</th><th>Email</th><th>Room type</th><th>Move-in</th><th>Guests</th><th>ID</th><th>Submitted</th><th></th></tr></thead>
+            <thead><tr><th>Ref</th><th>Name</th><th>Phone</th><th>Email</th><th>Room type</th><th>Check-in</th><th>Guests</th><th>ID</th><th>Submitted</th><th>Actions</th></tr></thead>
             <tbody id="bookingsTableBody"></tbody>
           </table>
         </div>
@@ -502,7 +502,7 @@
         <h3>Visitor enquiries</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Name</th><th>Phone</th><th>Room type</th><th>Move-in date</th><th>Message</th><th>Submitted</th><th></th></tr></thead>
+            <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Room type</th><th>Check-in</th><th>Guests</th><th>Message</th><th>Submitted</th><th>Actions</th></tr></thead>
             <tbody id="enquiriesTableBody"></tbody>
           </table>
         </div>
@@ -958,6 +958,8 @@
     } else if (editingTenantId){
       const prev = getTenants().find(t => t.id === editingTenantId);
       idCardUrl = prev ? (prev.idCardUrl || null) : null;
+    } else if (pendingIdCardUrl){
+      idCardUrl = pendingIdCardUrl;
     }
 
     await finishTenantSave({name, phone, roomNumber, stayType, guests, checkin, checkout, rent, paid, extend, meterStart, meterEnd, meterRate, idCardUrl});
@@ -998,6 +1000,7 @@
     document.getElementById('tenantMeterStart').value = '';
     document.getElementById('tenantMeterEnd').value = '';
     document.getElementById('tenantMeterRate').value = '8';
+    pendingIdCardUrl = null;
   }
   function editTenant(id){
     const t = getTenants().find(x => x.id===id);
@@ -1140,13 +1143,47 @@
 
   // ---------- Enquiries ----------
   function renderEnquiries(){
-    const enquiries = getEnquiries();
+    const enquiries = [...getEnquiries()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     document.getElementById('enquiriesTableBody').innerHTML = enquiries.map(e => `
       <tr>
-        <td>${e.name}</td><td>${e.phone}</td><td>${e.roomType}</td><td>${fmtDate(e.moveIn)}</td>
-        <td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button></td>
-      </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">No enquiries yet.</td></tr>`;
+        <td>${e.name}</td><td>${e.phone}</td><td>${e.email || '—'}</td><td>${e.roomType}</td><td>${fmtDate(e.moveIn)}</td>
+        <td>${e.guests || '—'}</td><td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
+        <td class="actions-cell">
+          <button class="btn btn-teal btn-sm" onclick="bookFromRecord('enquiry', '${e.id}')">Book room</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="9" style="color:var(--muted);">No enquiries yet.</td></tr>`;
+    renderBookings();
+  }
+  // Turn an enquiry/booking into a tenant: opens the Tenants form pre-filled with the visitor's details
+  let pendingIdCardUrl = null;
+  function bookFromRecord(kind, id){
+    const rec = (kind === 'booking' ? getBookings() : getEnquiries()).find(x => x.id === id);
+    if (!rec) return;
+    const isDay = /^Day Stay/.test(rec.roomType || '');
+
+    switchTab('tenants');
+    editingTenantId = null;
+    document.getElementById('tenantSubmitBtn').textContent = 'Add Tenant';
+    document.getElementById('tenantFormTitle').textContent = 'Add a tenant';
+
+    document.getElementById('tenantName').value = rec.name || '';
+    document.getElementById('tenantPhone').value = rec.phone || '';
+    document.getElementById('tenantGuests').value = rec.guests || 1;
+    document.getElementById('tenantStayType').value = isDay ? 'day' : 'month';
+    onStayTypeChange();
+    document.getElementById('tenantCheckin').value = rec.moveIn || '';
+    onCheckinChange();
+    pendingIdCardUrl = rec.idCardUrl || null;
+
+    const match = getRooms().find(r => r.type === rec.roomType && r.status !== 'occupied');
+    if (match){
+      document.getElementById('tenantRoom').value = match.number;
+      updateRentFromRoom();
+    } else {
+      alert(`No free room of type "${rec.roomType}" was found. The tenant form is filled in — please pick a room manually (or add rooms in the Rooms tab).`);
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
   }
   async function deleteEnquiry(id){
     try{ await deleteDoc(doc(db, 'enquiries', id)); } catch(e){ console.error(e); }
@@ -1160,7 +1197,10 @@
         <td>${fmtDate(b.moveIn)}</td><td>${b.guests}</td>
         <td>${b.idCardUrl ? `<button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View</button>` : '—'}</td>
         <td>${fmtDate(b.submittedAt)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button></td>
+        <td class="actions-cell">
+          <button class="btn btn-teal btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button>
+        </td>
       </tr>`).join('') || `<tr><td colspan="10" style="color:var(--muted);">No bookings yet.</td></tr>`;
   }
   async function deleteBooking(id){
@@ -1400,7 +1440,7 @@
     deleteStaff, editRoom, editStaff, editTenant, enterVisitorView, generateBill, generateSalaryStatement,
     logout, markSalaryPaid, onCheckinChange, onStayTypeChange, showRoomDetail, submitAttendance,
     submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
-    switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom
+    switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord
   });
 </script>
 
