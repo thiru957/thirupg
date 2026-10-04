@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CodeKasa">
+<meta name="application-name" content="CodeKasa">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -90,7 +91,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:18px 0;
+    padding:18px 28px;
   }
   .brand{ font-size:1.4rem; letter-spacing:0.01em; }
   .brand-link{
@@ -269,6 +270,36 @@
   .page-section{ display:none; }
   .page-section.active{ display:block; }
   .back-btn{ margin-bottom:20px; }
+  /* ---------- Install-as-app banner ---------- */
+  .install-bar{ position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:70; width:min(560px, calc(100% - 24px)); display:flex; align-items:center; gap:12px; background:var(--pine-deep); color:var(--paper); border:1px solid rgba(232,207,160,0.35); border-radius:6px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,0.35); }
+  .install-bar.hidden, .install-modal.hidden{ display:none !important; }
+  .install-bar img{ border-radius:9px; flex:none; }
+  .install-text{ display:flex; flex-direction:column; line-height:1.3; min-width:0; flex:1; }
+  .install-text strong{ font-size:0.9rem; font-weight:600; }
+  .install-text span{ font-size:0.78rem; color:#CFC8BC; }
+  .install-close{ background:none; border:none; color:inherit; font-size:1.05rem; cursor:pointer; padding:6px; opacity:0.75; font-family:inherit; }
+  .install-close:hover{ opacity:1; }
+  .install-bar .btn{ padding:9px 16px; font-size:0.72rem; white-space:nowrap; }
+  @media (max-width:700px){ body.install-showing .wa-float{ bottom:calc(var(--install-h, 72px) + 32px); } }
+  @media (max-width:480px){ .install-text span{ display:none; } }
+  .install-modal{ position:fixed; inset:0; background:rgba(14,12,10,0.6); z-index:120; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .install-card{ position:relative; background:var(--paper); max-width:460px; width:100%; border-radius:4px; padding:28px 26px 22px; max-height:90vh; overflow:auto; }
+  .install-card h3{ margin-bottom:12px; }
+  .install-card ol{ padding-left:20px; line-height:1.75; font-size:0.93rem; margin:0 0 10px; }
+  .install-card p{ font-size:0.85rem; color:var(--muted); margin:0 0 6px; }
+  .install-card .install-close{ position:absolute; top:8px; right:8px; color:var(--ink); }
+
+  /* ---------- Payment page ---------- */
+  .pay-layout{ display:grid; grid-template-columns:minmax(260px, 340px) 1fr; gap:32px; align-items:start; }
+  @media (max-width:800px){ .pay-layout{ grid-template-columns:1fr; } }
+  .pay-qr-card{ background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--rust); border-radius:2px; padding:20px; text-align:center; }
+  .pay-qr-card img{ width:100%; max-width:300px; height:auto; display:block; margin:0 auto; }
+  .pay-qr-caption{ margin:10px 0 12px; font-size:0.9rem; color:var(--muted); }
+  .pay-qr-meta{ width:100%; font-size:0.88rem; border-collapse:collapse; text-align:left; }
+  .pay-qr-meta td{ padding:6px 0; border-top:1px solid var(--line); }
+  .pay-qr-meta td:first-child{ color:var(--muted); width:38%; }
+  .pay-qr-note{ margin:12px 0 0; font-size:0.78rem; color:var(--muted); }
+
   .policy-box{
     margin-top:26px;
     padding:20px 24px;
@@ -280,7 +311,7 @@
   .policy-box h3{ font-size:1.05rem; margin-bottom:10px; }
   .policy-box ul{ margin:0; padding-left:20px; color:var(--ink); font-size:0.92rem; line-height:1.7; }
   .policy-box li + li{ margin-top:4px; }
-  #homeDivider.hidden-nav{ display:none; }
+  .hidden-nav{ display:none !important; }
 
   /* ---------- Facilities ---------- */
   .facility-grid{
@@ -738,6 +769,7 @@
       <h3>Booking policies</h3>
       <ul>
         <li>A valid <strong>ID proof (Aadhaar number or passport number)</strong> is mandatory for every adult staying. It must belong to the person who is staying — if it does not match at check-in, the booking is cancelled and <strong>no refund is given</strong>.</li>
+        <li>A booking is <strong>confirmed only after payment</strong> is made and verified. Pay by UPI on the booking page, or call CodeKasa on +91 81068 12341 to confirm. You then get a downloadable <strong>bill (PDF)</strong>.</li>
         <li>Bookings can be made from today up to <strong>6 months ahead</strong>.</li>
         <li>You can retrieve your booking with your mobile number or booking number, and <strong>edit it up to one week before check-in</strong>. Within one week of check-in, please call CodeKasa on +91 81068 12341 to make changes.</li>
         <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
@@ -813,34 +845,41 @@
   <div class="wrap">
     <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
-      <div class="section-eyebrow">Advance payment</div>
-      <h2>Pay however suits you</h2>
-      <p>Pay the advance as per the stay terms on the Rooms page — online, by UPI, bank transfer, or in person during your visit.</p>
+      <div class="section-eyebrow">Payment</div>
+      <h2>Pay securely by UPI</h2>
+      <p>Book your room first to get your booking number and the exact amount to pay. Your booking is confirmed once CodeKasa has verified your payment.</p>
     </div>
-  </div>
-  <div class="wrap" style="padding:0;">
-    <div class="pay-grid">
-      <div class="pay-card">
-        <h3>Pay online</h3>
-        <p>Pay your advance securely by card, UPI or netbanking through our payment page.</p>
-        <a href="#upi-pay" class="btn btn-primary">Pay advance online</a>
+
+    <div class="pay-layout">
+      <div class="pay-qr-card">
+        <img src="upi-qr.png" alt="UPI QR code for CodeKasa payments. Payee name: ALAMPURI REVATHI" width="300">
+        <p class="pay-qr-caption">Scan with PhonePe, Google Pay, Paytm or any UPI app</p>
+        <table class="pay-qr-meta">
+          <tr><td>Payee name</td><td><strong>ALAMPURI REVATHI</strong></td></tr>
+          <tr><td>UPI ID</td><td><strong>8019316795@ybl</strong></td></tr>
+        </table>
+        <p class="pay-qr-note">Please pay only after you have a booking number, and add it in the payment note.</p>
       </div>
-      <div class="pay-card" id="upi-pay">
-        <h3>Scan &amp; pay via UPI</h3>
-        <div class="qr-box">Your UPI QR code image goes here</div>
-      </div>
-      <div class="pay-card">
-        <h3>Bank transfer</h3>
-        <ul class="bank-list">
-          <li><span>Account name</span><span>CodeKasa</span></li>
-          <li><span>Account no.</span><span>XXXXXXXXXXXX</span></li>
-          <li><span>IFSC</span><span>XXXX0XXXXXX</span></li>
-        </ul>
-      </div>
-      <div class="pay-card">
-        <h3>Cash on visit</h3>
-        <p>Prefer to pay in person? Bring the advance when you come see the room — no online step needed.</p>
-        <a href="#contact" class="btn btn-ghost" style="border-color:var(--line); color:var(--ink);" onclick="event.preventDefault(); showPage('contact');">Schedule a visit</a>
+
+      <div>
+        <div class="policy-box" style="margin-top:0;">
+          <h3>Payment rules</h3>
+          <ul>
+            <li>Pay the <strong>exact amount</strong> shown for your booking. For monthly stays this is one month's rent as advance plus ₹6,000 (non-refundable). For day stays it is the full stay amount.</li>
+            <li>Pay by scanning the QR or with any UPI app, and put your <strong>booking number (CK…)</strong> in the payment note.</li>
+            <li>After paying, enter the <strong>12-digit UPI transaction ID (UTR)</strong> on your booking page so CodeKasa can verify the payment.</li>
+            <li>A booking is <strong>confirmed only after CodeKasa verifies the payment</strong>. Until then it shows as "Awaiting payment" or "Payment under verification".</li>
+            <li>Once confirmed you can view and download your <strong>bill (PDF)</strong> with the booking and payment details.</li>
+            <li>The ₹6,000 is non-refundable. For monthly stays the advance is returned <strong>one week after you vacate</strong> the room.</li>
+            <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+          </ul>
+        </div>
+        <div class="policy-box">
+          <h3>Can't pay online?</h3>
+          <p style="margin:0 0 14px; font-size:0.92rem;">Call CodeKasa on <strong>+91 81068 12341</strong> and we will confirm your booking with you.</p>
+          <a href="tel:+918106812341" class="btn btn-primary">Call +91 81068 12341</a>
+          <a href="#rooms" class="btn btn-outline" style="margin-left:8px;" onclick="event.preventDefault(); showPage('rooms');">Book a room</a>
+        </div>
       </div>
     </div>
   </div>
@@ -942,6 +981,7 @@
           <a href="#facilities" onclick="event.preventDefault(); showPage('facilities');">Facilities</a>
           <a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a>
           <a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a>
+          <a href="#" id="footerInstall" onclick="event.preventDefault(); openInstall();">Install app</a>
         </div>
       </div>
       <div>
@@ -958,6 +998,21 @@
     </div>
   </div>
 </footer>
+
+<div id="installBar" class="install-bar hidden" role="region" aria-label="Install the CodeKasa app">
+  <img src="icon-192.png" alt="" width="40" height="40">
+  <div class="install-text"><strong>Install the CodeKasa app</strong><span>Open it from your home screen — faster booking and payments.</span></div>
+  <button type="button" class="btn btn-primary" id="installBtn">Install</button>
+  <button type="button" class="install-close" id="installClose" aria-label="Not now">✕</button>
+</div>
+
+<div id="installHelp" class="install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
+  <div class="install-card">
+    <button type="button" class="install-close" id="installHelpClose" aria-label="Close">✕</button>
+    <h3 id="installHelpTitle">Install CodeKasa on your device</h3>
+    <div id="installHelpBody"></div>
+  </div>
+</div>
 
 <a class="wa-float" href="https://wa.me/918106812341" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.4-1.34a9.9 9.9 0 004.64 1.15h.01c5.46 0 9.91-4.45 9.91-9.9C21.96 6.45 17.5 2 12.04 2zm0 18.02h-.01a8.3 8.3 0 01-4.24-1.16l-.3-.18-3.15.78.85-3.07-.2-.32a8.24 8.24 0 01-1.27-4.16c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 012.41 5.83c0 4.55-3.7 8.11-8.18 8.11zm4.52-6.13c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.23.25-.86.84-.86 2.04 0 1.2.88 2.36 1 2.53.12.17 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
@@ -1248,6 +1303,81 @@
     navLinks.classList.remove('open');
     menuBtn.setAttribute('aria-expanded', 'false');
   }));
+
+  // ---------- Install as an app: Android, iPhone/iPad, Windows, Mac, Linux, Chromebook ----------
+  function openInstall(){ if (window.__ckInstall) window.__ckInstall(); }
+  (function installSupport(){
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+    const isFirefox = /Firefox|FxiOS/i.test(ua);
+    const isSafariMac = !isIOS && /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua);
+    const standalone = () => (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
+    const KEY = 'ck_install_dismissed', SNOOZE_DAYS = 14;
+    const snoozed = () => { try { const t = Number(localStorage.getItem(KEY)); return !!t && (Date.now() - t) < SNOOZE_DAYS * 864e5; } catch(e){ return false; } };
+    const snooze = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch(e){} };
+
+    const bar = document.getElementById('installBar'), btn = document.getElementById('installBtn'), closeBtn = document.getElementById('installClose');
+    const help = document.getElementById('installHelp'), helpBody = document.getElementById('installHelpBody'), helpClose = document.getElementById('installHelpClose');
+    const footerLink = document.getElementById('footerInstall');
+    const manualPlatform = isIOS || isSafariMac || (isAndroid && isFirefox);   // browsers that can install but never show an automatic prompt
+    let deferred = null, ready = false;
+
+    function setBar(visible){
+      bar.classList.toggle('hidden', !visible);
+      document.body.classList.toggle('install-showing', visible);
+      if (visible) document.documentElement.style.setProperty('--install-h', bar.offsetHeight + 'px');   // lets the WhatsApp button clear the banner on any screen width
+    }
+    function helpHtml(){
+      if (isIOS) return `<ol><li>Tap the <strong>Share</strong> button (the square with an arrow pointing up) in your browser.</li><li>Scroll down and tap <strong>Add to Home Screen</strong>.</li><li>Tap <strong>Add</strong>. CodeKasa now opens from your home screen like an app.</li></ol><p>On iPhone and iPad use Safari, or Chrome / Edge on iOS 16.4 or newer.</p>`;
+      if (isSafariMac) return `<ol><li>In the menu bar choose <strong>File → Add to Dock…</strong> (or click <strong>Share → Add to Dock</strong>).</li><li>Click <strong>Add</strong>. CodeKasa appears in your Dock.</li></ol><p>This needs Safari 17 or newer.</p>`;
+      if (isAndroid && isFirefox) return `<ol><li>Tap the <strong>⋮</strong> menu in Firefox.</li><li>Tap <strong>Install</strong>.</li><li>Tap <strong>Add</strong> to put CodeKasa on your home screen.</li></ol>`;
+      if (isAndroid) return `<ol><li>Tap the <strong>⋮</strong> (or ≡) menu in your browser.</li><li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Tap <strong>Install</strong>.</li></ol>`;
+      if (isFirefox) return `<p style="font-size:0.93rem; color:var(--ink);">Firefox on computers cannot install apps. Open <strong>codekasa.com</strong> in <strong>Chrome</strong>, <strong>Edge</strong> or <strong>Safari</strong> to install it, or press <strong>Ctrl+D</strong> (<strong>Cmd+D</strong> on Mac) to bookmark this page.</p>`;
+      return `<ol><li>Look for the <strong>install icon</strong> (a screen with a down-arrow) at the right end of the address bar and click it, then click <strong>Install</strong>.</li><li>Or open the browser menu (<strong>⋮</strong>) and choose <strong>Install CodeKasa…</strong> (in Edge: <strong>Apps → Install this site as an app</strong>).</li></ol><p>If you do not see these options, CodeKasa may already be installed on this device.</p>`;
+    }
+    function openHelp(){ helpBody.innerHTML = helpHtml(); help.classList.remove('hidden'); helpClose.focus(); }
+    function closeHelp(){ help.classList.add('hidden'); }
+    async function install(){
+      if (deferred){
+        const d = deferred; deferred = null; setBar(false);
+        try { await d.prompt(); const choice = await d.userChoice; if (choice && choice.outcome === 'dismissed') snooze(); } catch(e){}
+        return;
+      }
+      openHelp();
+    }
+    function maybeShowBar(){
+      if (!ready || standalone() || snoozed()) return;
+      if (deferred){ btn.textContent = 'Install'; setBar(true); }
+      else if (manualPlatform){ btn.textContent = 'How to install'; setBar(true); }
+    }
+
+    window.__ckInstall = install;
+    if (standalone()){ if (footerLink) footerLink.classList.add('hidden-nav'); return; }       // already running as an installed app
+
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; maybeShowBar(); });
+    window.addEventListener('appinstalled', () => { deferred = null; setBar(false); if (footerLink) footerLink.classList.add('hidden-nav'); });
+    btn.addEventListener('click', install);
+    closeBtn.addEventListener('click', () => { snooze(); setBar(false); });
+    helpClose.addEventListener('click', closeHelp);
+    help.addEventListener('click', (e) => { if (e.target === help) closeHelp(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeHelp(); });
+    window.addEventListener('resize', () => { if (!bar.classList.contains('hidden')) document.documentElement.style.setProperty('--install-h', bar.offsetHeight + 'px'); });
+    setTimeout(() => { ready = true; maybeShowBar(); }, window.__INSTALL_DELAY_MS != null ? window.__INSTALL_DELAY_MS : 2500);
+  })();
+
+  // Open the section named in the address (#rooms, #payment …). Used by the installed app's home-screen shortcuts,
+  // both when the app starts and when a shortcut is tapped while it is already open.
+  (function routeFromHash(){
+    function route(initial){
+      const id = (location.hash || '').slice(1);
+      const el = id && document.getElementById(id);
+      if (el && el.classList.contains('page-section')) showPage(id);
+      else if (!initial && (id === 'top' || id === '')) showHome();
+    }
+    route(true);
+    window.addEventListener('hashchange', () => route(false));
+  })();
 </script>
 
 

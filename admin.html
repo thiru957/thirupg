@@ -164,6 +164,88 @@
   .booking-result{ border:1px solid var(--line); border-radius:6px; padding:16px; margin-bottom:14px; background:var(--paper); }
   .booking-result h4{ margin:0 0 8px; font-family:'Work Sans',sans-serif; font-size:0.95rem; }
   .mini-form{ background:var(--ivory); border-radius:6px; padding:14px 14px 4px; margin-top:12px; }
+
+  /* ---------- Booking shell: steps + live summary ---------- */
+  .bk-wrap{ width:100%; max-width:1040px; }
+  .bk-top{ background:var(--paper); border-radius:8px; padding:14px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+  .bk-top .login-brand{ margin:0; }
+  .steps{ list-style:none; display:flex; gap:4px; margin:0; padding:0; flex-wrap:wrap; }
+  .steps li{ display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--muted); padding:6px 12px; border-radius:20px; }
+  .steps li span{ width:22px; height:22px; border-radius:50%; background:var(--line); color:var(--muted); display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; }
+  .steps li.active{ color:var(--pine-deep); font-weight:600; background:var(--ivory); }
+  .steps li.active span{ background:var(--rust); color:#fff; }
+  .steps li.done span{ background:var(--ok); color:#fff; }
+  .bk-grid{ display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:18px; align-items:start; }
+  .bk-grid .booking-card{ max-width:none; }
+  .bk-summary{ position:sticky; top:16px; }
+  @media (max-width:900px){ .bk-grid{ grid-template-columns:1fr; } .bk-summary{ position:static; } }
+  .sum-card{ background:var(--paper); border-radius:8px; padding:22px 22px 18px; border-top:3px solid var(--rust); }
+  .sum-eyebrow{ font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--rust); font-weight:600; margin-bottom:6px; }
+  .sum-room{ font-family:'Fraunces',serif; font-size:1.25rem; font-weight:600; color:var(--pine-deep); margin-bottom:10px; }
+  .sum-line{ display:flex; justify-content:space-between; gap:12px; font-size:0.85rem; padding:7px 0; border-bottom:1px solid var(--line); }
+  .sum-line span{ color:var(--muted); }
+  .sum-line strong{ text-align:right; font-weight:500; }
+  .sum-card hr{ border:none; margin:6px 0; }
+  .sum-total{ display:flex; justify-content:space-between; align-items:baseline; padding:12px 0 2px; font-size:0.9rem; }
+  .sum-total strong{ font-family:'Fraunces',serif; font-size:1.55rem; color:var(--pine-deep); }
+  .sum-note{ font-size:0.76rem; color:var(--muted); margin:6px 0 0; }
+
+  a.btn{ text-decoration:none; }
+  .call-box a:not(.btn), .info-box a:not(.btn), .booking-card .sub a{ color:var(--pine-deep); font-weight:600; }
+
+  /* ---------- Payment step ---------- */
+  .pay-head{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; }
+  .pay-amount{ background:var(--ivory); border:1px solid var(--line); border-left:3px solid var(--rust); border-radius:4px; padding:14px 18px; margin:0 0 18px; display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; }
+  .pay-amount span{ color:var(--muted); font-size:0.85rem; }
+  .pay-amount strong{ font-family:'Fraunces',serif; font-size:1.9rem; color:var(--pine-deep); }
+  .pay-amount small{ color:var(--muted); font-size:0.8rem; flex-basis:100%; }
+  .pay-method{ display:grid; grid-template-columns:260px 1fr; gap:22px; margin-bottom:18px; align-items:start; }
+  @media (max-width:680px){ .pay-method{ grid-template-columns:1fr; } }
+  .pay-qr img{ width:100%; max-width:240px; height:auto; display:block; margin:0 auto 6px; border:1px solid var(--line); border-radius:6px; }
+  .pay-how ol{ margin:0 0 12px; padding-left:20px; font-size:0.88rem; line-height:1.7; }
+  .utr-box{ background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:16px 16px 6px; margin-bottom:16px; }
+  .call-box{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; background:var(--ivory); border-radius:6px; padding:12px 16px; font-size:0.86rem; margin-bottom:16px; }
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  @media (hover:hover) and (pointer:fine){ .upi-app-btn{ display:none !important; } }
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(14,12,10,0.6); z-index:150; display:flex; align-items:center; justify-content:center; padding:16px; overflow:auto; }
+  .modal-card{ background:var(--paper); border-radius:8px; padding:26px; max-width:520px; width:100%; max-height:92vh; overflow:auto; }
+
+  /* ---------- Bill / receipt ---------- */
+  #billOverlay{ position:fixed; inset:0; z-index:200; background:#E9E5DD; overflow:auto; padding:16px; }
+  .bill-toolbar{ max-width:820px; margin:0 auto 12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; font-size:0.9rem; }
+  .bill{ max-width:820px; margin:0 auto; background:#fff; padding:34px 38px; border:1px solid var(--line); font-size:13px; color:#1E1B18; line-height:1.5; }
+  .bill-head{ display:flex; justify-content:space-between; gap:24px; border-bottom:2px solid #1C1A18; padding-bottom:16px; margin-bottom:16px; }
+  .bill-brand{ font-family:'Fraunces',serif; font-size:30px; font-weight:600; line-height:1; }
+  .bill-tag{ font-size:9px; letter-spacing:0.18em; color:#7A7268; font-weight:600; margin:4px 0 8px; }
+  .bill-addr{ font-size:11.5px; color:#444; }
+  .bill-meta{ text-align:right; }
+  .bill-title{ font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:8px; line-height:1.25; }
+  .bill-meta table{ margin-left:auto; font-size:12px; border-collapse:collapse; }
+  .bill-meta td{ padding:1px 0 1px 14px; }
+  .bill-meta td:first-child{ color:#7A7268; }
+  .bill-copy{ display:inline-block; margin-top:8px; padding:3px 10px; border:1px solid #1C1A18; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; font-weight:600; }
+  .bill h4{ margin:16px 0 6px; font-family:'Work Sans',sans-serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#7A7268; border-bottom:1px solid #DDD6CA; padding-bottom:4px; }
+  .bill-cols{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .bill-cols h4{ margin-top:0; }
+  .bill-table{ width:100%; border-collapse:collapse; }
+  .bill-table th, .bill-table td{ padding:7px 8px; border-bottom:1px solid #E5E0D8; text-align:left; }
+  .bill-table th{ font-size:11px; color:#7A7268; text-transform:uppercase; letter-spacing:0.08em; }
+  .bill-table th:last-child, .bill-table td:last-child{ text-align:right; }
+  .bill-table small{ color:#7A7268; }
+  .bill-table tfoot td{ font-weight:700; border-top:2px solid #1C1A18; border-bottom:none; font-size:14px; }
+  .bill-terms{ margin:0; padding-left:18px; font-size:11.5px; color:#333; }
+  .bill-sign{ display:flex; justify-content:space-between; margin-top:46px; font-size:11px; color:#555; }
+  .bill-sign div{ border-top:1px solid #333; padding-top:4px; width:42%; text-align:center; }
+  .bill-foot{ margin-top:18px; text-align:center; font-size:10.5px; color:#777; }
+  @media (max-width:640px){ .bill{ padding:20px 16px; } .bill-head{ flex-direction:column; } .bill-meta{ text-align:left; } .bill-meta table{ margin-left:0; } .bill-cols{ grid-template-columns:1fr; } }
+  @page{ size:A4; margin:12mm; }
+  @media print{
+    body.bill-open > *:not(#billOverlay){ display:none !important; }
+    body.bill-open{ background:#fff !important; }
+    body.bill-open #billOverlay{ position:static !important; overflow:visible !important; background:#fff !important; padding:0 !important; }
+    .bill-toolbar{ display:none !important; }
+    .bill{ border:none !important; padding:0 !important; max-width:none !important; font-size:12px; }
+  }
 </style>
 </head>
 <body>
@@ -201,6 +283,10 @@
       </div>
       <div class="error-msg" id="loginError">Incorrect email or password. Please try again.</div>
       <button class="btn btn-rust" style="width:100%;" onclick="attemptAdminLogin()">Log in as Admin</button>
+      <div style="text-align:center; margin-top:12px;">
+        <button type="button" class="link-btn hidden" id="adminInstallLink">Install the CodeKasa Admin app</button>
+        <p class="hint hidden" id="adminInstallHelp" style="margin:6px 0 0;"></p>
+      </div>
     </div>
 
     <div id="visitorLoginForm" class="hidden">
@@ -215,73 +301,132 @@
   </div>
 </div>
 
-<!-- ================= BOOKING REGISTRATION SCREEN ================= -->
+<!-- ================= STEP 1: BOOKING DETAILS ================= -->
 <div id="bookingScreen" class="hidden booking-screen">
-  <div class="login-card booking-card">
-    <div class="login-brand">
-      <span class="namam-mark" aria-hidden="true">
-        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-          <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
-          <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
-          <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span style="display:flex; flex-direction:column; line-height:1.15;">
-        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
-        <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
-      </span>
+  <div class="bk-wrap">
+    <div class="bk-top">
+      <div class="login-brand">
+          <span class="namam-mark" aria-hidden="true">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span style="display:flex; flex-direction:column; line-height:1.15;">
+            <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
+            <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
+          </span>
+        </div>
+      <div class="js-steps"></div>
     </div>
-    <a href="index.html" class="back-link">&larr; Back to website</a>
-    <h3 style="margin-bottom:4px;">Book: <span id="bookRoomTypeLabel" style="color:var(--rust);"></span></h3>
-    <p class="sub">Fields marked * are required.</p>
-    <div id="bkStayInfo" class="info-box"></div>
+    <div class="bk-grid">
+      <div class="login-card booking-card">
+        <a href="index.html" class="back-link">&larr; Back to website</a>
+        <h3 style="margin-bottom:4px;">Book: <span id="bookRoomTypeLabel" style="color:var(--rust);"></span></h3>
+        <p class="sub">Step 1 of 3 · Fields marked * are required.</p>
+        <div id="bkStayInfo" class="info-box"></div>
 
-    <div class="error-msg" id="bookingError" role="alert"></div>
+        <div class="error-msg" id="bookingError" role="alert"></div>
 
-    <div class="field"><label for="bkName">Full name (as on your ID proof) *</label><input type="text" id="bkName" maxlength="60" autocomplete="name" placeholder="Your name"></div>
-    <div class="field-row">
-      <div class="field"><label for="bkPhone">Mobile number *</label><input type="tel" id="bkPhone" maxlength="17" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile number"></div>
-      <div class="field"><label for="bkEmail">Email *</label><input type="email" id="bkEmail" maxlength="100" autocomplete="email" placeholder="you@example.com"></div>
+        <div class="field"><label for="bkName">Full name (as on your ID proof) *</label><input type="text" id="bkName" maxlength="60" autocomplete="name" placeholder="Your name"></div>
+        <div class="field-row">
+          <div class="field"><label for="bkPhone">Mobile number *</label><input type="tel" id="bkPhone" maxlength="17" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile number"></div>
+          <div class="field"><label for="bkEmail">Email *</label><input type="email" id="bkEmail" maxlength="100" autocomplete="email" placeholder="you@example.com"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="bkMoveIn">Check-in date *</label><input type="date" id="bkMoveIn"></div>
+          <div class="field"><label for="bkDuration" id="bkDurationLabel">Stay duration *</label><select id="bkDuration"></select></div>
+        </div>
+        <div class="hint" id="bkCheckoutLine" style="margin:-6px 0 14px;"></div>
+
+        <div class="field-row" id="bkCountsRow">
+          <div class="field" id="bkGuestsField"><label for="bkGuests">Number of people staying *</label><select id="bkGuests"></select></div>
+          <div class="field" id="bkAdultsField"><label for="bkAdults">Adults *</label><select id="bkAdults"></select></div>
+          <div class="field" id="bkKidsField"><label for="bkKids">Kids</label><select id="bkKids"></select></div>
+        </div>
+
+        <div id="bkPersons"></div>
+
+        <div class="info-box warn">
+          <strong>Important</strong>
+          <ul>
+            <li>The ID proof (Aadhaar or passport number) must be of the person who is staying. If it does not match at check-in, the booking will be cancelled and <strong>no refund</strong> will be given.</li>
+            <li>Your booking is <strong>confirmed only after payment</strong> is made and verified (next step).</li>
+            <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+            <li>You can edit your booking online up to <strong>one week before check-in</strong>. Within one week, please call CodeKasa on +91 81068 12341.</li>
+          </ul>
+        </div>
+        <label class="check-row"><input type="checkbox" id="bkAgree"><span>I have read and agree to the booking terms above and the stay terms shown for this room. *</span></label>
+        <div class="field-err" id="bkAgreeErr"></div>
+
+        <button class="btn btn-rust" id="bkSubmitBtn" style="width:100%; margin-top:10px;" onclick="submitBooking()">Continue to payment</button>
+        <p style="text-align:center; margin:14px 0 0;"><button class="link-btn" onclick="openManage()">Already booked? Retrieve my booking</button></p>
+      </div>
+      <aside class="bk-summary js-summary"></aside>
     </div>
-    <div class="field-row">
-      <div class="field"><label for="bkMoveIn">Check-in date *</label><input type="date" id="bkMoveIn"></div>
-      <div class="field"><label for="bkDuration" id="bkDurationLabel">Stay duration *</label><select id="bkDuration"></select></div>
-    </div>
-    <div class="hint" id="bkCheckoutLine" style="margin:-6px 0 14px;"></div>
-
-    <div class="field-row" id="bkCountsRow">
-      <div class="field" id="bkGuestsField"><label for="bkGuests">Number of people staying *</label><select id="bkGuests"></select></div>
-      <div class="field" id="bkAdultsField"><label for="bkAdults">Adults *</label><select id="bkAdults"></select></div>
-      <div class="field" id="bkKidsField"><label for="bkKids">Kids</label><select id="bkKids"></select></div>
-    </div>
-
-    <div id="bkPersons"></div>
-
-    <div class="info-box warn">
-      <strong>Important</strong>
-      <ul>
-        <li>The ID proof (Aadhaar or passport number) must be of the person who is staying. If it does not match at check-in, the booking will be cancelled and <strong>no refund</strong> will be given.</li>
-        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
-        <li>You can edit your booking online up to <strong>one week before check-in</strong>. Within one week, please call CodeKasa on +91 81068 12341.</li>
-      </ul>
-    </div>
-    <label class="check-row"><input type="checkbox" id="bkAgree"><span>I have read and agree to the booking terms above and the stay terms shown for this room. *</span></label>
-    <div class="field-err" id="bkAgreeErr"></div>
-
-    <button class="btn btn-rust" id="bkSubmitBtn" style="width:100%; margin-top:10px;" onclick="submitBooking()">Confirm Booking</button>
-    <p style="text-align:center; margin:14px 0 0;"><button class="link-btn" onclick="openManage()">Already booked? Retrieve my booking</button></p>
   </div>
 </div>
 
-<!-- ================= BOOKING CONFIRMATION SCREEN ================= -->
-<div id="bookingConfirmScreen" class="hidden booking-screen">
-  <div class="login-card booking-card">
-    <div style="text-align:center;">
-      <div style="font-size:2.2rem; margin-bottom:4px;">✅</div>
-      <h3 style="margin-bottom:4px;">Booking confirmed</h3>
-      <p class="sub">Thank you! Please keep your booking number safe — you will need it to view or edit your booking.</p>
+<!-- ================= STEP 2: PAYMENT ================= -->
+<div id="paymentScreen" class="hidden booking-screen">
+  <div class="bk-wrap">
+    <div class="bk-top">
+      <div class="login-brand">
+          <span class="namam-mark" aria-hidden="true">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span style="display:flex; flex-direction:column; line-height:1.15;">
+            <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
+            <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
+          </span>
+        </div>
+      <div class="js-steps"></div>
     </div>
-    <div id="confBody"></div>
+    <div class="bk-grid">
+      <div class="login-card booking-card">
+        <div id="payBody"></div>
+        <p style="text-align:center; margin:14px 0 0;"><button class="link-btn" onclick="openManage()">Retrieve another booking</button></p>
+      </div>
+      <aside class="bk-summary js-summary"></aside>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STEP 3: CONFIRMED ================= -->
+<div id="bookingConfirmScreen" class="hidden booking-screen">
+  <div class="bk-wrap">
+    <div class="bk-top">
+      <div class="login-brand">
+          <span class="namam-mark" aria-hidden="true">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span style="display:flex; flex-direction:column; line-height:1.15;">
+            <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
+            <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
+          </span>
+        </div>
+      <div class="js-steps"></div>
+    </div>
+    <div class="bk-grid">
+      <div class="login-card booking-card">
+        <div style="text-align:center;">
+          <div style="font-size:2.2rem; margin-bottom:4px;">✅</div>
+          <h3 style="margin-bottom:4px;">Booking confirmed</h3>
+          <p class="sub">Payment received. Keep your booking number safe — you will need it to view or edit your booking.</p>
+        </div>
+        <div id="confBody"></div>
+      </div>
+      <aside class="bk-summary js-summary"></aside>
+    </div>
   </div>
 </div>
 
@@ -575,6 +720,7 @@
 
     <!-- ENQUIRIES TAB -->
     <div class="tab-panel" id="tab-enquiries">
+      <div id="adminNotice"></div>
       <div class="card">
         <h3>Room bookings (from "Book Now")</h3>
         <div class="table-wrap">
@@ -644,6 +790,40 @@
       <div class="field"><label>Message (optional)</label><textarea id="visMessage" rows="3" maxlength="500" placeholder="Anything else we should know?"></textarea></div>
       <button class="btn btn-rust" id="visSubmitBtn" onclick="submitEnquiry()">Send enquiry</button>
     </div>
+  </div>
+</div>
+
+<!-- ================= BILL / RECEIPT (print → Save as PDF) ================= -->
+<div id="billOverlay" class="hidden">
+  <div class="bill-toolbar">
+    <span><strong>Booking confirmation &amp; receipt</strong><br><span class="hint">Click “Download / Print PDF”, then choose <em>Save as PDF</em> as the printer.</span></span>
+    <span>
+      <button class="btn btn-rust btn-sm" onclick="printBill()">Download / Print PDF</button>
+      <button class="btn btn-outline btn-sm" onclick="closeBill()">Close</button>
+    </span>
+  </div>
+  <div id="billBody"></div>
+</div>
+
+<!-- ================= ADMIN: CONFIRM A PAYMENT ================= -->
+<div id="payModal" class="hidden modal-backdrop">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h3 id="pmTitle" style="margin-bottom:10px;">Confirm payment</h3>
+    <div class="info-box" id="pmInfo"></div>
+    <div class="error-msg" id="pmWarn" role="alert"></div>
+    <div class="field"><label for="pmMethod">Payment method</label>
+      <select id="pmMethod" onchange="pmMethodChanged()"><option>UPI</option><option>Cash</option><option>Bank transfer</option><option>Other</option></select></div>
+    <div class="field"><label for="pmRef" id="pmRefLabel">UPI transaction ID (UTR) *</label><input type="text" id="pmRef" maxlength="30" autocomplete="off"></div>
+    <div class="field-row">
+      <div class="field"><label for="pmAmount">Amount received (₹) *</label><input type="number" id="pmAmount" min="1" step="1"></div>
+      <div class="field"><label for="pmDate">Received on *</label><input type="date" id="pmDate"></div>
+    </div>
+    <div class="field-err" id="pmErr"></div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-rust" id="pmSaveBtn" onclick="savePayConfirm()">Confirm booking</button>
+      <button class="btn btn-outline" onclick="closePayModal()">Cancel</button>
+    </div>
+    <p class="hint">Confirming marks the booking as paid and unlocks the guest's bill. Only confirm after you have checked the money in your account.</p>
   </div>
 </div>
 
@@ -823,6 +1003,7 @@
   let enquiriesCache = [];
   let bookingsCache = [];
   let bookingIdsCache = [];
+  let bookingPaymentsCache = [];
   let staffCache = [];
   let attendanceCache = [];
   let salaryPaymentsCache = [];
@@ -877,6 +1058,11 @@
       renderBookings();
     }, (err) => console.error('bookingIds listener error', err));
 
+    onSnapshot(collection(db, 'bookingPayments'), (snap) => {
+      bookingPaymentsCache = snapToArray(snap);
+      renderBookings();
+    }, (err) => console.error('bookingPayments listener error', err));
+
     onSnapshot(collection(db, 'staff'), (snap) => {
       staffCache = snapToArray(snap);
       renderStaffTable();
@@ -910,8 +1096,11 @@
   }
 
   // ---------- Screens & small helpers ----------
-  const SCREENS = ['loginScreen','bookingScreen','bookingConfirmScreen','manageScreen','adminApp','visitorApp'];
+  const POLL_MS = window.__POLL_MS || 10000;
+  let payPoll = null, utrBusy = false;     // declared first: showScreen() (called while the page loads) uses payPoll
+  const SCREENS = ['loginScreen','bookingScreen','paymentScreen','bookingConfirmScreen','manageScreen','adminApp','visitorApp'];
   function showScreen(id){
+    if (id !== 'paymentScreen') stopPayPoll();
     SCREENS.forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
     window.scrollTo({ top: 0 });
   }
@@ -964,8 +1153,45 @@
       return res.ok;
     } catch(e){ console.warn('Email notification failed', e); return false; }
   }
+
+  // PAYMENT HELPERS START
+  const PAY = { UPI_ID: '8019316795@ybl', PAYEE: 'ALAMPURI REVATHI' };
+  // What a guest must pay to confirm: monthly = one month's rent (advance) + the non-refundable charge; day stay = the full stay.
+  function amountsFor(type, rate, count){
+    if (stayTypeOf(type) === 'day'){
+      return { kind: 'day', rate, nights: count, advance: 0, nonRefundable: 0, stay: rate * count, total: rate * count };
+    }
+    return { kind: 'month', rate, months: count, advance: rate, nonRefundable: CK.NON_REFUNDABLE, stay: 0, total: rate + CK.NON_REFUNDABLE };
+  }
+  function normUtr(v){ return String(v || '').replace(/[\s-]/g, ''); }
+  function vUtr(v){
+    const s = normUtr(v);
+    if (!s) return 'Please enter the UPI transaction ID (UTR).';
+    if (!/^\d+$/.test(s)) return 'The UTR is a 12-digit number — digits only.';
+    if (s.length !== 12) return 'The UTR must be exactly 12 digits.';
+    return '';
+  }
+  function maskRef(s){ s = String(s || ''); return s.length > 4 ? 'X'.repeat(s.length - 4) + s.slice(-4) : s; }
+  const STATUS = {
+    pending_payment:   { label: 'Awaiting payment',           cls: 'badge-warn' },
+    payment_submitted: { label: 'Payment under verification', cls: 'badge-warn' },
+    confirmed:         { label: 'Confirmed',                  cls: 'badge-ok' },
+    cancelled:         { label: 'Cancelled',                  cls: 'badge-bad' }
+  };
+  function statusOf(b){ return STATUS[b.status] || { label: b.status || 'Confirmed', cls: 'badge-ok' }; }
+  function upiLink(amount, ref){
+    return `upi://pay?pa=${PAY.UPI_ID}&pn=${encodeURIComponent(PAY.PAYEE)}&am=${Number(amount).toFixed(2)}&cu=INR&tn=${encodeURIComponent('CodeKasa ' + ref)}`;
+  }
+  // PAYMENT HELPERS END
+
+  function siteLink(query){
+    return window.location.origin + window.location.pathname + (query ? '?' + query : '');
+  }
   const POLICY_LINE = 'Please carry the original ID proof of every adult staying (the same Aadhaar/passport number given at booking). If it does not match at check-in, the booking is cancelled and no refund is given.';
+  const MONTH_TERMS = `Monthly stay terms: minimum 3 months. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} non-refundable. The advance is returned one week after you vacate.`;
+
   function waGuestText(b){
+    const p = b.payment || {};
     const L = [
       `Hello ${b.name},`,
       'Your booking at CodeKasa — A Luxury Living is CONFIRMED.',
@@ -977,32 +1203,221 @@
       `Stay: ${stayLabel(b)}`,
       `Guests: ${guestsLabel(b)}`
     ];
-    if (b.stayType !== 'day'){
-      L.push('', `Monthly stay terms: minimum 3 months. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} non-refundable. The advance is returned one week after you vacate.`);
-    }
+    if (p.amount) L.push(`Payment received: ${rupee(p.amount)} via ${p.method} on ${fmtDate(p.paidOn)}`);
+    if (b.stayType !== 'day') L.push('', MONTH_TERMS);
     L.push('', POLICY_LINE,
       'You can edit your booking online up to one week before check-in; within one week please call +91 81068 12341. Cancellation is not possible within 24 hours of booking and no refund is given.',
+      `Your bill (PDF): ${siteLink('manage=1')}`,
       '',
       'CodeKasa, Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035',
       'Phone: +91 81068 12341');
     return L.join('\n');
   }
-  function waAdminText(b, persons){
+  function waPendingText(b){
     return [
-      `New CodeKasa booking ${b.id}`,
+      `Hello ${b.name},`,
+      `Your CodeKasa booking ${b.id} (${b.roomType}) is waiting for payment of ${rupee(b.amountDue)}.`,
+      `Pay by UPI to ${PAY.PAYEE} (${PAY.UPI_ID}) and add ${b.id} in the note, then enter the 12-digit UTR here:`,
+      siteLink('pay=' + b.id),
+      '',
+      'Your booking is confirmed only after we verify the payment. For help call +91 81068 12341.'
+    ].join('\n');
+  }
+  function waAdminNewText(b, persons){
+    return [
+      `New CodeKasa booking request ${b.id} (payment pending)`,
       `Name: ${b.name}`, `Mobile: ${b.phone}`, `Email: ${b.email}`,
       `Room: ${b.roomType}`,
       `Check-in: ${fmtDate(b.moveIn)}`, `Check-out: ${fmtDate(b.checkOut)}`,
       `Stay: ${stayLabel(b)}`, `Guests: ${guestsLabel(b)}`,
-      'ID proofs: ' + persons.map(p => `${p.name} (${idLabel(p.idType)} ${maskId(p.idType, p.idNumber)})`).join('; ')
+      `Amount due: ${rupee(b.amountDue)}`,
+      'ID proofs: ' + persons.map(p => `${p.name} (${idLabel(p.idType)} ${p.idMasked})`).join('; ')
     ].join('\n');
+  }
+  function waAdminPaymentText(b, utr){
+    return [
+      `Payment done for CodeKasa booking ${b.id}`,
+      `Name: ${b.name}`, `Mobile: ${b.phone}`,
+      `Room: ${b.roomType}`,
+      `Check-in: ${fmtDate(b.moveIn)}`,
+      `Amount paid: ${rupee(b.amountDue)}`,
+      `UPI transaction ID (UTR): ${utr}`,
+      'Please verify and confirm my booking.'
+    ].join('\n');
+  }
+  function payRulesHtml(month){
+    return `<div class="info-box"><strong>Payment rules</strong><ul>
+      <li>Pay the <strong>exact amount</strong> shown.${month ? ` It is one month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} (non-refundable).` : ' It is the full amount for your stay.'}</li>
+      <li>Scan the QR or use any UPI app, and put your <strong>booking number</strong> in the payment note.</li>
+      <li>Then enter the <strong>12-digit UPI transaction ID (UTR)</strong> below so CodeKasa can verify your payment.</li>
+      <li>Your booking is <strong>confirmed only after CodeKasa verifies the payment</strong>. This page updates by itself.</li>
+      <li>Cannot pay online? <strong>Call CodeKasa on +91 81068 12341</strong> and we will confirm your booking.</li>
+      ${month ? `<li>The ${rupee(CK.NON_REFUNDABLE)} is non-refundable. The advance is returned <strong>one week after you vacate</strong>.</li>` : ''}
+      <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li></ul></div>`;
+  }
+
+  // ---------- Steps bar + booking summary (shared by the three booking screens) ----------
+  function stepsHtml(n){
+    return '<ol class="steps">' + ['Guest details', 'Payment', 'Confirmed'].map((t, i) =>
+      `<li class="${i + 1 < n ? 'done' : (i + 1 === n ? 'active' : '')}"><span>${i + 1 < n ? '✓' : i + 1}</span>${t}</li>`).join('') + '</ol>';
+  }
+  // m: { roomType, moveIn, checkOut, stay, guests, amounts, status }
+  function summaryHtml(m){
+    const row = (k, v) => `<div class="sum-line"><span>${k}</span><strong>${v}</strong></div>`;
+    const dateTxt = (d, extra) => d ? esc(fmtDate(d)) + ' · ' + extra : '<em>Select dates</em>';
+    let money = '';
+    const a = m.amounts;
+    if (a){
+      money = a.kind === 'month'
+        ? row('Advance (one month\'s rent)', rupee(a.advance)) + row('Non-refundable charge', rupee(a.nonRefundable))
+        : row(`${rupee(a.rate)} × ${a.nights} night${a.nights > 1 ? 's' : ''}`, rupee(a.stay));
+      const label = m.status === 'confirmed' ? 'Amount paid' : 'Payable to confirm';
+      money += `<div class="sum-total"><span>${label}</span><strong>${rupee(a.total)}</strong></div>`;
+      if (a.kind === 'month') money += '<p class="sum-note">The advance is returned one week after you vacate. The non-refundable charge is not returned.</p>';
+    }
+    const st = m.status ? `<div style="margin-bottom:10px;"><span class="badge ${statusOf(m).cls}">${esc(statusOf(m).label)}</span></div>` : '';
+    return `<div class="sum-card">
+      <div class="sum-eyebrow">Your stay</div>
+      <div class="sum-room">${esc(m.roomType)}</div>${st}
+      ${row('Check-in', dateTxt(m.moveIn, 'from 2:00 PM'))}
+      ${row('Check-out', dateTxt(m.checkOut, 'by 10:00 AM'))}
+      ${row('Stay', m.stay ? esc(m.stay) : '—')}
+      ${row('Guests', m.guests ? esc(m.guests) : '—')}
+      ${money ? '<hr>' + money : ''}
+    </div>`;
+  }
+  function renderChrome(step, model){
+    document.querySelectorAll('.js-steps').forEach(el => { el.innerHTML = stepsHtml(step); });
+    document.querySelectorAll('.js-summary').forEach(el => { el.innerHTML = summaryHtml(model); });
+  }
+  function modelOf(b){
+    const count = b.stayType === 'day' ? b.nights : b.months;
+    return {
+      roomType: b.roomType, moveIn: b.moveIn, checkOut: b.checkOut, stay: stayLabel(b), guests: guestsLabel(b),
+      amounts: amountsFor(b.roomType, Number(b.rate) || listedPrice(b.roomType), count),
+      status: b.status
+    };
+  }
+
+  // ---------- Bill / receipt (print → Save as PDF) ----------
+  let billCtx = null;
+  function billHtml(b, audience, utrFull){
+    const p = b.payment || {};
+    const month = b.stayType !== 'day';
+    const rate = Number(b.rate) || listedPrice(b.roomType);
+    const nonref = Number(b.nonRefundable) || 0;
+    const total = Number(b.amountDue) || (month ? rate + nonref : rate * (b.nights || 1));
+    const rows = month
+      ? [[`Advance — one month's rent <small>(returned one week after you vacate)</small>`, rate], [`Non-refundable charge`, nonref]]
+      : [[`Stay charges — ${rupee(rate)} × ${b.nights} night${b.nights > 1 ? 's' : ''}`, rate * b.nights]];
+    const persons = (b.persons || []).map(x => `<div>${esc(x.name)} — ${idLabel(x.idType)} ${esc(x.idMasked || '')}</div>`).join('') || '—';
+    const copy = audience === 'office' ? 'CodeKasa copy' : 'Guest copy';
+    const upiRef = audience === 'office' && utrFull ? utrFull : (p.refMasked || '—');
+    const paid = b.status === 'confirmed' && p.amount;
+    return `<div class="bill" id="billSheet">
+      <div class="bill-head">
+        <div>
+          <div class="bill-brand">Code<span style="color:#E5342E;">K</span>asa</div>
+          <div class="bill-tag">A LUXURY LIVING</div>
+          <div class="bill-addr">Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd,<br>Carmelaram Post, Mullur, Karnataka 560035<br>+91 81068 12341 · info@codekasa.com</div>
+        </div>
+        <div class="bill-meta">
+          <div class="bill-title">Booking Confirmation<br>&amp; Payment Receipt</div>
+          <table>
+            <tr><td>Receipt no.</td><td><strong>RC-${esc(b.id)}</strong></td></tr>
+            <tr><td>Booking date</td><td>${esc(fmtDate(b.submittedAt))}</td></tr>
+            <tr><td>Paid on</td><td>${paid ? esc(fmtDate(p.paidOn)) : '—'}</td></tr>
+          </table>
+          <div class="bill-copy">${copy}</div>
+        </div>
+      </div>
+
+      <div class="bill-cols">
+        <div>
+          <h4>Guest</h4>
+          <div><strong>${esc(b.name)}</strong></div>
+          <div>Mobile: ${esc(b.phone)}</div>
+          <div>Email: ${esc(b.email)}</div>
+        </div>
+        <div>
+          <h4>Booking</h4>
+          <div>Booking no.: <strong>${esc(b.id)}</strong></div>
+          <div>Room: ${esc(b.roomType)}</div>
+          <div>Check-in: ${esc(fmtDate(b.moveIn))} (from 2:00 PM)</div>
+          <div>Check-out: ${esc(fmtDate(b.checkOut))} (by 10:00 AM)</div>
+          <div>Stay: ${esc(stayLabel(b))} · Guests: ${esc(guestsLabel(b))}</div>
+        </div>
+      </div>
+
+      <h4>ID proof of persons staying</h4>
+      <div class="bill-ids">${persons}</div>
+
+      <h4>Charges</h4>
+      <table class="bill-table">
+        <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+        <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${rupee(r[1])}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><td>Total</td><td>${rupee(total)}</td></tr></tfoot>
+      </table>
+
+      <h4>Payment</h4>
+      <table class="bill-table">
+        <tbody>
+          <tr><td>Status</td><td><strong>${paid ? 'PAID' : 'NOT PAID'}</strong></td></tr>
+          <tr><td>Method</td><td>${paid ? esc(p.method) : '—'}</td></tr>
+          <tr><td>Amount received</td><td>${paid ? rupee(p.amount) : '—'}</td></tr>
+          <tr><td>Payment reference</td><td>${paid ? esc(upiRef) : '—'}</td></tr>
+          <tr><td>Received by</td><td>CodeKasa</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Terms</h4>
+      <ul class="bill-terms">
+        ${month ? `<li>Minimum 3 months booking. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable. The advance is returned one week after the room is vacated.</li>` : ''}
+        <li>ID proof must belong to the person staying. If the number does not match at check-in, the booking is cancelled and no refund is given.</li>
+        <li>Within 24 hours of booking, cancellation is not possible and no refund will be given.</li>
+        <li>The booking can be edited online up to one week before check-in. Within one week, please call +91 81068 12341.</li>
+        <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
+      </ul>
+
+      <div class="bill-sign"><div>Guest signature</div><div>For CodeKasa</div></div>
+      <div class="bill-foot">This is a computer-generated receipt. Thank you for choosing CodeKasa.</div>
+    </div>`;
+  }
+  function openBill(b, audience, utrFull){
+    if (!b || b.status !== 'confirmed' || !b.payment){ alert('The bill is available once the booking is confirmed.'); return; }
+    billCtx = { ref: b.id, audience };
+    document.getElementById('billBody').innerHTML = billHtml(b, audience, utrFull);
+    document.getElementById('billOverlay').classList.remove('hidden');
+    document.body.classList.add('bill-open');
+  }
+  function closeBill(){
+    document.getElementById('billOverlay').classList.add('hidden');
+    document.body.classList.remove('bill-open');
+  }
+  function printBill(){
+    const old = document.title;
+    document.title = `CodeKasa-Receipt-${billCtx ? billCtx.ref : ''}`;       // becomes the saved PDF's file name
+    window.print();
+    setTimeout(() => { document.title = old; }, 500);
   }
 
   // ---------- Booking flow (from "Book Now" on the main site) ----------
   let pendingBookRoom = null;
-  let manageRequested = false;
+  let manageRequested = false;      // true when the page was opened to manage/pay a booking (so it must not jump to the admin dashboard)
   let bkSubmitting = false;
   let bkPersons = [];
+  let cur = null;                   // the booking currently shown on the payment / confirmation screens
+  const known = {};                 // bookings seen in this session, by booking number (used for the bill)
+  function remember(b){ known[b.id] = b; return b; }
+
+  const VIS_RULES = {
+    visName:    () => vName(val('visName')),
+    visPhone:   () => vPhone(val('visPhone')),
+    visEmail:   () => vEmail(val('visEmail'), false),
+    visMoveIn:  () => vCheckIn(val('visMoveIn'), false),
+    visMessage: () => val('visMessage').length > 500 ? 'Message is too long (500 characters max).' : ''
+  };
+
   (function checkUrlParams(){
     const p = new URLSearchParams(window.location.search);
     const bookRoom = p.get('book');
@@ -1016,12 +1431,17 @@
       manageRequested = true;
       showScreen('manageScreen');
     }
+    const payRef = (p.get('pay') || '').toUpperCase();
+    if (/^CK[A-Z0-9]{8}$/.test(payRef)){
+      manageRequested = true;
+      openPayment(payRef);
+    }
   })();
 
   function stayInfoHtml(type){
     const price = listedPrice(type);
     if (stayTypeOf(type) === 'day'){
-      return `<strong>Day stay</strong>${price ? ` · ${rupee(price)} per day` : ''}<br>Check-in from 2:00 PM · Check-out by 10:00 AM (24-hour stay).`;
+      return `<strong>Day stay</strong>${price ? ` · ${rupee(price)} per day` : ''}<br>Check-in from 2:00 PM · Check-out by 10:00 AM (24-hour stay). The full stay amount is payable to confirm.`;
     }
     return `<strong>Monthly stay</strong>${price ? ` · ${rupee(price)} per month` : ''}
       <ul>
@@ -1099,9 +1519,24 @@
     const n = Number(val('bkDuration')) || 0;
     return stayTypeOf(pendingBookRoom) === 'day' ? addDays(d, n) : addMonths(d, n);
   }
-  function bkUpdateCheckout(){
+  function bkModel(){
+    const type = pendingBookRoom, isDay = stayTypeOf(type) === 'day', kind = roomKind(type);
+    const dur = Number(val('bkDuration')) || (isDay ? 1 : CK.MIN_MONTHS);
+    const dateOk = !vCheckIn(val('bkMoveIn'), true);
+    const out = dateOk ? bkComputeCheckout() : null;
+    let guests = '1 adult';
+    if (kind === 'family') guests = guestsLabel({ adults: Number(val('bkAdults')) || 1, kids: Number(val('bkKids')) || 0 });
+    else if (kind !== 'single') guests = guestsLabel({ adults: Number(val('bkGuests')) || 1, kids: 0 });
+    return {
+      roomType: type, moveIn: dateOk ? val('bkMoveIn') : '', checkOut: out ? localISO(out) : '',
+      stay: isDay ? `${dur} night${dur > 1 ? 's' : ''}` : `${dur} months`, guests,
+      amounts: amountsFor(type, listedPrice(type), dur)
+    };
+  }
+  function bkRefresh(){
     const out = vCheckIn(val('bkMoveIn'), true) ? null : bkComputeCheckout();
     document.getElementById('bkCheckoutLine').textContent = out ? `Check-out: ${longDate(out)} by 10:00 AM` : '';
+    renderChrome(1, bkModel());
   }
   function openBookingForm(roomType){
     pendingBookRoom = roomType;
@@ -1118,26 +1553,19 @@
     ['bkName','bkPhone','bkEmail','bkMoveIn','bkDuration','bkGuests','bkAdults','bkKids'].forEach(id => setFieldError(id, ''));
     document.getElementById('bkAgreeErr').textContent = '';
     document.getElementById('bookingError').style.display = 'none';
-    document.getElementById('bkCheckoutLine').textContent = '';
+    bkRefresh();
     showScreen('bookingScreen');
   }
-  const VIS_RULES = {
-    visName:    () => vName(val('visName')),
-    visPhone:   () => vPhone(val('visPhone')),
-    visEmail:   () => vEmail(val('visEmail'), false),
-    visMoveIn:  () => vCheckIn(val('visMoveIn'), false),
-    visMessage: () => val('visMessage').length > 500 ? 'Message is too long (500 characters max).' : ''
-  };
-
   (function wireBookingForm(){
     const on = (id, ev, fn) => document.getElementById(id).addEventListener(ev, fn);
     on('bkName', 'blur', () => setFieldError('bkName', vName(val('bkName'))));
     on('bkPhone', 'blur', () => setFieldError('bkPhone', vPhone(val('bkPhone'))));
     on('bkEmail', 'blur', () => setFieldError('bkEmail', vEmail(val('bkEmail'), true)));
-    on('bkMoveIn', 'change', () => { setFieldError('bkMoveIn', vCheckIn(val('bkMoveIn'), true)); bkUpdateCheckout(); });
-    on('bkDuration', 'change', bkUpdateCheckout);
-    on('bkGuests', 'change', bkRenderPersons);
-    on('bkAdults', 'change', bkRenderPersons);
+    on('bkMoveIn', 'change', () => { setFieldError('bkMoveIn', vCheckIn(val('bkMoveIn'), true)); bkRefresh(); });
+    on('bkDuration', 'change', bkRefresh);
+    on('bkKids', 'change', bkRefresh);
+    on('bkGuests', 'change', () => { bkRenderPersons(); bkRefresh(); });
+    on('bkAdults', 'change', () => { bkRenderPersons(); bkRefresh(); });
     on('bkPersons', 'focusout', e => {
       const id = e.target.id || '';
       let m;
@@ -1214,6 +1642,7 @@
     };
   }
 
+  // Step 1 → creates the booking as "awaiting payment". It becomes confirmed only after the payment is verified.
   async function submitBooking(){
     if (bkSubmitting) return;
     const errEl = document.getElementById('bookingError');
@@ -1227,55 +1656,186 @@
     const btn = document.getElementById('bkSubmitBtn');
     bkSubmitting = true;
     btn.disabled = true;
-    btn.textContent = 'Confirming…';
+    btn.textContent = 'Creating your booking…';
     try{
       const ref = makeRef();
       const nowIso = new Date().toISOString();
+      const rate = listedPrice(pendingBookRoom);
+      const amt = amountsFor(pendingBookRoom, rate, v.dur);
       const booking = {
         name: v.name, phone: v.phone, email: v.email,
         roomType: pendingBookRoom, stayType: v.isDay ? 'day' : 'month',
         moveIn: v.moveIn, checkOut: v.checkOut,
         ...(v.isDay ? { nights: v.dur } : { months: v.dur }),
         adults: v.adults, kids: v.kids, guests: v.guests,
-        persons: v.persons.map(p => ({ name: p.name, idType: p.idType })),     // no ID numbers in the publicly-readable record
-        status: 'confirmed', termsAccepted: true, submittedAt: nowIso
+        persons: v.persons.map(p => ({ name: p.name, idType: p.idType, idMasked: maskId(p.idType, p.idNumber) })),   // masked only: full ID numbers never go in the public record
+        rate, nonRefundable: amt.nonRefundable, amountDue: amt.total,
+        status: 'pending_payment', termsAccepted: true, submittedAt: nowIso
       };
       const batch = writeBatch(db);
       batch.set(doc(db, 'bookings', ref), booking);
-      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons });   // ID numbers: admin-only
+      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons });   // full ID numbers: admin-only
       batch.set(doc(db, 'bookingLookup', v.phone), { refs: arrayUnion(ref), updatedAt: nowIso }, { merge: true });
       await batch.commit();
 
       const full = { id: ref, ...booking };
-      const mailSent = notifyAdminEmail(`New booking ${ref} — ${booking.roomType}`, {
+      notifyAdminEmail(`New booking request ${ref} — payment pending`, {
         bookingNumber: ref, name: v.name, phone: v.phone, email: v.email,
         room: booking.roomType, stay: stayLabel(full),
         checkIn: fmtDate(v.moveIn), checkOut: fmtDate(v.checkOut) + ' (by 10:00 AM)',
-        guests: guestsLabel(full),
-        idProofs: v.persons.map(p => `${p.name}: ${idLabel(p.idType)} ${maskId(p.idType, p.idNumber)}`).join(' | '),
-        status: 'confirmed'
+        guests: guestsLabel(full), amountDue: rupee(amt.total),
+        idProofs: booking.persons.map(p => `${p.name}: ${idLabel(p.idType)} ${p.idMasked}`).join(' | '),
+        status: 'Awaiting payment'
       });
-      showBookingConfirmation(full, v.persons);
-      mailSent.then(okMail => {
-        const el = document.getElementById('confMailNote');
-        if (el) el.textContent = okMail
-          ? 'CodeKasa has also been emailed your booking.'
-          : 'We could not email CodeKasa automatically, so please use the first WhatsApp button above to send us your booking details.';
-      });
+      showPayment(full);
     } catch(e){
       console.error(e);
-      errEl.textContent = 'We could not complete your booking just now. Please check your connection and try again, or call +91 81068 12341.';
+      errEl.textContent = 'We could not create your booking just now. Please check your connection and try again, or call +91 81068 12341.';
       errEl.style.display = 'block';
     } finally {
       bkSubmitting = false;
       btn.disabled = false;
-      btn.textContent = 'Confirm Booking';
+      btn.textContent = 'Continue to payment';
     }
   }
 
-  function showBookingConfirmation(b, persons){
+  // ---------- Step 2: payment ----------
+  function stopPayPoll(){ if (payPoll){ clearInterval(payPoll); payPoll = null; } }
+  function startPayPoll(){ stopPayPoll(); payPoll = setInterval(() => refreshCurrent(false), POLL_MS); }
+
+  function showPayment(b){
+    cur = remember(b);
+    if (b.status === 'confirmed'){ showBookingConfirmation(b); return; }
+    renderChrome(2, modelOf(b));
+    document.getElementById('payBody').innerHTML = payBodyHtml(b);
+    showScreen('paymentScreen');
+    if (b.status === 'pending_payment' || b.status === 'payment_submitted') startPayPoll();
+  }
+  async function openPayment(ref){
+    try{
+      const snap = await getDoc(doc(db, 'bookings', ref));
+      if (!snap.exists()){ alert('We could not find that booking. Please check the booking number or call +91 81068 12341.'); return; }
+      showPayment({ id: snap.id, ...snap.data() });
+    } catch(e){ console.error(e); alert('We could not load your booking just now. Please try again, or call +91 81068 12341.'); }
+  }
+  async function refreshCurrent(manual){
+    if (!cur) return;
+    const note = document.getElementById('payStatusNote');
+    try{
+      const snap = await getDoc(doc(db, 'bookings', cur.id));
+      if (!snap.exists()) return;
+      const fresh = { id: snap.id, ...snap.data() };
+      const changed = fresh.status !== cur.status;
+      if (changed) showPayment({ ...fresh, _utr: cur._utr });
+      else { cur = remember({ ...fresh, _utr: cur._utr }); if (manual && note) note.textContent = `Status: ${statusOf(fresh).label}. We will update this page as soon as CodeKasa confirms.`; }
+    } catch(e){ console.warn(e); if (manual && note) note.textContent = 'Could not check just now. Please try again.'; }
+  }
+  function copyUpi(){
+    const done = () => { const el = document.getElementById('copyUpiBtn'); if (el){ el.textContent = 'Copied ✓'; setTimeout(() => { el.textContent = 'Copy'; }, 1800); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(PAY.UPI_ID).then(done, () => {});
+    else done();
+  }
+  function showUtrForm(){ document.getElementById('utrBox').classList.remove('hidden'); document.getElementById('payUtr').focus(); }
+
+  function payBodyHtml(b){
     const month = b.stayType !== 'day';
-    const price = listedPrice(b.roomType);
+    const amt = rupee(b.amountDue);
+    const st = statusOf(b);
+    if (b.status === 'cancelled'){
+      return `<h3 style="margin:0 0 6px;">Booking cancelled</h3><p class="sub">Booking ${esc(b.id)} has been cancelled. For any help, call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</p>`;
+    }
+    const submitted = b.status === 'payment_submitted';
+    const head = `<div class="pay-head"><div>
+        <h3 style="margin:0 0 4px;">${submitted ? 'Payment received for verification' : 'Complete your payment'}</h3>
+        <p class="sub" style="margin:0;">Booking <strong>${esc(b.id)}</strong> · ${esc(b.roomType)}</p></div>
+        <span class="badge ${st.cls}">${esc(st.label)}</span></div>`;
+    const callBox = `<div class="call-box"><div><strong>Cannot pay online?</strong><br>Call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a> and we will confirm your booking.</div>
+        <a class="btn btn-outline btn-sm" href="tel:+918106812341">Call now</a></div>`;
+    const utrForm = `<div class="utr-box${submitted ? ' hidden' : ''}" id="utrBox">
+        <div class="field"><label for="payUtr">UPI transaction ID (UTR) *</label>
+          <input type="text" id="payUtr" inputmode="numeric" maxlength="16" autocomplete="off" placeholder="12-digit UTR from your UPI app"></div>
+        <p class="hint" style="margin:-6px 0 12px;">Open the payment in your UPI app → <em>Details</em>. The UTR is a 12-digit number.</p>
+        <div class="error-msg" id="payErr" role="alert"></div>
+        <button class="btn btn-rust" id="payUtrBtn" style="width:100%;" onclick="submitUtr()">I have paid — submit for confirmation</button>
+      </div>`;
+    if (submitted){
+      const utrTxt = b._utr ? ` (ending ${esc(b._utr.slice(-4))})` : '';
+      return `${head}
+        <div class="info-box" style="margin-top:14px;"><strong>Thank you — we have your payment details${utrTxt}.</strong><br>
+          CodeKasa will verify the payment and confirm your booking. This page updates by itself when that happens, and you can keep or close it — your bill will be available under <em>Retrieve my booking</em>.</div>
+        <div class="pay-amount"><span>Amount paid</span><strong>${amt}</strong></div>
+        <p class="hint" id="payStatusNote" style="margin:0 0 12px;">Status: ${esc(st.label)}.</p>
+        <div class="btn-row">
+          <button class="btn btn-rust btn-sm" onclick="refreshCurrent(true)">Check status now</button>
+          <a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, waAdminPaymentText(b, b._utr || '(entered on the booking page)'))}">Tell CodeKasa on WhatsApp</a>
+          <button class="btn btn-outline btn-sm" onclick="showUtrForm()">Entered a wrong ID? Enter again</button>
+        </div>
+        ${utrForm}
+        ${callBox}`;
+    }
+    return `${head}
+      <div class="pay-amount"><span>Amount to pay</span><strong>${amt}</strong>
+        <small>${month ? `Advance ${rupee(b.rate)} + non-refundable ${rupee(b.nonRefundable)}` : `${rupee(b.rate)} × ${b.nights} night${b.nights > 1 ? 's' : ''}`}</small></div>
+
+      <div class="pay-method">
+        <div class="pay-qr">
+          <img src="upi-qr.png" alt="UPI QR code. Payee: ${esc(PAY.PAYEE)}" width="240">
+          <div class="hint" style="text-align:center;">Scan with PhonePe, Google Pay, Paytm or any UPI app</div>
+        </div>
+        <div class="pay-how">
+          <ol>
+            <li>Scan the QR (or pay to the UPI ID) and pay exactly <strong>${amt}</strong>.</li>
+            <li>Write <strong>${esc(b.id)}</strong> in the payment note.</li>
+            <li>Enter the 12-digit transaction ID (UTR) below and submit.</li>
+          </ol>
+          <table class="kv" style="margin-bottom:10px;">
+            <tr><td>Payee name</td><td><strong>${esc(PAY.PAYEE)}</strong></td></tr>
+            <tr><td>UPI ID</td><td><strong>${esc(PAY.UPI_ID)}</strong> <button class="link-btn" id="copyUpiBtn" onclick="copyUpi()">Copy</button></td></tr>
+          </table>
+          <a class="btn btn-teal btn-sm upi-app-btn" href="${upiLink(b.amountDue, b.id)}">Pay with UPI app</a>
+          <p class="hint upi-app-btn" style="margin:6px 0 0;">On a phone? This opens your UPI app. If the amount is not filled in, enter ${amt}.</p>
+        </div>
+      </div>
+      ${utrForm}
+      ${callBox}
+      ${payRulesHtml(month)}`;
+  }
+
+  async function submitUtr(){
+    if (!cur || utrBusy) return;
+    const msg = vUtr(val('payUtr'));
+    setFieldError('payUtr', msg);
+    if (msg){ document.getElementById('payUtr').focus(); return; }
+    const utr = normUtr(val('payUtr'));
+    const errEl = document.getElementById('payErr'), btn = document.getElementById('payUtrBtn');
+    errEl.style.display = 'none';
+    utrBusy = true; btn.disabled = true; btn.textContent = 'Submitting…';
+    try{
+      const nowIso = new Date().toISOString();
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'bookingPayments', cur.id), { utr, submittedAt: nowIso, amountDue: cur.amountDue, name: cur.name, phone: cur.phone }, { merge: true });
+      if (cur.status === 'pending_payment') batch.update(doc(db, 'bookings', cur.id), { status: 'payment_submitted', updatedAt: nowIso });
+      await batch.commit();
+      const updated = { ...cur, status: 'payment_submitted', updatedAt: nowIso, _utr: utr };
+      notifyAdminEmail(`Payment submitted for ${cur.id} — please verify`, {
+        bookingNumber: cur.id, name: cur.name, phone: cur.phone, email: cur.email, room: cur.roomType,
+        amountDue: rupee(cur.amountDue), upiTransactionId: utr, checkIn: fmtDate(cur.moveIn), status: 'Payment under verification'
+      });
+      showPayment(updated);
+    } catch(e){
+      console.error(e);
+      errEl.textContent = 'We could not submit this just now. Please try again, or call +91 81068 12341 and quote your booking number.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'I have paid — submit for confirmation';
+    } finally { utrBusy = false; }
+  }
+
+  // ---------- Step 3: confirmed ----------
+  function showBookingConfirmation(b){
+    cur = remember(b);
+    renderChrome(3, modelOf(b));
+    const p = b.payment || {};
+    const month = b.stayType !== 'day';
     const rows = [
       ['Booking number', `<strong>${esc(b.id)}</strong>`],
       ['Name', esc(b.name)],
@@ -1285,35 +1845,36 @@
       ['Check-out', `${esc(fmtDate(b.checkOut))} (by 10:00 AM)`],
       ['Stay', esc(stayLabel(b))],
       ['Guests', esc(guestsLabel(b))],
-      ['ID proof', persons.map(p => `${esc(p.name)} — ${idLabel(p.idType)} ${esc(maskId(p.idType, p.idNumber))}`).join('<br>')]
+      ['ID proof', (b.persons || []).map(x => `${esc(x.name)} — ${idLabel(x.idType)} ${esc(x.idMasked || '')}`).join('<br>') || '—'],
+      ['Payment', p.amount ? `${rupee(p.amount)} received via ${esc(p.method)} on ${esc(fmtDate(p.paidOn))}${p.refMasked ? ' · ref ' + esc(p.refMasked) : ''}` : '—']
     ];
-    const termsBox = month
-      ? `<div class="info-box"><strong>Monthly stay terms</strong><ul>
-           <li>Minimum 3 months booking.</li>
-           <li>One month's rent as advance${price ? ' (' + rupee(price) + ')' : ''}, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</li>
-           <li>The advance is returned one week after you vacate the room.</li></ul></div>`
-      : '';
     document.getElementById('confBody').innerHTML = `
       <div class="ref-badge">${esc(b.id)}</div>
       <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>
-      ${termsBox}
+      ${month ? `<div class="info-box"><strong>Monthly stay terms</strong><ul>
+           <li>Minimum 3 months booking.</li>
+           <li>One month's rent as advance, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</li>
+           <li>The advance is returned one week after you vacate the room.</li></ul></div>` : ''}
       <div class="info-box warn"><strong>Please remember</strong><ul>
         <li>Carry the original ID proof of every adult staying. If it does not match the number you gave at check-in, the booking is cancelled and <strong>no refund</strong> is given.</li>
         <li>You can edit this booking online up to one week before check-in. Within one week, call +91 81068 12341.</li>
         <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li></ul></div>
-      <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, waAdminText(b, persons))}">Send booking details to CodeKasa on WhatsApp</a>
+      <button class="btn btn-rust btn-block" onclick="openBillGuest('${b.id}')">Download / print bill (PDF)</button>
+      <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, 'CodeKasa booking ' + b.id + ' is confirmed.\nName: ' + b.name + '\nRoom: ' + b.roomType + '\nCheck-in: ' + fmtDate(b.moveIn))}">Send details to CodeKasa on WhatsApp</a>
       <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(b.phone, waGuestText(b))}">Send a confirmation copy to my WhatsApp</a>
-      <p class="hint" style="margin:8px 0 16px;">WhatsApp opens with the message ready — just tap Send. <span id="confMailNote">Sending your booking to CodeKasa by email…</span></p>
-      <button class="btn btn-rust" style="width:100%;" onclick="openManage('${b.id}')">View or edit this booking</button>
+      <p class="hint" style="margin:8px 0 16px;">WhatsApp opens with the message ready — just tap Send.</p>
+      <button class="btn btn-outline btn-block" onclick="openManage('${b.id}')">View or edit this booking</button>
       <a class="btn btn-outline btn-block" style="margin-top:10px;" href="index.html">Back to CodeKasa website</a>`;
     showScreen('bookingConfirmScreen');
   }
+  function openBillGuest(ref){ openBill(known[ref], 'guest'); }
 
   // ---------- Retrieve / edit a booking ----------
   let mgBookings = [];
   let mgFlash = '';
   function editState(b){
-    if (b.status !== 'confirmed') return { ok: false, why: `This booking is ${esc(b.status || 'not active')}.` };
+    if (b.status === 'cancelled') return { ok: false, why: 'This booking is cancelled.' };
+    if (b.status !== 'confirmed') return { ok: false, why: 'Complete your payment to confirm this booking. After that you can edit it here.' };
     const d = daysUntil(b.moveIn);
     if (d === null) return { ok: false, why: 'This booking cannot be edited online.' };
     if (d < 0) return { ok: false, why: 'This stay has already started or is complete.' };
@@ -1344,7 +1905,7 @@
         refs = snap.exists() ? (snap.data().refs || []).slice(-10).reverse() : [];
       }
       const docs = await Promise.all(refs.map(r => getDoc(doc(db, 'bookings', r))));
-      mgBookings = docs.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
+      mgBookings = docs.filter(d => d.exists()).map(d => remember({ id: d.id, ...d.data() }));
       renderManageResults();
     } catch(e){
       console.error(e);
@@ -1359,12 +1920,15 @@
       return;
     }
     out.innerHTML = flash + mgBookings.map(b => {
-      const st = editState(b);
-      const action = st.ok
-        ? `<button class="btn btn-teal btn-sm" onclick="startEditBooking('${b.id}')">Edit dates</button><div id="mgEdit_${b.id}"></div>`
-        : `<div class="hint" style="margin-top:10px;">${st.why}</div>`;
+      const st = statusOf(b), es = editState(b);
+      let action;
+      if (b.status === 'pending_payment') action = `<button class="btn btn-rust btn-sm" onclick="openPayment('${b.id}')">Complete payment (${rupee(b.amountDue)})</button><div class="hint" style="margin-top:8px;">This booking is confirmed only after payment is made and verified.</div>`;
+      else if (b.status === 'payment_submitted') action = `<button class="btn btn-rust btn-sm" onclick="openPayment('${b.id}')">View payment status</button><div class="hint" style="margin-top:8px;">CodeKasa is verifying your payment.</div>`;
+      else if (b.status === 'confirmed') action = `<button class="btn btn-teal btn-sm" onclick="openBillGuest('${b.id}')">Bill (PDF)</button> ` +
+        (es.ok ? `<button class="btn btn-outline btn-sm" onclick="startEditBooking('${b.id}')">Edit dates</button><div id="mgEdit_${b.id}"></div>` : `<div class="hint" style="margin-top:10px;">${es.why}</div>`);
+      else action = `<div class="hint">${es.why}</div>`;
       return `<div class="booking-result">
-        <h4>Booking ${esc(b.id)} <span class="badge ${b.status === 'confirmed' ? 'badge-ok' : 'badge-bad'}">${esc(b.status || '')}</span></h4>
+        <h4>Booking ${esc(b.id)} <span class="badge ${st.cls}">${esc(st.label)}</span></h4>
         <table class="kv">
           <tr><td>Name</td><td>${esc(b.name)}</td></tr>
           <tr><td>Room</td><td>${esc(b.roomType)}</td></tr>
@@ -1372,40 +1936,42 @@
           <tr><td>Check-out</td><td>${esc(fmtDate(b.checkOut))} (by 10:00 AM)</td></tr>
           <tr><td>Stay</td><td>${b.stayType ? esc(stayLabel(b)) : '—'}</td></tr>
           <tr><td>Guests</td><td>${esc(guestsLabel(b))}</td></tr>
+          <tr><td>${b.status === 'confirmed' ? 'Amount paid' : 'Amount to pay'}</td><td>${b.amountDue ? rupee(b.status === 'confirmed' && b.payment ? b.payment.amount : b.amountDue) : '—'}</td></tr>
           <tr><td>ID proof</td><td>Submitted ✓ <span class="hint">(kept private)</span></td></tr>
         </table>${action}</div>`;
     }).join('');
   }
-  function mgDurationOptions(b, selected){
-    const isDay = b.stayType === 'day';
+  function mgDurationOptions(selected){
     let html = '';
-    if (isDay) for (let n = 1; n <= 30; n++) html += `<option value="${n}"${n === selected ? ' selected' : ''}>${n} night${n > 1 ? 's' : ''}</option>`;
-    else for (let m = CK.MIN_MONTHS; m <= 12; m++) html += `<option value="${m}"${m === selected ? ' selected' : ''}>${m} months</option>`;
+    for (let m = CK.MIN_MONTHS; m <= 12; m++) html += `<option value="${m}"${m === selected ? ' selected' : ''}>${m} months</option>`;
     return html;
   }
   function startEditBooking(ref){
     const b = mgBookings.find(x => x.id === ref);
     if (!b) return;
-    const w = bookingWindow();
-    const cur = b.stayType === 'day' ? Number(b.nights) : Number(b.months);
+    const w = bookingWindow(), isDay = b.stayType === 'day';
+    // The amount paid depends on the number of nights for a day stay, so only the check-in date can change online for those.
+    const durField = isDay
+      ? `<div class="field"><label>Number of nights</label><div class="hint" style="padding:10px 0;">${b.nights} night${b.nights > 1 ? 's' : ''} (to change this, please call CodeKasa)</div></div>`
+      : `<div class="field"><label for="mgEditDur">Stay duration</label><select id="mgEditDur" onchange="mgEditPreview('${ref}')">${mgDurationOptions(Number(b.months))}</select></div>`;
     document.getElementById('mgEdit_' + ref).innerHTML = `<div class="mini-form">
       <div class="field-row">
         <div class="field"><label for="mgEditDate">New check-in date *</label><input type="date" id="mgEditDate" min="${localISO(w.min)}" max="${localISO(w.max)}" value="${esc(b.moveIn)}" oninput="mgEditPreview('${ref}')"></div>
-        <div class="field"><label for="mgEditDur">${b.stayType === 'day' ? 'Number of nights' : 'Stay duration'}</label><select id="mgEditDur" onchange="mgEditPreview('${ref}')">${mgDurationOptions(b, cur)}</select></div>
+        ${durField}
       </div>
       <div class="hint" id="mgEditOut" style="margin-bottom:10px;"></div>
       <div class="field-err" id="mgEditErr" style="margin-bottom:8px;"></div>
       <button class="btn btn-rust btn-sm" onclick="saveEditBooking('${ref}')">Save changes</button>
       <button class="btn btn-outline btn-sm" onclick="cancelEditBooking('${ref}')">Close</button>
-      <p class="hint" style="margin:10px 0 8px;">You can change the check-in date and stay length. For anything else, please call CodeKasa.</p>
+      <p class="hint" style="margin:10px 0 8px;">For anything else, please call CodeKasa.</p>
     </div>`;
     mgEditPreview(ref);
   }
   function mgEditOutDate(b){
     const d = parseISO(val('mgEditDate'));
     if (!d) return null;
-    const n = Number(val('mgEditDur')) || 0;
-    return b.stayType === 'day' ? addDays(d, n) : addMonths(d, n);
+    if (b.stayType === 'day') return addDays(d, Number(b.nights) || 1);
+    return addMonths(d, Number(val('mgEditDur')) || Number(b.months) || CK.MIN_MONTHS);
   }
   function mgEditPreview(ref){
     const b = mgBookings.find(x => x.id === ref);
@@ -1422,23 +1988,24 @@
       if (!snap.exists()){ errEl.textContent = 'This booking could not be found.'; return; }
       const b = { id: snap.id, ...snap.data() };
       if (!editState(b).ok){                     // re-check against the saved record, not the screen
-        const i = mgBookings.findIndex(x => x.id === ref); if (i >= 0) mgBookings[i] = b;
+        const i = mgBookings.findIndex(x => x.id === ref); if (i >= 0) mgBookings[i] = remember(b);
         mgFlash = ''; renderManageResults(); return;
       }
       const newDate = val('mgEditDate');
       const dateErr = vCheckIn(newDate, true);
       if (dateErr){ errEl.textContent = dateErr; return; }
-      const dur = Number(val('mgEditDur'));
       const isDay = b.stayType === 'day';
-      if (isDay ? vInt(dur, 1, 30, 'Nights') : (!Number.isInteger(dur) || dur < CK.MIN_MONTHS || dur > 12)){
-        errEl.textContent = isDay ? 'Please choose between 1 and 30 nights.' : `Monthly stays need ${CK.MIN_MONTHS} to 12 months.`;
-        return;
+      const changes = { moveIn: newDate, updatedAt: new Date().toISOString() };
+      if (isDay){
+        changes.checkOut = localISO(addDays(parseISO(newDate), Number(b.nights) || 1));
+      } else {
+        const dur = Number(val('mgEditDur'));
+        if (!Number.isInteger(dur) || dur < CK.MIN_MONTHS || dur > 12){ errEl.textContent = `Monthly stays need ${CK.MIN_MONTHS} to 12 months.`; return; }
+        changes.months = dur;
+        changes.checkOut = localISO(addMonths(parseISO(newDate), dur));
       }
-      const out = isDay ? addDays(parseISO(newDate), dur) : addMonths(parseISO(newDate), dur);
-      const changes = { moveIn: newDate, checkOut: localISO(out), updatedAt: new Date().toISOString() };
-      if (isDay) changes.nights = dur; else changes.months = dur;
       await updateDoc(doc(db, 'bookings', ref), changes);
-      const updated = { ...b, ...changes };
+      const updated = remember({ ...b, ...changes });
       const i = mgBookings.findIndex(x => x.id === ref);
       if (i >= 0) mgBookings[i] = updated;
       mgFlash = `Your booking ${ref} has been updated.`;
@@ -1453,52 +2020,141 @@
     }
   }
 
-  // ---------- Admin: bookings list ----------
+  // ---------- Admin: bookings list, payment verification, bill ----------
   function idsFor(ref){ return bookingIdsCache.find(x => x.id === ref); }
+  function paymentFor(ref){ return bookingPaymentsCache.find(x => x.id === ref); }
   function occupantsHtml(b){
     const rec = idsFor(b.id);
     const list = (rec && rec.persons) || b.persons || [];
     let html = esc(guestsLabel(b));
-    html += list.map(p => `<br>${esc(p.name)} — ${idLabel(p.idType)}${p.idNumber ? ' <strong>' + esc(p.idNumber) + '</strong>' : ''}`).join('');
+    html += list.map(p => `<br>${esc(p.name)} — ${idLabel(p.idType)}${(p.idNumber || p.idMasked) ? ' <strong>' + esc(p.idNumber || p.idMasked) + '</strong>' : ''}`).join('');
     if (b.idCardUrl) html += `<br><button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View ID file</button>`;
     return html;
   }
   function renderBookings(){
     const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-    document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => `
-      <tr>
+    document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => {
+      const st = statusOf(b), pay = paymentFor(b.id);
+      const open = b.status === 'pending_payment' || b.status === 'payment_submitted';
+      let statusCell = `<span class="badge ${st.cls}">${esc(st.label)}</span>`;
+      if (b.amountDue) statusCell += `<br>Due ${rupee(b.amountDue)}`;
+      if (open && pay && pay.utr) statusCell += `<br>Guest UTR <strong>${esc(pay.utr)}</strong>`;
+      if (b.status === 'confirmed' && b.payment) statusCell += `<br>Paid ${rupee(b.payment.amount)} · ${esc(b.payment.method)}`;
+      return `<tr>
         <td style="font-family:monospace; font-size:0.78rem;">${esc(b.id)}</td>
         <td>${esc(b.name)}<br>${esc(b.phone)}<br>${esc(b.email)}</td>
         <td>${esc(b.roomType)}</td>
-        <td>${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}<br>${b.stayType ? esc(stayLabel(b)) : ''}${b.updatedAt ? '<br><span class="badge badge-warn">Edited by guest</span>' : ''}</td>
+        <td>${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}<br>${b.stayType ? esc(stayLabel(b)) : ''}${b.updatedAt && b.status === 'confirmed' ? '<br><span class="badge badge-warn">Edited by guest</span>' : ''}</td>
         <td>${occupantsHtml(b)}</td>
-        <td><span class="badge ${(b.status || 'confirmed') === 'confirmed' ? 'badge-ok' : 'badge-bad'}">${esc(b.status || 'confirmed')}</span></td>
+        <td>${statusCell}</td>
         <td>${esc(fmtDate(b.submittedAt))}</td>
         <td class="actions-cell">
+          ${open ? `<button class="btn btn-rust btn-sm" onclick="openPayModal('${b.id}')">Confirm payment</button>` : ''}
+          ${b.status === 'confirmed' && b.payment ? `<button class="btn btn-blue btn-sm" onclick="adminBill('${b.id}')">Bill (PDF)</button>` : ''}
           <button class="btn btn-teal btn-sm" onclick="whatsappGuest('${b.id}')">WhatsApp guest</button>
-          <button class="btn btn-blue btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
+          <button class="btn btn-outline btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
           <button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button>
         </td>
-      </tr>`).join('') || `<tr><td colspan="8" style="color:var(--muted);">No bookings yet.</td></tr>`;
+      </tr>`;
+    }).join('') || `<tr><td colspan="8" style="color:var(--muted);">No bookings yet.</td></tr>`;
   }
   function whatsappGuest(id){
     const b = getBookings().find(x => x.id === id);
     if (!b) return;
     const phone = normPhone(b.phone);
     if (vPhone(phone)){ alert('This booking has no valid mobile number.'); return; }
-    window.open(waLink(phone, waGuestText(b)), '_blank');
+    window.open(waLink(phone, b.status === 'confirmed' ? waGuestText(b) : waPendingText(b)), '_blank');
+  }
+  function adminBill(id){
+    const b = getBookings().find(x => x.id === id);
+    const pay = paymentFor(id);
+    openBill(b, 'office', pay && pay.utr ? pay.utr : '');
   }
   async function deleteBooking(id){
     if (!confirm('Delete this booking record? This cannot be undone.')) return;
     try{
       await deleteDoc(doc(db, 'bookings', id));
-      try{ await deleteDoc(doc(db, 'bookingIds', id)); } catch(e){ /* may not exist for older bookings */ }
+      for (const col of ['bookingIds', 'bookingPayments']){
+        try{ await deleteDoc(doc(db, col, id)); } catch(e){ /* may not exist for older bookings */ }
+      }
     } catch(e){ console.error(e); alert('Could not delete this booking.'); }
   }
   function viewBookingId(id){
     const b = getBookings().find(x => x.id === id);
     if (!b || !b.idCardUrl) return;
     window.open(b.idCardUrl, '_blank');
+  }
+
+  // --- confirm a payment (the only way a booking becomes "confirmed") ---
+  let payModalId = null;
+  function expectedTotal(b){
+    const count = b.stayType === 'day' ? Number(b.nights) : Number(b.months);
+    return amountsFor(b.roomType, listedPrice(b.roomType), count).total;
+  }
+  function pmMethodChanged(){
+    const m = val('pmMethod');
+    document.getElementById('pmRefLabel').textContent = m === 'UPI' ? 'UPI transaction ID (UTR) *' : (m === 'Bank transfer' ? 'Bank reference no. *' : 'Receipt / reference no. (optional)');
+    document.getElementById('pmRef').placeholder = m === 'UPI' ? '12-digit UTR' : '';
+  }
+  function openPayModal(id){
+    const b = getBookings().find(x => x.id === id);
+    if (!b) return;
+    payModalId = id;
+    const pay = paymentFor(id), expected = expectedTotal(b), mismatch = Number(b.amountDue) !== expected;
+    document.getElementById('pmInfo').innerHTML =
+      `<strong>${esc(b.id)}</strong> · ${esc(b.name)} · ${esc(b.phone)}<br>${esc(b.roomType)} · ${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}<br>` +
+      `Amount due on booking: <strong>${rupee(b.amountDue || 0)}</strong> · Price list says: <strong>${rupee(expected)}</strong>` +
+      (pay && pay.utr ? `<br>UTR submitted by guest: <strong>${esc(pay.utr)}</strong>` : '<br>No UTR submitted yet (for cash / phone confirmations).');
+    document.getElementById('pmWarn').style.display = mismatch ? 'block' : 'none';
+    document.getElementById('pmWarn').textContent = mismatch ? `Check this: the amount on the booking (${rupee(b.amountDue || 0)}) does not match the price list (${rupee(expected)}). Confirm only the amount you actually received.` : '';
+    document.getElementById('pmMethod').value = 'UPI';
+    document.getElementById('pmRef').value = pay && pay.utr ? pay.utr : '';
+    document.getElementById('pmAmount').value = expected;
+    document.getElementById('pmDate').value = localISO(new Date());
+    document.getElementById('pmDate').max = localISO(new Date());
+    ['pmRef','pmAmount','pmDate'].forEach(i => setFieldError(i, ''));
+    document.getElementById('pmErr').textContent = '';
+    pmMethodChanged();
+    document.getElementById('payModal').classList.remove('hidden');
+  }
+  function closePayModal(){ document.getElementById('payModal').classList.add('hidden'); payModalId = null; }
+  function vPayConfirm(){
+    const method = val('pmMethod'), ref = val('pmRef').trim(), amount = Number(val('pmAmount')), paidOn = val('pmDate');
+    let first = null;
+    const mark = (id, msg) => { setFieldError(id, msg); if (msg && !first) first = id; };
+    if (method === 'UPI') mark('pmRef', vUtr(ref));
+    else if (method === 'Bank transfer') mark('pmRef', /^[A-Za-z0-9]{6,30}$/.test(ref) ? '' : 'Enter the bank reference (6–30 letters/digits).');
+    else mark('pmRef', ref.length > 30 ? 'Keep the reference under 30 characters.' : '');
+    mark('pmAmount', (Number.isFinite(amount) && amount > 0 && amount <= 1000000) ? '' : 'Enter the amount received (more than 0).');
+    const d = parseISO(paidOn);
+    mark('pmDate', !d ? 'Enter the date received.' : (d > startOfDay(new Date()) ? 'The date cannot be in the future.' : ''));
+    return first ? { ok: false, first } : { ok: true, method, ref: method === 'UPI' ? normUtr(ref) : ref, amount, paidOn };
+  }
+  async function savePayConfirm(){
+    const b = getBookings().find(x => x.id === payModalId);
+    if (!b) return;
+    const v = vPayConfirm();
+    if (!v.ok){ document.getElementById(v.first).focus(); return; }
+    const btn = document.getElementById('pmSaveBtn'), errEl = document.getElementById('pmErr');
+    btn.disabled = true; btn.textContent = 'Confirming…'; errEl.textContent = '';
+    try{
+      const nowIso = new Date().toISOString();
+      const payment = { method: v.method, amount: v.amount, paidOn: v.paidOn, refMasked: v.ref ? maskRef(v.ref) : '' };
+      const batch = writeBatch(db);
+      batch.update(doc(db, 'bookings', b.id), { status: 'confirmed', payment, confirmedAt: nowIso, updatedAt: nowIso });
+      batch.set(doc(db, 'bookingPayments', b.id), { utr: v.ref, method: v.method, amount: v.amount, paidOn: v.paidOn, verified: true, confirmedAt: nowIso, name: b.name, phone: b.phone, amountDue: b.amountDue || 0 }, { merge: true });
+      await batch.commit();
+      const done = { ...b, status: 'confirmed', payment };
+      closePayModal();
+      const notice = document.getElementById('adminNotice');
+      const phone = normPhone(b.phone);
+      notice.innerHTML = `<div class="confirm-msg" style="display:block;">Booking <strong>${esc(b.id)}</strong> is now confirmed.
+        ${vPhone(phone) ? '' : `<a class="btn btn-wa btn-sm" style="margin-left:10px;" target="_blank" rel="noopener" href="${waLink(phone, waGuestText(done))}">Send confirmation to ${esc(b.name)} on WhatsApp</a>`}
+        <button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminBill('${b.id}')">Open bill (PDF)</button></div>`;
+    } catch(e){
+      console.error(e);
+      errEl.textContent = 'Could not save. Please check your connection and try again.';
+    } finally { btn.disabled = false; btn.textContent = 'Confirm booking'; }
   }
 
   function daysBetween(dateStr){
@@ -2193,7 +2849,9 @@
     submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
     switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
-    bkIdTypeChanged, whatsappGuest
+    bkIdTypeChanged, whatsappGuest,
+    submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
+    adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged
   });
 </script>
 
@@ -2206,6 +2864,25 @@
       });
     });
   }
+
+  // Install the admin dashboard as its own app (offered on the Admin login tab only).
+  (function adminInstall(){
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isSafariMac = !isIOS && /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua);
+    const standalone = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches)) || navigator.standalone === true;
+    const link = document.getElementById('adminInstallLink'), help = document.getElementById('adminInstallHelp');
+    if (!link || standalone) return;
+    let deferred = null;
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; link.classList.remove('hidden'); });   // also stops the browser's own pop-up on guest booking pages
+    window.addEventListener('appinstalled', () => { deferred = null; link.classList.add('hidden'); help.classList.add('hidden'); });
+    if (isIOS || isSafariMac) link.classList.remove('hidden');
+    link.addEventListener('click', async () => {
+      if (deferred){ const d = deferred; deferred = null; link.classList.add('hidden'); try { await d.prompt(); await d.userChoice; } catch(e){} return; }
+      help.textContent = isIOS ? 'Tap the Share button, then “Add to Home Screen”.' : (isSafariMac ? 'In Safari choose File → Add to Dock.' : 'Open your browser menu and choose “Install app”.');
+      help.classList.remove('hidden');
+    });
+  })();
 </script>
 
 </body>
