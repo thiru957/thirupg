@@ -130,6 +130,40 @@
   .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   @media (max-width:600px){ .field-row{ grid-template-columns:1fr; } }
   .confirm-msg{ background:#E4F6EB; color:var(--ok); padding:12px 16px; border-radius:5px; font-size:0.9rem; margin-bottom:16px; display:none; }
+
+  /* ---------- Booking / manage screens ---------- */
+  .booking-screen{
+    min-height:100vh; display:flex; align-items:flex-start; justify-content:center;
+    padding:32px 16px 56px;
+    background:linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%), url('building.jpg');
+    background-size:cover; background-position:center; background-attachment:fixed;
+  }
+  .booking-card{ max-width:640px; width:100%; padding:32px 30px; }
+  @media (max-width:560px){ .booking-card{ padding:24px 18px; } }
+  .booking-card .sub{ font-size:0.85rem; color:var(--muted); margin:0 0 16px; }
+  .back-link{ display:inline-block; font-size:0.82rem; color:var(--muted); text-decoration:none; margin:-8px 0 14px; }
+  .back-link:hover{ color:var(--rust); }
+  .info-box{ background:var(--ivory); border:1px solid var(--line); border-left:3px solid var(--rust); border-radius:4px; padding:12px 14px; font-size:0.84rem; line-height:1.6; margin-bottom:16px; }
+  .info-box.warn{ border-left-color:var(--bad); background:#FDF4F3; }
+  .info-box ul{ margin:6px 0 0; padding-left:18px; }
+  .info-box li + li{ margin-top:3px; }
+  .hint{ font-size:0.78rem; color:var(--muted); }
+  .field-err{ color:var(--bad); font-size:0.78rem; }
+  input.invalid, select.invalid, textarea.invalid{ border-color:var(--bad); }
+  .person-block{ border:1px solid var(--line); border-radius:6px; padding:14px 14px 4px; margin-bottom:12px; background:var(--paper); }
+  .person-block h4{ margin:0 0 10px; font-size:0.88rem; font-family:'Work Sans',sans-serif; font-weight:600; color:var(--pine-deep); }
+  .check-row{ display:flex; gap:10px; align-items:flex-start; font-size:0.84rem; margin:12px 0 4px; cursor:pointer; }
+  .check-row input{ margin-top:3px; }
+  .link-btn{ background:none; border:none; color:var(--rust); text-decoration:underline; cursor:pointer; padding:0; font-size:0.84rem; font-family:inherit; }
+  .btn-wa{ background:#25D366; color:#0B2A17; }
+  .btn-block{ display:block; width:100%; text-align:center; text-decoration:none; }
+  .kv{ width:100%; font-size:0.88rem; border-collapse:collapse; margin-bottom:14px; }
+  .kv td{ padding:7px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  .kv td:first-child{ color:var(--muted); width:38%; padding-right:10px; }
+  .ref-badge{ font-family:monospace; font-size:1.25rem; letter-spacing:0.08em; font-weight:700; color:var(--pine-deep); background:var(--ivory); border:1px dashed var(--rust); border-radius:4px; padding:10px 14px; text-align:center; margin:4px 0 16px; user-select:all; }
+  .booking-result{ border:1px solid var(--line); border-radius:6px; padding:16px; margin-bottom:14px; background:var(--paper); }
+  .booking-result h4{ margin:0 0 8px; font-family:'Work Sans',sans-serif; font-size:0.95rem; }
+  .mini-form{ background:var(--ivory); border-radius:6px; padding:14px 14px 4px; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -172,6 +206,7 @@
     <div id="visitorLoginForm" class="hidden">
       <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;" id="visitorFormNote">Browse available rooms and send us an enquiry — no login needed.</p>
       <button class="btn btn-teal" style="width:100%;" onclick="enterVisitorView()" id="visitorContinueBtn">Continue as Visitor</button>
+      <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="openManage()">Retrieve or edit my booking</button>
     </div>
 
     <div class="login-note">
@@ -181,8 +216,8 @@
 </div>
 
 <!-- ================= BOOKING REGISTRATION SCREEN ================= -->
-<div id="bookingScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
-  <div class="login-card" style="max-width:460px;">
+<div id="bookingScreen" class="hidden booking-screen">
+  <div class="login-card booking-card">
     <div class="login-brand">
       <span class="namam-mark" aria-hidden="true">
         <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
@@ -196,40 +231,91 @@
         <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
       </span>
     </div>
+    <a href="index.html" class="back-link">&larr; Back to website</a>
     <h3 style="margin-bottom:4px;">Book: <span id="bookRoomTypeLabel" style="color:var(--rust);"></span></h3>
-    <p style="font-size:0.85rem; color:var(--muted); margin-top:0; margin-bottom:18px;">Fill in your details to register and confirm your booking request. Fields marked * are required.</p>
+    <p class="sub">Fields marked * are required.</p>
+    <div id="bkStayInfo" class="info-box"></div>
 
-    <div class="error-msg" id="bookingError">Please fill in all required fields.</div>
+    <div class="error-msg" id="bookingError" role="alert"></div>
 
-    <div class="field"><label>Full name *</label><input type="text" id="bkName" placeholder="Your name"></div>
-    <div class="field"><label>Phone *</label><input type="text" id="bkPhone" placeholder="+91 XXXXX XXXXX"></div>
-    <div class="field"><label>Email *</label><input type="email" id="bkEmail" placeholder="you@example.com"></div>
+    <div class="field"><label for="bkName">Full name (as on your ID proof) *</label><input type="text" id="bkName" maxlength="60" autocomplete="name" placeholder="Your name"></div>
     <div class="field-row">
-      <div class="field"><label>Move-in date *</label><input type="date" id="bkMoveIn"></div>
-      <div class="field"><label>Guests</label><input type="number" id="bkGuests" min="1" value="1"></div>
+      <div class="field"><label for="bkPhone">Mobile number *</label><input type="tel" id="bkPhone" maxlength="17" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile number"></div>
+      <div class="field"><label for="bkEmail">Email *</label><input type="email" id="bkEmail" maxlength="100" autocomplete="email" placeholder="you@example.com"></div>
     </div>
-    <div class="field"><label>ID card (optional, any format)</label><input type="file" id="bkIdFile" accept="image/*,.pdf,.doc,.docx"></div>
+    <div class="field-row">
+      <div class="field"><label for="bkMoveIn">Check-in date *</label><input type="date" id="bkMoveIn"></div>
+      <div class="field"><label for="bkDuration" id="bkDurationLabel">Stay duration *</label><select id="bkDuration"></select></div>
+    </div>
+    <div class="hint" id="bkCheckoutLine" style="margin:-6px 0 14px;"></div>
 
-    <button class="btn btn-rust" style="width:100%; margin-top:6px;" onclick="submitBooking()">Register &amp; Confirm Booking</button>
-    <div class="login-note">
-      This booking is saved to CodeKasa's live database and will appear on the admin dashboard immediately.
+    <div class="field-row" id="bkCountsRow">
+      <div class="field" id="bkGuestsField"><label for="bkGuests">Number of people staying *</label><select id="bkGuests"></select></div>
+      <div class="field" id="bkAdultsField"><label for="bkAdults">Adults *</label><select id="bkAdults"></select></div>
+      <div class="field" id="bkKidsField"><label for="bkKids">Kids</label><select id="bkKids"></select></div>
     </div>
+
+    <div id="bkPersons"></div>
+
+    <div class="info-box warn">
+      <strong>Important</strong>
+      <ul>
+        <li>The ID proof (Aadhaar or passport number) must be of the person who is staying. If it does not match at check-in, the booking will be cancelled and <strong>no refund</strong> will be given.</li>
+        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+        <li>You can edit your booking online up to <strong>one week before check-in</strong>. Within one week, please call CodeKasa on +91 81068 12341.</li>
+      </ul>
+    </div>
+    <label class="check-row"><input type="checkbox" id="bkAgree"><span>I have read and agree to the booking terms above and the stay terms shown for this room. *</span></label>
+    <div class="field-err" id="bkAgreeErr"></div>
+
+    <button class="btn btn-rust" id="bkSubmitBtn" style="width:100%; margin-top:10px;" onclick="submitBooking()">Confirm Booking</button>
+    <p style="text-align:center; margin:14px 0 0;"><button class="link-btn" onclick="openManage()">Already booked? Retrieve my booking</button></p>
   </div>
 </div>
 
 <!-- ================= BOOKING CONFIRMATION SCREEN ================= -->
-<div id="bookingConfirmScreen" class="hidden" style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(14,12,10,0.55) 0%, rgba(14,12,10,0.85) 100%), url('building.jpg'); background-size:cover; background-position:center; padding:24px;">
-  <div class="login-card" style="max-width:460px; text-align:center;">
-    <div style="font-size:2.4rem; margin-bottom:6px;">✅</div>
-    <h3 style="margin-bottom:6px;">Booking request confirmed</h3>
-    <p style="font-size:0.88rem; color:var(--muted); margin-top:0; margin-bottom:18px;">We've received your details — our team will contact you shortly to finalise your stay.</p>
-    <table style="width:100%; text-align:left; font-size:0.88rem; margin-bottom:18px;">
-      <tr><td style="padding:6px 0; color:var(--muted);">Reference</td><td style="padding:6px 0; text-align:right; font-weight:600;" id="confRef"></td></tr>
-      <tr><td style="padding:6px 0; color:var(--muted);">Name</td><td style="padding:6px 0; text-align:right;" id="confName"></td></tr>
-      <tr><td style="padding:6px 0; color:var(--muted);">Room</td><td style="padding:6px 0; text-align:right;" id="confRoom"></td></tr>
-      <tr><td style="padding:6px 0; color:var(--muted);">Move-in date</td><td style="padding:6px 0; text-align:right;" id="confMoveIn"></td></tr>
-    </table>
-    <button class="btn btn-teal" style="width:100%;" onclick="window.location.href='index.html'">Back to CodeKasa website</button>
+<div id="bookingConfirmScreen" class="hidden booking-screen">
+  <div class="login-card booking-card">
+    <div style="text-align:center;">
+      <div style="font-size:2.2rem; margin-bottom:4px;">✅</div>
+      <h3 style="margin-bottom:4px;">Booking confirmed</h3>
+      <p class="sub">Thank you! Please keep your booking number safe — you will need it to view or edit your booking.</p>
+    </div>
+    <div id="confBody"></div>
+  </div>
+</div>
+
+<!-- ================= RETRIEVE / MANAGE BOOKING SCREEN ================= -->
+<div id="manageScreen" class="hidden booking-screen">
+  <div class="login-card booking-card">
+    <div class="login-brand">
+      <span class="namam-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M35 8 C13 30, 13 74, 46 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <path d="M65 8 C87 30, 87 74, 54 114" stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <line x1="50" y1="14" x2="50" y2="108" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span style="display:flex; flex-direction:column; line-height:1.15;">
+        <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
+        <span style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;">A Luxury Living</span>
+      </span>
+    </div>
+    <a href="index.html" class="back-link">&larr; Back to website</a>
+    <h3 style="margin-bottom:4px;">Retrieve your booking</h3>
+    <p class="sub">Enter the mobile number you booked with, or your booking number (it starts with CK).</p>
+    <div class="field"><label for="mgQuery">Mobile number or booking number</label><input type="text" id="mgQuery" maxlength="20" placeholder="e.g. 9876543210 or CKAB12CD34" autocomplete="off"></div>
+    <div class="field-err" id="mgError" style="margin:-6px 0 8px;"></div>
+    <button class="btn btn-rust" id="mgFindBtn" style="width:100%;" onclick="findBookings()">Find my booking</button>
+    <div id="mgResults" style="margin-top:20px;"></div>
+    <div class="info-box" style="margin-top:18px;">
+      <strong>Changing or cancelling a booking</strong>
+      <ul>
+        <li>You can edit the check-in date and stay length online up to <strong>one week before check-in</strong>.</li>
+        <li>Within one week of check-in, please call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</li>
+        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given. For any cancellation request, please call CodeKasa.</li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -493,7 +579,7 @@
         <h3>Room bookings (from "Book Now")</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Ref</th><th>Name</th><th>Phone</th><th>Email</th><th>Room type</th><th>Check-in</th><th>Guests</th><th>ID</th><th>Submitted</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Booking no.</th><th>Guest</th><th>Room</th><th>Stay</th><th>Occupants &amp; ID proof</th><th>Status</th><th>Booked on</th><th>Actions</th></tr></thead>
             <tbody id="bookingsTableBody"></tbody>
           </table>
         </div>
@@ -536,11 +622,12 @@
     <div class="card" style="max-width:560px;">
       <h3>Send us an enquiry</h3>
       <div class="confirm-msg" id="enquiryConfirm">Thanks! Your enquiry has been sent — we'll get back to you soon.</div>
-      <div class="field"><label>Full name</label><input type="text" id="visName" placeholder="Your name"></div>
+      <div class="field"><label for="visName">Full name *</label><input type="text" id="visName" maxlength="60" placeholder="Your name"></div>
       <div class="field-row">
-        <div class="field"><label>Phone</label><input type="text" id="visPhone" placeholder="+91 XXXXX XXXXX"></div>
-        <div class="field"><label>Move-in date</label><input type="date" id="visMoveIn"></div>
+        <div class="field"><label for="visPhone">Mobile number *</label><input type="tel" id="visPhone" maxlength="17" inputmode="tel" placeholder="10-digit mobile number"></div>
+        <div class="field"><label for="visEmail">Email (optional)</label><input type="email" id="visEmail" maxlength="100" placeholder="you@example.com"></div>
       </div>
+      <div class="field"><label for="visMoveIn">Check-in date</label><input type="date" id="visMoveIn"></div>
       <div class="field"><label>Room type interested in</label>
         <select id="visRoomType">
           <option>Single Stay — AC</option>
@@ -554,8 +641,8 @@
           <option>Not sure yet</option>
         </select>
       </div>
-      <div class="field"><label>Message (optional)</label><textarea id="visMessage" rows="3" placeholder="Anything else we should know?"></textarea></div>
-      <button class="btn btn-rust" onclick="submitEnquiry()">Send enquiry</button>
+      <div class="field"><label>Message (optional)</label><textarea id="visMessage" rows="3" maxlength="500" placeholder="Anything else we should know?"></textarea></div>
+      <button class="btn btn-rust" id="visSubmitBtn" onclick="submitEnquiry()">Send enquiry</button>
     </div>
   </div>
 </div>
@@ -563,7 +650,8 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
   import {
-    getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot
+    getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot,
+    getDoc, writeBatch, arrayUnion
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
   import {
     getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
@@ -586,6 +674,143 @@
   const auth = getAuth(fbApp);
   const storage = getStorage(fbApp);
 
+  // VALIDATORS START
+  const CK = {
+    ADMIN_PHONE: '8106812341',
+    NON_REFUNDABLE: 6000,
+    MIN_MONTHS: 3,
+    MAX_BOOK_MONTHS: 6,
+    EDIT_LOCK_DAYS: 7
+  };
+
+  // ----- dates (all local-time, never UTC, so IST users never see an off-by-one day) -----
+  function localISO(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function parseISO(s){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if (!m) return null;
+    const d = new Date(+m[1], +m[2]-1, +m[3]);
+    return (d.getFullYear() === +m[1] && d.getMonth() === +m[2]-1 && d.getDate() === +m[3]) ? d : null;
+  }
+  function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function addMonths(d, n){
+    const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+    const lastDay = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+    first.setDate(Math.min(d.getDate(), lastDay));
+    return first;
+  }
+  function bookingWindow(now){
+    const today = startOfDay(now || new Date());
+    return { min: today, max: addMonths(today, CK.MAX_BOOK_MONTHS) };
+  }
+  function daysUntil(dateStr, now){
+    const d = parseISO(dateStr);
+    if (!d) return null;
+    return Math.round((d - startOfDay(now || new Date())) / 86400000);
+  }
+  function longDate(d){
+    return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  // ----- field validators: each returns '' when valid, otherwise a message -----
+  function vName(v){
+    v = (v || '').trim().replace(/\s+/g, ' ');
+    if (!v) return 'Please enter the full name.';
+    if (v.length < 2) return 'Name is too short.';
+    if (v.length > 60) return 'Name is too long (60 characters max).';
+    if (!/^[\p{L}][\p{L} .'-]*$/u.test(v)) return "Name can contain only letters, spaces and . ' -";
+    return '';
+  }
+  function normPhone(v){
+    let s = String(v || '').replace(/[\s\-().]/g, '');
+    if (s.startsWith('+91')) s = s.slice(3);
+    else if (s.startsWith('0091')) s = s.slice(4);
+    else if (s.length === 12 && s.startsWith('91')) s = s.slice(2);
+    else if (s.length === 11 && s.startsWith('0')) s = s.slice(1);
+    return s;
+  }
+  function vPhone(v){
+    if (!String(v || '').trim()) return 'Please enter a mobile number.';
+    const s = normPhone(v);
+    if (!/^\d+$/.test(s)) return 'Mobile number can contain digits only.';
+    if (s.length !== 10) return 'Enter a 10-digit mobile number.';
+    if (!/^[6-9]/.test(s)) return 'Indian mobile numbers start with 6, 7, 8 or 9.';
+    if (/^(\d)\1{9}$/.test(s)) return 'Please enter a valid mobile number.';
+    return '';
+  }
+  function vEmail(v, required){
+    v = (v || '').trim();
+    if (!v) return required ? 'Please enter an email address.' : '';
+    if (v.length > 100) return 'Email address is too long.';
+    if (/\s/.test(v) || /\.\./.test(v)) return 'Please enter a valid email address.';
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) return 'Please enter a valid email address, e.g. name@example.com.';
+    return '';
+  }
+  function normId(type, v){
+    v = String(v || '');
+    return type === 'aadhaar' ? v.replace(/[\s-]/g, '') : v.replace(/\s/g, '').toUpperCase();
+  }
+  function vId(type, v){
+    const s = normId(type, v);
+    if (!s) return type === 'aadhaar' ? 'Please enter the Aadhaar number.' : 'Please enter the passport number.';
+    if (type === 'aadhaar'){
+      if (!/^\d+$/.test(s)) return 'Aadhaar number must contain digits only.';
+      if (s.length !== 12) return 'Aadhaar number must be exactly 12 digits.';
+      if (!/^[2-9]/.test(s)) return 'A valid Aadhaar number cannot start with 0 or 1.';
+      return '';
+    }
+    if (!/^[A-Z0-9]{6,9}$/.test(s) || !/\d/.test(s)) return 'Enter a valid passport number (6–9 letters/digits, e.g. A1234567).';
+    return '';
+  }
+  function vInt(v, min, max, label){
+    const n = Number(v);
+    if (!Number.isInteger(n) || n < min || n > max) return `${label} must be between ${min} and ${max}.`;
+    return '';
+  }
+  // required=false lets the enquiry form leave the date blank
+  function vCheckIn(str, required, now){
+    if (!str) return required ? 'Please select a check-in date.' : '';
+    const d = parseISO(str);
+    if (!d) return 'Please enter a valid date.';
+    const w = bookingWindow(now);
+    if (d < w.min) return 'Check-in date cannot be in the past.';
+    if (d > w.max) return `Bookings can be made up to 6 months ahead (latest ${longDate(w.max)}).`;
+    return '';
+  }
+
+  // ----- display helpers -----
+  function maskId(type, v){
+    const s = normId(type, v);
+    if (type === 'aadhaar') return 'XXXX XXXX ' + s.slice(-4);
+    return s.length > 3 ? '*'.repeat(s.length - 3) + s.slice(-3) : s;
+  }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  // ----- room / stay rules -----
+  function roomKind(type){
+    type = type || '';
+    if (/^Single/.test(type)) return 'single';
+    if (/^Family/.test(type)) return 'family';
+    if (/^Twin/.test(type)) return 'twin';
+    if (/^Day/.test(type)) return 'day';
+    return 'other';
+  }
+  function stayTypeOf(type){ return roomKind(type) === 'day' ? 'day' : 'month'; }
+  function makeRef(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const buf = new Uint32Array(8);
+    (globalThis.crypto || window.crypto).getRandomValues(buf);
+    let out = 'CK';
+    for (const n of buf) out += chars[n % chars.length];
+    return out;
+  }
+  // VALIDATORS END
+
+
   let selectedRole = "admin";
   let editingRoomId = null;
   let editingTenantId = null;
@@ -597,6 +822,7 @@
   let tenantsCache = [];
   let enquiriesCache = [];
   let bookingsCache = [];
+  let bookingIdsCache = [];
   let staffCache = [];
   let attendanceCache = [];
   let salaryPaymentsCache = [];
@@ -646,6 +872,11 @@
       renderBookings();
     }, (err) => console.error('bookings listener error', err));
 
+    onSnapshot(collection(db, 'bookingIds'), (snap) => {
+      bookingIdsCache = snapToArray(snap);
+      renderBookings();
+    }, (err) => console.error('bookingIds listener error', err));
+
     onSnapshot(collection(db, 'staff'), (snap) => {
       staffCache = snapToArray(snap);
       renderStaffTable();
@@ -678,56 +909,598 @@
     return await getDownloadURL(fileRef);
   }
 
+  // ---------- Screens & small helpers ----------
+  const SCREENS = ['loginScreen','bookingScreen','bookingConfirmScreen','manageScreen','adminApp','visitorApp'];
+  function showScreen(id){
+    SCREENS.forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
+    window.scrollTo({ top: 0 });
+  }
+  const val = id => document.getElementById(id).value;
+  function setFieldError(id, msg){
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('invalid', !!msg);
+    let err = el.parentElement.querySelector(':scope > .field-err');
+    if (!err){ err = document.createElement('div'); err.className = 'field-err'; el.parentElement.appendChild(err); }
+    err.textContent = msg || '';
+  }
+  function fmtDate(d){
+    if (!d) return '—';
+    const dt = parseISO(d) || new Date(d);
+    if (isNaN(dt)) return '—';
+    return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  // ---------- Prices, wording, notifications ----------
+  const EMAIL_ENDPOINT = "https://formspree.io/f/mzezkqko";
+  const LISTED_PRICES = {
+    'Single Stay — AC': 15000, 'Single Stay — Non-AC': 13000,
+    'Family Stay — AC': 18000, 'Family Stay — Non-AC': 13000,
+    'Twin Sharing — AC': 9000, 'Twin Sharing — Non-AC': 7000,
+    'Day Stay — AC': 1800, 'Day Stay — Non-AC': 1200
+  };
+  function listedPrice(type){
+    const r = getRooms().find(x => x.type === type && Number(x.price) > 0);
+    return r ? Number(r.price) : (LISTED_PRICES[type] || 0);
+  }
+  const rupee = n => '₹' + Number(n).toLocaleString('en-IN');
+  const idLabel = t => t === 'passport' ? 'Passport' : 'Aadhaar';
+  function stayLabel(b){
+    return b.stayType === 'day' ? `${b.nights} night${b.nights > 1 ? 's' : ''}` : `${b.months} months`;
+  }
+  function guestsLabel(b){
+    const adults = b.adults || b.guests || 1, kids = b.kids || 0;
+    return `${adults} adult${adults > 1 ? 's' : ''}` + (kids ? `, ${kids} kid${kids > 1 ? 's' : ''}` : '');
+  }
+  function waLink(phone10, text){ return `https://wa.me/91${phone10}?text=${encodeURIComponent(text)}`; }
+  async function notifyAdminEmail(subject, fields){
+    try{
+      const res = await fetch(EMAIL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ _subject: subject, ...fields }),
+        keepalive: true
+      });
+      return res.ok;
+    } catch(e){ console.warn('Email notification failed', e); return false; }
+  }
+  const POLICY_LINE = 'Please carry the original ID proof of every adult staying (the same Aadhaar/passport number given at booking). If it does not match at check-in, the booking is cancelled and no refund is given.';
+  function waGuestText(b){
+    const L = [
+      `Hello ${b.name},`,
+      'Your booking at CodeKasa — A Luxury Living is CONFIRMED.',
+      '',
+      `Booking number: ${b.id}`,
+      `Room: ${b.roomType}`,
+      `Check-in: ${fmtDate(b.moveIn)} (from 2:00 PM)`,
+      `Check-out: ${fmtDate(b.checkOut)} (by 10:00 AM)`,
+      `Stay: ${stayLabel(b)}`,
+      `Guests: ${guestsLabel(b)}`
+    ];
+    if (b.stayType !== 'day'){
+      L.push('', `Monthly stay terms: minimum 3 months. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} non-refundable. The advance is returned one week after you vacate.`);
+    }
+    L.push('', POLICY_LINE,
+      'You can edit your booking online up to one week before check-in; within one week please call +91 81068 12341. Cancellation is not possible within 24 hours of booking and no refund is given.',
+      '',
+      'CodeKasa, Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035',
+      'Phone: +91 81068 12341');
+    return L.join('\n');
+  }
+  function waAdminText(b, persons){
+    return [
+      `New CodeKasa booking ${b.id}`,
+      `Name: ${b.name}`, `Mobile: ${b.phone}`, `Email: ${b.email}`,
+      `Room: ${b.roomType}`,
+      `Check-in: ${fmtDate(b.moveIn)}`, `Check-out: ${fmtDate(b.checkOut)}`,
+      `Stay: ${stayLabel(b)}`, `Guests: ${guestsLabel(b)}`,
+      'ID proofs: ' + persons.map(p => `${p.name} (${idLabel(p.idType)} ${maskId(p.idType, p.idNumber)})`).join('; ')
+    ].join('\n');
+  }
+
   // ---------- Booking flow (from "Book Now" on the main site) ----------
   let pendingBookRoom = null;
-  (function checkBookingParam(){
-    const params = new URLSearchParams(window.location.search);
-    const bookRoom = params.get('book');
-    if (bookRoom){
+  let manageRequested = false;
+  let bkSubmitting = false;
+  let bkPersons = [];
+  (function checkUrlParams(){
+    const p = new URLSearchParams(window.location.search);
+    const bookRoom = p.get('book');
+    if (bookRoom && Object.prototype.hasOwnProperty.call(LISTED_PRICES, bookRoom)){
       pendingBookRoom = bookRoom;
       switchRoleTab('visitor');
       document.getElementById('visitorFormNote').textContent = `You're booking: ${bookRoom}. Continue as a visitor to register your details.`;
       document.getElementById('visitorContinueBtn').textContent = 'Continue to Booking';
     }
+    if (p.get('manage')){
+      manageRequested = true;
+      showScreen('manageScreen');
+    }
   })();
-  async function submitBooking(){
-    const roomType = document.getElementById('bookRoomTypeLabel').textContent;
-    const name = document.getElementById('bkName').value.trim();
-    const phone = document.getElementById('bkPhone').value.trim();
-    const email = document.getElementById('bkEmail').value.trim();
-    const moveIn = document.getElementById('bkMoveIn').value;
-    const guests = parseInt(document.getElementById('bkGuests').value) || 1;
-    const fileInput = document.getElementById('bkIdFile');
-    const file = fileInput.files[0];
-    const errorEl = document.getElementById('bookingError');
 
-    if (!name || !phone || !email || !moveIn){
-      errorEl.style.display = 'block';
+  function stayInfoHtml(type){
+    const price = listedPrice(type);
+    if (stayTypeOf(type) === 'day'){
+      return `<strong>Day stay</strong>${price ? ` · ${rupee(price)} per day` : ''}<br>Check-in from 2:00 PM · Check-out by 10:00 AM (24-hour stay).`;
+    }
+    return `<strong>Monthly stay</strong>${price ? ` · ${rupee(price)} per month` : ''}
+      <ul>
+        <li><strong>Minimum 3 months</strong> booking is required.</li>
+        <li><strong>One month's rent as advance${price ? ' (' + rupee(price) + ')' : ''}, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</strong></li>
+        <li>The advance is returned <strong>one week after you vacate</strong> the room.</li>
+        <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
+      </ul>`;
+  }
+  function fillSelect(id, from, to, labelFn){
+    let html = '';
+    for (let n = from; n <= to; n++) html += `<option value="${n}">${labelFn(n)}</option>`;
+    document.getElementById(id).innerHTML = html;
+  }
+  function bkFillDurations(){
+    const isDay = stayTypeOf(pendingBookRoom) === 'day';
+    document.getElementById('bkDurationLabel').textContent = isDay ? 'Number of nights *' : 'Stay duration (minimum 3 months) *';
+    if (isDay) fillSelect('bkDuration', 1, 30, n => `${n} night${n > 1 ? 's' : ''}`);
+    else fillSelect('bkDuration', CK.MIN_MONTHS, 12, n => `${n} months`);
+  }
+  function bkSetupCounts(){
+    const kind = roomKind(pendingBookRoom);
+    fillSelect('bkGuests', 1, 2, n => n === 1 ? '1 person' : '2 people');
+    fillSelect('bkAdults', 1, 4, n => `${n} adult${n > 1 ? 's' : ''}`);
+    fillSelect('bkKids', 0, 4, n => n === 0 ? 'No kids' : `${n} kid${n > 1 ? 's' : ''}`);
+    document.getElementById('bkCountsRow').classList.toggle('hidden', kind === 'single');      // single stay = one person, no guest column
+    document.getElementById('bkGuestsField').classList.toggle('hidden', kind === 'single' || kind === 'family');
+    document.getElementById('bkAdultsField').classList.toggle('hidden', kind !== 'family');
+    document.getElementById('bkKidsField').classList.toggle('hidden', kind !== 'family');
+  }
+  function bkPersonCount(){
+    const kind = roomKind(pendingBookRoom);
+    if (kind === 'single') return 1;
+    if (kind === 'family') return Number(val('bkAdults')) || 1;
+    return Number(val('bkGuests')) || 1;
+  }
+  function bkCapturePersons(){
+    const n = document.querySelectorAll('#bkPersons .person-block').length;
+    bkPersons = [];
+    for (let i = 0; i < n; i++){
+      bkPersons.push({ name: i > 0 ? val('bkPName' + i) : '', idType: val('bkPIdType' + i), idNo: val('bkPIdNo' + i) });
+    }
+  }
+  function bkRenderPersons(){
+    bkCapturePersons();                                   // keep whatever was typed when the count changes
+    const kind = roomKind(pendingBookRoom), count = bkPersonCount();
+    let html = '';
+    for (let i = 0; i < count; i++){
+      const p = bkPersons[i] || { name: '', idType: 'aadhaar', idNo: '' };
+      const title = kind === 'single' ? 'ID proof of the guest staying'
+        : kind === 'family' ? (i === 0 ? 'Adult 1 — you' : `Adult ${i + 1}`)
+        : (i === 0 ? 'Guest 1 — you' : `Guest ${i + 1}`);
+      html += `<div class="person-block"><h4>${title}</h4>
+        ${i > 0 ? `<div class="field"><label for="bkPName${i}">Full name (as on ID proof) *</label><input type="text" id="bkPName${i}" maxlength="60" value="${esc(p.name)}"></div>` : ''}
+        <div class="field-row">
+          <div class="field"><label for="bkPIdType${i}">ID proof type *</label>
+            <select id="bkPIdType${i}" onchange="bkIdTypeChanged(${i})">
+              <option value="aadhaar"${p.idType === 'aadhaar' ? ' selected' : ''}>Aadhaar number</option>
+              <option value="passport"${p.idType === 'passport' ? ' selected' : ''}>Passport number</option>
+            </select></div>
+          <div class="field"><label for="bkPIdNo${i}">ID number *</label>
+            <input type="text" id="bkPIdNo${i}" maxlength="16" autocomplete="off" value="${esc(p.idNo)}" placeholder="${p.idType === 'passport' ? 'e.g. A1234567' : '12-digit Aadhaar number'}"></div>
+        </div></div>`;
+    }
+    document.getElementById('bkPersons').innerHTML = html;
+  }
+  function bkIdTypeChanged(i){
+    const t = val('bkPIdType' + i);
+    document.getElementById('bkPIdNo' + i).placeholder = t === 'passport' ? 'e.g. A1234567' : '12-digit Aadhaar number';
+    if (val('bkPIdNo' + i).trim()) setFieldError('bkPIdNo' + i, vId(t, val('bkPIdNo' + i)));
+  }
+  function bkComputeCheckout(){
+    const d = parseISO(val('bkMoveIn'));
+    if (!d) return null;
+    const n = Number(val('bkDuration')) || 0;
+    return stayTypeOf(pendingBookRoom) === 'day' ? addDays(d, n) : addMonths(d, n);
+  }
+  function bkUpdateCheckout(){
+    const out = vCheckIn(val('bkMoveIn'), true) ? null : bkComputeCheckout();
+    document.getElementById('bkCheckoutLine').textContent = out ? `Check-out: ${longDate(out)} by 10:00 AM` : '';
+  }
+  function openBookingForm(roomType){
+    pendingBookRoom = roomType;
+    bkPersons = [];
+    document.getElementById('bkPersons').innerHTML = '';
+    document.getElementById('bookRoomTypeLabel').textContent = roomType;
+    document.getElementById('bkStayInfo').innerHTML = stayInfoHtml(roomType);
+    const w = bookingWindow(), d = document.getElementById('bkMoveIn');
+    d.min = localISO(w.min);
+    d.max = localISO(w.max);
+    bkFillDurations();
+    bkSetupCounts();
+    bkRenderPersons();
+    ['bkName','bkPhone','bkEmail','bkMoveIn','bkDuration','bkGuests','bkAdults','bkKids'].forEach(id => setFieldError(id, ''));
+    document.getElementById('bkAgreeErr').textContent = '';
+    document.getElementById('bookingError').style.display = 'none';
+    document.getElementById('bkCheckoutLine').textContent = '';
+    showScreen('bookingScreen');
+  }
+  const VIS_RULES = {
+    visName:    () => vName(val('visName')),
+    visPhone:   () => vPhone(val('visPhone')),
+    visEmail:   () => vEmail(val('visEmail'), false),
+    visMoveIn:  () => vCheckIn(val('visMoveIn'), false),
+    visMessage: () => val('visMessage').length > 500 ? 'Message is too long (500 characters max).' : ''
+  };
+
+  (function wireBookingForm(){
+    const on = (id, ev, fn) => document.getElementById(id).addEventListener(ev, fn);
+    on('bkName', 'blur', () => setFieldError('bkName', vName(val('bkName'))));
+    on('bkPhone', 'blur', () => setFieldError('bkPhone', vPhone(val('bkPhone'))));
+    on('bkEmail', 'blur', () => setFieldError('bkEmail', vEmail(val('bkEmail'), true)));
+    on('bkMoveIn', 'change', () => { setFieldError('bkMoveIn', vCheckIn(val('bkMoveIn'), true)); bkUpdateCheckout(); });
+    on('bkDuration', 'change', bkUpdateCheckout);
+    on('bkGuests', 'change', bkRenderPersons);
+    on('bkAdults', 'change', bkRenderPersons);
+    on('bkPersons', 'focusout', e => {
+      const id = e.target.id || '';
+      let m;
+      if ((m = /^bkPIdNo(\d+)$/.exec(id))) setFieldError(id, vId(val('bkPIdType' + m[1]), e.target.value));
+      else if (/^bkPName\d+$/.test(id)) setFieldError(id, vName(e.target.value));
+    });
+    on('bkAgree', 'change', () => { document.getElementById('bkAgreeErr').textContent = ''; });
+    // visitor enquiry form: date window + live checks
+    const vd = document.getElementById('visMoveIn'), w = bookingWindow();
+    vd.min = localISO(w.min);
+    vd.max = localISO(w.max);
+    Object.keys(VIS_RULES).forEach(id => on(id, 'blur', () => setFieldError(id, VIS_RULES[id]())));
+  })();
+
+  function bkValidate(){
+    const type = pendingBookRoom, kind = roomKind(type), isDay = stayTypeOf(type) === 'day';
+    let first = null;
+    const mark = (id, msg) => { setFieldError(id, msg); if (msg && !first) first = id; };
+
+    mark('bkName', vName(val('bkName')));
+    mark('bkPhone', vPhone(val('bkPhone')));
+    mark('bkEmail', vEmail(val('bkEmail'), true));
+    mark('bkMoveIn', vCheckIn(val('bkMoveIn'), true));
+
+    let durErr = '';
+    const dur = Number(val('bkDuration'));
+    if (isDay) durErr = vInt(val('bkDuration'), 1, 30, 'Number of nights');
+    else if (!Number.isInteger(dur) || dur < CK.MIN_MONTHS) durErr = `Monthly stays need a minimum of ${CK.MIN_MONTHS} months.`;
+    else if (dur > 12) durErr = 'Online bookings are limited to 12 months.';
+    mark('bkDuration', durErr);
+
+    let adults = 1, kids = 0, guests = 1;
+    if (kind === 'family'){
+      mark('bkAdults', vInt(val('bkAdults'), 1, 4, 'Adults'));
+      mark('bkKids', vInt(val('bkKids'), 0, 4, 'Kids'));
+      adults = Number(val('bkAdults')) || 1; kids = Number(val('bkKids')) || 0; guests = adults + kids;
+    } else if (kind !== 'single'){
+      mark('bkGuests', vInt(val('bkGuests'), 1, 2, 'Number of people'));
+      guests = Number(val('bkGuests')) || 1; adults = guests;
+    }
+
+    const persons = [], seen = new Set(), count = bkPersonCount();
+    for (let i = 0; i < count; i++){
+      const idType = val('bkPIdType' + i);
+      const raw = val('bkPIdNo' + i);
+      const name = (i === 0 ? val('bkName') : val('bkPName' + i)).trim().replace(/\s+/g, ' ');
+      if (i > 0) mark('bkPName' + i, vName(val('bkPName' + i)));
+      let idErr = (idType === 'aadhaar' || idType === 'passport') ? vId(idType, raw) : 'Please choose an ID proof type.';
+      const norm = normId(idType, raw);
+      if (!idErr && seen.has(norm)) idErr = 'This ID number is already entered for another guest.';
+      mark('bkPIdNo' + i, idErr);
+      if (!idErr) seen.add(norm);
+      persons.push({ name, idType, idNumber: norm });
+    }
+
+    const agreeErr = document.getElementById('bkAgree').checked ? '' : 'Please accept the booking terms to continue.';
+    document.getElementById('bkAgreeErr').textContent = agreeErr;
+    if (agreeErr && !first) first = 'bkAgree';
+
+    if (first){
+      const el = document.getElementById(first);
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.focus({ preventScroll: true });
+      return { ok: false };
+    }
+    const checkOut = bkComputeCheckout();
+    return {
+      ok: true, isDay, adults, kids, guests, persons, dur,
+      name: val('bkName').trim().replace(/\s+/g, ' '),
+      phone: normPhone(val('bkPhone')),
+      email: val('bkEmail').trim(),
+      moveIn: val('bkMoveIn'),
+      checkOut: localISO(checkOut)
+    };
+  }
+
+  async function submitBooking(){
+    if (bkSubmitting) return;
+    const errEl = document.getElementById('bookingError');
+    const v = bkValidate();
+    if (!v.ok){
+      errEl.textContent = 'Please correct the highlighted fields and try again.';
+      errEl.style.display = 'block';
       return;
     }
-    errorEl.style.display = 'none';
-    if (file && file.size > 5*1024*1024){ alert('That file is larger than 5 MB. Please choose a smaller file, or leave it blank and share your ID at check-in.'); return; }
-
+    errEl.style.display = 'none';
+    const btn = document.getElementById('bkSubmitBtn');
+    bkSubmitting = true;
+    btn.disabled = true;
+    btn.textContent = 'Confirming…';
     try{
-      const idCardUrl = await uploadIdFile(file, 'id-cards/bookings');
-      const booking = {name, phone, email, roomType, moveIn, guests, idCardUrl: idCardUrl || null, submittedAt: new Date().toISOString()};
-      const docRef = await addDoc(collection(db, 'bookings'), booking);
-      showBookingConfirmation({ id: docRef.id, ...booking });
+      const ref = makeRef();
+      const nowIso = new Date().toISOString();
+      const booking = {
+        name: v.name, phone: v.phone, email: v.email,
+        roomType: pendingBookRoom, stayType: v.isDay ? 'day' : 'month',
+        moveIn: v.moveIn, checkOut: v.checkOut,
+        ...(v.isDay ? { nights: v.dur } : { months: v.dur }),
+        adults: v.adults, kids: v.kids, guests: v.guests,
+        persons: v.persons.map(p => ({ name: p.name, idType: p.idType })),     // no ID numbers in the publicly-readable record
+        status: 'confirmed', termsAccepted: true, submittedAt: nowIso
+      };
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'bookings', ref), booking);
+      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons });   // ID numbers: admin-only
+      batch.set(doc(db, 'bookingLookup', v.phone), { refs: arrayUnion(ref), updatedAt: nowIso }, { merge: true });
+      await batch.commit();
+
+      const full = { id: ref, ...booking };
+      const mailSent = notifyAdminEmail(`New booking ${ref} — ${booking.roomType}`, {
+        bookingNumber: ref, name: v.name, phone: v.phone, email: v.email,
+        room: booking.roomType, stay: stayLabel(full),
+        checkIn: fmtDate(v.moveIn), checkOut: fmtDate(v.checkOut) + ' (by 10:00 AM)',
+        guests: guestsLabel(full),
+        idProofs: v.persons.map(p => `${p.name}: ${idLabel(p.idType)} ${maskId(p.idType, p.idNumber)}`).join(' | '),
+        status: 'confirmed'
+      });
+      showBookingConfirmation(full, v.persons);
+      mailSent.then(okMail => {
+        const el = document.getElementById('confMailNote');
+        if (el) el.textContent = okMail
+          ? 'CodeKasa has also been emailed your booking.'
+          : 'We could not email CodeKasa automatically, so please use the first WhatsApp button above to send us your booking details.';
+      });
     } catch(e){
       console.error(e);
-      alert('Something went wrong sending your booking. Please check your connection and try again.');
+      errEl.textContent = 'We could not complete your booking just now. Please check your connection and try again, or call +91 81068 12341.';
+      errEl.style.display = 'block';
+    } finally {
+      bkSubmitting = false;
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
     }
   }
-  function showBookingConfirmation(booking){
-    document.getElementById('bookingScreen').classList.add('hidden');
-    document.getElementById('bookingConfirmScreen').classList.remove('hidden');
-    document.getElementById('confRef').textContent = booking.id;
-    document.getElementById('confName').textContent = booking.name;
-    document.getElementById('confRoom').textContent = booking.roomType;
-    document.getElementById('confMoveIn').textContent = fmtDate(booking.moveIn);
+
+  function showBookingConfirmation(b, persons){
+    const month = b.stayType !== 'day';
+    const price = listedPrice(b.roomType);
+    const rows = [
+      ['Booking number', `<strong>${esc(b.id)}</strong>`],
+      ['Name', esc(b.name)],
+      ['Mobile', esc(b.phone)],
+      ['Room', esc(b.roomType)],
+      ['Check-in', `${esc(fmtDate(b.moveIn))} (from 2:00 PM)`],
+      ['Check-out', `${esc(fmtDate(b.checkOut))} (by 10:00 AM)`],
+      ['Stay', esc(stayLabel(b))],
+      ['Guests', esc(guestsLabel(b))],
+      ['ID proof', persons.map(p => `${esc(p.name)} — ${idLabel(p.idType)} ${esc(maskId(p.idType, p.idNumber))}`).join('<br>')]
+    ];
+    const termsBox = month
+      ? `<div class="info-box"><strong>Monthly stay terms</strong><ul>
+           <li>Minimum 3 months booking.</li>
+           <li>One month's rent as advance${price ? ' (' + rupee(price) + ')' : ''}, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</li>
+           <li>The advance is returned one week after you vacate the room.</li></ul></div>`
+      : '';
+    document.getElementById('confBody').innerHTML = `
+      <div class="ref-badge">${esc(b.id)}</div>
+      <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>
+      ${termsBox}
+      <div class="info-box warn"><strong>Please remember</strong><ul>
+        <li>Carry the original ID proof of every adult staying. If it does not match the number you gave at check-in, the booking is cancelled and <strong>no refund</strong> is given.</li>
+        <li>You can edit this booking online up to one week before check-in. Within one week, call +91 81068 12341.</li>
+        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li></ul></div>
+      <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, waAdminText(b, persons))}">Send booking details to CodeKasa on WhatsApp</a>
+      <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(b.phone, waGuestText(b))}">Send a confirmation copy to my WhatsApp</a>
+      <p class="hint" style="margin:8px 0 16px;">WhatsApp opens with the message ready — just tap Send. <span id="confMailNote">Sending your booking to CodeKasa by email…</span></p>
+      <button class="btn btn-rust" style="width:100%;" onclick="openManage('${b.id}')">View or edit this booking</button>
+      <a class="btn btn-outline btn-block" style="margin-top:10px;" href="index.html">Back to CodeKasa website</a>`;
+    showScreen('bookingConfirmScreen');
   }
 
-  function fmtDate(d){ if(!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }
+  // ---------- Retrieve / edit a booking ----------
+  let mgBookings = [];
+  let mgFlash = '';
+  function editState(b){
+    if (b.status !== 'confirmed') return { ok: false, why: `This booking is ${esc(b.status || 'not active')}.` };
+    const d = daysUntil(b.moveIn);
+    if (d === null) return { ok: false, why: 'This booking cannot be edited online.' };
+    if (d < 0) return { ok: false, why: 'This stay has already started or is complete.' };
+    if (d < CK.EDIT_LOCK_DAYS) return { ok: false, why: 'Your check-in is within one week, so changes can no longer be made online. Please call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.' };
+    return { ok: true };
+  }
+  function openManage(prefill){
+    document.getElementById('mgQuery').value = prefill || '';
+    document.getElementById('mgResults').innerHTML = '';
+    document.getElementById('mgError').textContent = '';
+    mgFlash = '';
+    showScreen('manageScreen');
+    if (prefill) findBookings();
+  }
+  async function findBookings(){
+    const q = val('mgQuery').trim();
+    const errEl = document.getElementById('mgError'), out = document.getElementById('mgResults'), btn = document.getElementById('mgFindBtn');
+    errEl.textContent = ''; out.innerHTML = ''; mgFlash = '';
+    const asRef = q.toUpperCase().replace(/\s/g, '');
+    let refs;
+    if (/^CK[A-Z0-9]{8}$/.test(asRef)) refs = [asRef];
+    else if (vPhone(q) === '') refs = null;
+    else { errEl.textContent = 'Enter your 10-digit mobile number, or a booking number starting with CK.'; return; }
+    btn.disabled = true; btn.textContent = 'Searching…';
+    try{
+      if (refs === null){
+        const snap = await getDoc(doc(db, 'bookingLookup', normPhone(q)));
+        refs = snap.exists() ? (snap.data().refs || []).slice(-10).reverse() : [];
+      }
+      const docs = await Promise.all(refs.map(r => getDoc(doc(db, 'bookings', r))));
+      mgBookings = docs.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
+      renderManageResults();
+    } catch(e){
+      console.error(e);
+      errEl.textContent = 'We could not look up your booking right now. Please check your connection and try again, or call +91 81068 12341.';
+    } finally { btn.disabled = false; btn.textContent = 'Find my booking'; }
+  }
+  function renderManageResults(){
+    const out = document.getElementById('mgResults');
+    const flash = mgFlash ? `<div class="confirm-msg" style="display:block;">${esc(mgFlash)}</div>` : '';
+    if (!mgBookings.length){
+      out.innerHTML = flash + `<div class="info-box warn">No booking was found for that mobile number or booking number. Please check it and try again, or call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</div>`;
+      return;
+    }
+    out.innerHTML = flash + mgBookings.map(b => {
+      const st = editState(b);
+      const action = st.ok
+        ? `<button class="btn btn-teal btn-sm" onclick="startEditBooking('${b.id}')">Edit dates</button><div id="mgEdit_${b.id}"></div>`
+        : `<div class="hint" style="margin-top:10px;">${st.why}</div>`;
+      return `<div class="booking-result">
+        <h4>Booking ${esc(b.id)} <span class="badge ${b.status === 'confirmed' ? 'badge-ok' : 'badge-bad'}">${esc(b.status || '')}</span></h4>
+        <table class="kv">
+          <tr><td>Name</td><td>${esc(b.name)}</td></tr>
+          <tr><td>Room</td><td>${esc(b.roomType)}</td></tr>
+          <tr><td>Check-in</td><td>${esc(fmtDate(b.moveIn))} (from 2:00 PM)</td></tr>
+          <tr><td>Check-out</td><td>${esc(fmtDate(b.checkOut))} (by 10:00 AM)</td></tr>
+          <tr><td>Stay</td><td>${b.stayType ? esc(stayLabel(b)) : '—'}</td></tr>
+          <tr><td>Guests</td><td>${esc(guestsLabel(b))}</td></tr>
+          <tr><td>ID proof</td><td>Submitted ✓ <span class="hint">(kept private)</span></td></tr>
+        </table>${action}</div>`;
+    }).join('');
+  }
+  function mgDurationOptions(b, selected){
+    const isDay = b.stayType === 'day';
+    let html = '';
+    if (isDay) for (let n = 1; n <= 30; n++) html += `<option value="${n}"${n === selected ? ' selected' : ''}>${n} night${n > 1 ? 's' : ''}</option>`;
+    else for (let m = CK.MIN_MONTHS; m <= 12; m++) html += `<option value="${m}"${m === selected ? ' selected' : ''}>${m} months</option>`;
+    return html;
+  }
+  function startEditBooking(ref){
+    const b = mgBookings.find(x => x.id === ref);
+    if (!b) return;
+    const w = bookingWindow();
+    const cur = b.stayType === 'day' ? Number(b.nights) : Number(b.months);
+    document.getElementById('mgEdit_' + ref).innerHTML = `<div class="mini-form">
+      <div class="field-row">
+        <div class="field"><label for="mgEditDate">New check-in date *</label><input type="date" id="mgEditDate" min="${localISO(w.min)}" max="${localISO(w.max)}" value="${esc(b.moveIn)}" oninput="mgEditPreview('${ref}')"></div>
+        <div class="field"><label for="mgEditDur">${b.stayType === 'day' ? 'Number of nights' : 'Stay duration'}</label><select id="mgEditDur" onchange="mgEditPreview('${ref}')">${mgDurationOptions(b, cur)}</select></div>
+      </div>
+      <div class="hint" id="mgEditOut" style="margin-bottom:10px;"></div>
+      <div class="field-err" id="mgEditErr" style="margin-bottom:8px;"></div>
+      <button class="btn btn-rust btn-sm" onclick="saveEditBooking('${ref}')">Save changes</button>
+      <button class="btn btn-outline btn-sm" onclick="cancelEditBooking('${ref}')">Close</button>
+      <p class="hint" style="margin:10px 0 8px;">You can change the check-in date and stay length. For anything else, please call CodeKasa.</p>
+    </div>`;
+    mgEditPreview(ref);
+  }
+  function mgEditOutDate(b){
+    const d = parseISO(val('mgEditDate'));
+    if (!d) return null;
+    const n = Number(val('mgEditDur')) || 0;
+    return b.stayType === 'day' ? addDays(d, n) : addMonths(d, n);
+  }
+  function mgEditPreview(ref){
+    const b = mgBookings.find(x => x.id === ref);
+    if (!b) return;
+    const out = vCheckIn(val('mgEditDate'), true) ? null : mgEditOutDate(b);
+    document.getElementById('mgEditOut').textContent = out ? `New check-out: ${longDate(out)} by 10:00 AM` : '';
+  }
+  function cancelEditBooking(ref){ const el = document.getElementById('mgEdit_' + ref); if (el) el.innerHTML = ''; }
+  async function saveEditBooking(ref){
+    const errEl = document.getElementById('mgEditErr');
+    errEl.textContent = '';
+    try{
+      const snap = await getDoc(doc(db, 'bookings', ref));
+      if (!snap.exists()){ errEl.textContent = 'This booking could not be found.'; return; }
+      const b = { id: snap.id, ...snap.data() };
+      if (!editState(b).ok){                     // re-check against the saved record, not the screen
+        const i = mgBookings.findIndex(x => x.id === ref); if (i >= 0) mgBookings[i] = b;
+        mgFlash = ''; renderManageResults(); return;
+      }
+      const newDate = val('mgEditDate');
+      const dateErr = vCheckIn(newDate, true);
+      if (dateErr){ errEl.textContent = dateErr; return; }
+      const dur = Number(val('mgEditDur'));
+      const isDay = b.stayType === 'day';
+      if (isDay ? vInt(dur, 1, 30, 'Nights') : (!Number.isInteger(dur) || dur < CK.MIN_MONTHS || dur > 12)){
+        errEl.textContent = isDay ? 'Please choose between 1 and 30 nights.' : `Monthly stays need ${CK.MIN_MONTHS} to 12 months.`;
+        return;
+      }
+      const out = isDay ? addDays(parseISO(newDate), dur) : addMonths(parseISO(newDate), dur);
+      const changes = { moveIn: newDate, checkOut: localISO(out), updatedAt: new Date().toISOString() };
+      if (isDay) changes.nights = dur; else changes.months = dur;
+      await updateDoc(doc(db, 'bookings', ref), changes);
+      const updated = { ...b, ...changes };
+      const i = mgBookings.findIndex(x => x.id === ref);
+      if (i >= 0) mgBookings[i] = updated;
+      mgFlash = `Your booking ${ref} has been updated.`;
+      notifyAdminEmail(`Booking ${ref} changed by guest`, {
+        bookingNumber: ref, name: updated.name, phone: updated.phone, email: updated.email, room: updated.roomType,
+        newCheckIn: fmtDate(updated.moveIn), newCheckOut: fmtDate(updated.checkOut), stay: stayLabel(updated)
+      });
+      renderManageResults();
+    } catch(e){
+      console.error(e);
+      errEl.textContent = 'We could not save your changes. Please try again, or call +91 81068 12341.';
+    }
+  }
+
+  // ---------- Admin: bookings list ----------
+  function idsFor(ref){ return bookingIdsCache.find(x => x.id === ref); }
+  function occupantsHtml(b){
+    const rec = idsFor(b.id);
+    const list = (rec && rec.persons) || b.persons || [];
+    let html = esc(guestsLabel(b));
+    html += list.map(p => `<br>${esc(p.name)} — ${idLabel(p.idType)}${p.idNumber ? ' <strong>' + esc(p.idNumber) + '</strong>' : ''}`).join('');
+    if (b.idCardUrl) html += `<br><button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View ID file</button>`;
+    return html;
+  }
+  function renderBookings(){
+    const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => `
+      <tr>
+        <td style="font-family:monospace; font-size:0.78rem;">${esc(b.id)}</td>
+        <td>${esc(b.name)}<br>${esc(b.phone)}<br>${esc(b.email)}</td>
+        <td>${esc(b.roomType)}</td>
+        <td>${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}<br>${b.stayType ? esc(stayLabel(b)) : ''}${b.updatedAt ? '<br><span class="badge badge-warn">Edited by guest</span>' : ''}</td>
+        <td>${occupantsHtml(b)}</td>
+        <td><span class="badge ${(b.status || 'confirmed') === 'confirmed' ? 'badge-ok' : 'badge-bad'}">${esc(b.status || 'confirmed')}</span></td>
+        <td>${esc(fmtDate(b.submittedAt))}</td>
+        <td class="actions-cell">
+          <button class="btn btn-teal btn-sm" onclick="whatsappGuest('${b.id}')">WhatsApp guest</button>
+          <button class="btn btn-blue btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="8" style="color:var(--muted);">No bookings yet.</td></tr>`;
+  }
+  function whatsappGuest(id){
+    const b = getBookings().find(x => x.id === id);
+    if (!b) return;
+    const phone = normPhone(b.phone);
+    if (vPhone(phone)){ alert('This booking has no valid mobile number.'); return; }
+    window.open(waLink(phone, waGuestText(b)), '_blank');
+  }
+  async function deleteBooking(id){
+    if (!confirm('Delete this booking record? This cannot be undone.')) return;
+    try{
+      await deleteDoc(doc(db, 'bookings', id));
+      try{ await deleteDoc(doc(db, 'bookingIds', id)); } catch(e){ /* may not exist for older bookings */ }
+    } catch(e){ console.error(e); alert('Could not delete this booking.'); }
+  }
+  function viewBookingId(id){
+    const b = getBookings().find(x => x.id === id);
+    if (!b || !b.idCardUrl) return;
+    window.open(b.idCardUrl, '_blank');
+  }
+
   function daysBetween(dateStr){
     const today = new Date(); today.setHours(0,0,0,0);
     const target = new Date(dateStr); target.setHours(0,0,0,0);
@@ -756,27 +1529,19 @@
     }
   }
   function enterVisitorView(){
-    if (pendingBookRoom){
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('bookingScreen').classList.remove('hidden');
-      document.getElementById('bookRoomTypeLabel').textContent = pendingBookRoom;
-      return;
-    }
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('visitorApp').classList.remove('hidden');
+    if (pendingBookRoom){ openBookingForm(pendingBookRoom); return; }
+    showScreen('visitorApp');
     renderVisitorRooms();
   }
   function logout(){
     signOut(auth).catch(() => {});
-    document.getElementById('adminApp').classList.add('hidden');
-    document.getElementById('visitorApp').classList.add('hidden');
-    document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('adminPassword').value = '';
     document.getElementById('loginError').style.display = 'none';
+    showScreen('loginScreen');
   }
 
   onAuthStateChanged(auth, (user) => {
-    if (pendingBookRoom) return;
+    if (pendingBookRoom || manageRequested) return;
     if (user){
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('adminApp').classList.remove('hidden');
@@ -841,10 +1606,10 @@
     const tbody = document.getElementById('roomsTableBody');
     tbody.innerHTML = rooms.map(r => `
       <tr>
-        <td>${r.number}</td>
-        <td>${r.type}</td>
+        <td>${esc(r.number)}</td>
+        <td>${esc(r.type)}</td>
         <td>₹${Number(r.price).toLocaleString('en-IN')}</td>
-        <td>${r.facilities || '—'}</td>
+        <td>${esc(r.facilities) || '—'}</td>
         <td><span class="badge ${r.status==='occupied' ? 'badge-bad' : 'badge-ok'}">${r.status==='occupied' ? 'Occupied' : 'Available'}</span></td>
         <td class="actions-cell">
           <button class="btn btn-outline btn-sm" onclick="editRoom('${r.id}')">Edit</button>
@@ -871,7 +1636,7 @@
     const grid = document.getElementById('occupancyGrid');
     grid.innerHTML = rooms.map(r => `
       <button class="room-tile ${r.status}" onclick="showRoomDetail('${r.id}')">
-        ${r.number}<small>${r.status==='occupied' ? 'Occupied' : 'Free'}</small>
+        ${esc(r.number)}<small>${r.status==='occupied' ? 'Occupied' : 'Free'}</small>
       </button>`).join('') || `<p style="color:var(--muted);">Add rooms first from the Rooms tab.</p>`;
     document.getElementById('occupancyDetail').innerHTML = 'Select a room above to see its status.';
     document.getElementById('occupancyDetail').classList.add('empty');
@@ -885,20 +1650,20 @@
       const tenant = getTenants().find(t => t.roomNumber === room.number);
       if (tenant){
         panel.innerHTML = `
-          <strong>Room ${room.number} — Occupied</strong><br>
-          Tenant: ${tenant.name} (${tenant.phone || 'no phone on file'})<br>
+          <strong>Room ${esc(room.number)} — Occupied</strong><br>
+          Tenant: ${esc(tenant.name)} (${esc(tenant.phone) || 'no phone on file'})<br>
           Stay: ${fmtDate(tenant.checkin)} → ${fmtDate(tenant.checkout)}<br>
           Rent: ₹${Number(tenant.rent).toLocaleString('en-IN')} · Paid: ₹${Number(tenant.paid).toLocaleString('en-IN')}<br>
           Extension requested: ${tenant.extend ? 'Yes' : 'No'}`;
       } else {
-        panel.innerHTML = `<strong>Room ${room.number} — marked occupied</strong>, but no tenant record found. Check the Tenants tab.`;
+        panel.innerHTML = `<strong>Room ${esc(room.number)} — marked occupied</strong>, but no tenant record found. Check the Tenants tab.`;
       }
     } else {
       panel.innerHTML = `
-        <strong>Room ${room.number} — Available</strong><br>
-        Type: ${room.type} · Price: ₹${Number(room.price).toLocaleString('en-IN')}/mo<br>
-        Facilities: ${room.facilities || '—'}<br>
-        <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${room.number}'; updateRentFromRoom();">Add tenant to this room</button>`;
+        <strong>Room ${esc(room.number)} — Available</strong><br>
+        Type: ${esc(room.type)} · Price: ₹${Number(room.price).toLocaleString('en-IN')}/mo<br>
+        Facilities: ${esc(room.facilities) || '—'}<br>
+        <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${esc(room.number)}'; updateRentFromRoom();">Add tenant to this room</button>`;
     }
   }
 
@@ -907,7 +1672,7 @@
     const rooms = getRooms();
     const select = document.getElementById('tenantRoom');
     const current = select.value;
-    select.innerHTML = rooms.map(r => `<option value="${r.number}">${r.number} — ${r.type} (₹${Number(r.price).toLocaleString('en-IN')})</option>`).join('');
+    select.innerHTML = rooms.map(r => `<option value="${esc(r.number)}">${esc(r.number)} — ${esc(r.type)} (₹${Number(r.price).toLocaleString('en-IN')})</option>`).join('');
     if (current) select.value = current;
     select.onchange = updateRentFromRoom;
     if (!editingTenantId) updateRentFromRoom();
@@ -1059,8 +1824,8 @@
 
     document.getElementById('billPanel').classList.remove('empty');
     document.getElementById('billPanel').innerHTML = `
-      <h3 style="margin-bottom:4px;">Bill — ${t.name}</h3>
-      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Room ${t.roomNumber} (${room ? room.type : '—'}) · ${t.stayType==='day' ? 'Day stay' : 'Month stay'} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}</p>
+      <h3 style="margin-bottom:4px;">Bill — ${esc(t.name)}</h3>
+      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Room ${esc(t.roomNumber)} (${room ? esc(room.type) : '—'}) · ${t.stayType==='day' ? 'Day stay' : 'Month stay'} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}</p>
       <table style="max-width:520px;">
         <tr><td>Rent</td><td style="text-align:right;">₹${rent.toLocaleString('en-IN')}</td></tr>
         <tr><td>Electricity ${hasReadings ? `(${units} units × ₹${rate})` : '(meter readings not entered)'}</td><td style="text-align:right;">₹${elecCharge.toLocaleString('en-IN')}</td></tr>
@@ -1088,8 +1853,8 @@
         else daysBadge = `<span class="badge badge-ok">${daysLeft}d left</span>`;
       }
       return `<tr>
-        <td>${t.name}</td>
-        <td>${t.roomNumber}</td>
+        <td>${esc(t.name)}</td>
+        <td>${esc(t.roomNumber)}</td>
         <td>${t.guests || 1}</td>
         <td>${t.stayType === 'day' ? 'Day stay' : 'Month stay'}</td>
         <td>${fmtDate(t.checkin)}</td>
@@ -1127,17 +1892,17 @@
 
     const upcoming = tenants.filter(t => t.checkout && daysBetween(t.checkout) >= 0 && daysBetween(t.checkout) <= 7);
     document.getElementById('upcomingCheckoutsBody').innerHTML = upcoming.map(t => `
-      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>${fmtDate(t.checkout)}</td><td>${t.extend ? 'Yes' : 'No'}</td></tr>
+      <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>${fmtDate(t.checkout)}</td><td>${t.extend ? 'Yes' : 'No'}</td></tr>
     `).join('') || `<tr><td colspan="4" style="color:var(--muted);">No checkouts in the next 7 days.</td></tr>`;
 
     const extensions = tenants.filter(t => t.extend);
     document.getElementById('extensionsBody').innerHTML = extensions.map(t => `
-      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>${fmtDate(t.checkout)}</td></tr>
+      <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>${fmtDate(t.checkout)}</td></tr>
     `).join('') || `<tr><td colspan="3" style="color:var(--muted);">No pending extension requests.</td></tr>`;
 
     const dues = tenants.filter(t => ((t.rent||0)-(t.paid||0)) > 0);
     document.getElementById('pendingDuesBody').innerHTML = dues.map(t => `
-      <tr><td>${t.name}</td><td>${t.roomNumber}</td><td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td><td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td><td>₹${((t.rent||0)-(t.paid||0)).toLocaleString('en-IN')}</td></tr>
+      <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td><td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td><td>₹${((t.rent||0)-(t.paid||0)).toLocaleString('en-IN')}</td></tr>
     `).join('') || `<tr><td colspan="5" style="color:var(--muted);">No pending dues.</td></tr>`;
   }
 
@@ -1146,8 +1911,8 @@
     const enquiries = [...getEnquiries()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     document.getElementById('enquiriesTableBody').innerHTML = enquiries.map(e => `
       <tr>
-        <td>${e.name}</td><td>${e.phone}</td><td>${e.email || '—'}</td><td>${e.roomType}</td><td>${fmtDate(e.moveIn)}</td>
-        <td>${e.guests || '—'}</td><td>${e.message || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
+        <td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.email) || '—'}</td><td>${esc(e.roomType)}</td><td>${fmtDate(e.moveIn)}</td>
+        <td>${e.guests || '—'}</td><td>${esc(e.message) || '—'}</td><td>${fmtDate(e.submittedAt)}</td>
         <td class="actions-cell">
           <button class="btn btn-teal btn-sm" onclick="bookFromRecord('enquiry', '${e.id}')">Book room</button>
           <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button>
@@ -1188,30 +1953,6 @@
   async function deleteEnquiry(id){
     try{ await deleteDoc(doc(db, 'enquiries', id)); } catch(e){ console.error(e); }
   }
-  function renderBookings(){
-    const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-    document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => `
-      <tr>
-        <td style="font-family:monospace; font-size:0.78rem;">${b.id}</td>
-        <td>${b.name}</td><td>${b.phone}</td><td>${b.email}</td><td>${b.roomType}</td>
-        <td>${fmtDate(b.moveIn)}</td><td>${b.guests}</td>
-        <td>${b.idCardUrl ? `<button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View</button>` : '—'}</td>
-        <td>${fmtDate(b.submittedAt)}</td>
-        <td class="actions-cell">
-          <button class="btn btn-teal btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button>
-        </td>
-      </tr>`).join('') || `<tr><td colspan="10" style="color:var(--muted);">No bookings yet.</td></tr>`;
-  }
-  async function deleteBooking(id){
-    try{ await deleteDoc(doc(db, 'bookings', id)); } catch(e){ console.error(e); }
-  }
-  function viewBookingId(id){
-    const b = getBookings().find(x => x.id===id);
-    if (!b || !b.idCardUrl) return;
-    window.open(b.idCardUrl, '_blank');
-  }
-
   // ---------- Staff ----------
   function renderStaffTab(){
     renderStaffTable();
@@ -1268,7 +2009,7 @@
     const staff = getStaff();
     document.getElementById('staffTableBody').innerHTML = staff.map(s => `
       <tr>
-        <td>${s.name}</td><td>${s.role}</td><td>${s.phone || '—'}</td><td>${fmtDate(s.joiningDate)}</td>
+        <td>${esc(s.name)}</td><td>${esc(s.role)}</td><td>${esc(s.phone) || '—'}</td><td>${fmtDate(s.joiningDate)}</td>
         <td>₹${Number(s.salary||0).toLocaleString('en-IN')}</td>
         <td><span class="badge ${s.status==='active' ? 'badge-ok' : 'badge-bad'}">${s.status==='active' ? 'Active' : 'Inactive'}</span></td>
         <td class="actions-cell">
@@ -1281,7 +2022,7 @@
   // ---------- Attendance ----------
   function renderAttendanceStaffOptions(){
     const staff = getStaff();
-    document.getElementById('attStaff').innerHTML = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+    document.getElementById('attStaff').innerHTML = staff.map(s => `<option value="${s.id}">${esc(s.name)} (${esc(s.role)})</option>`).join('');
   }
   async function submitAttendance(){
     const staffId = document.getElementById('attStaff').value;
@@ -1312,7 +2053,7 @@
   // ---------- Salary ----------
   function renderSalaryStaffOptions(){
     const staff = getStaff();
-    document.getElementById('salaryStaff').innerHTML = staff.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+    document.getElementById('salaryStaff').innerHTML = staff.map(s => `<option value="${s.id}">${esc(s.name)} (${esc(s.role)})</option>`).join('');
   }
   function generateSalaryStatement(){
     const staffId = document.getElementById('salaryStaff').value;
@@ -1332,8 +2073,8 @@
 
     panel.classList.remove('empty');
     panel.innerHTML = `
-      <h3 style="margin-bottom:4px;">${staff.name} — ${month}</h3>
-      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Joined ${fmtDate(staff.joiningDate)} · ${staff.role} · Monthly salary ₹${Number(staff.salary||0).toLocaleString('en-IN')}</p>
+      <h3 style="margin-bottom:4px;">${esc(staff.name)} — ${month}</h3>
+      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Joined ${fmtDate(staff.joiningDate)} · ${esc(staff.role)} · Monthly salary ₹${Number(staff.salary||0).toLocaleString('en-IN')}</p>
       <table style="max-width:520px;">
         <tr><td>Days in month</td><td style="text-align:right;">${daysInMonth}</td></tr>
         <tr><td>Days worked</td><td style="text-align:right;">${daysWorked}</td></tr>
@@ -1386,7 +2127,7 @@
   function renderExpensesTable(){
     const expenses = [...getExpenses()].sort((a,b) => new Date(b.date) - new Date(a.date));
     document.getElementById('expensesTableBody').innerHTML = expenses.map(e => `
-      <tr><td>${e.type}</td><td>₹${Number(e.amount).toLocaleString('en-IN')}</td><td>${fmtDate(e.date)}</td><td>${e.notes || '—'}</td>
+      <tr><td>${esc(e.type)}</td><td>₹${Number(e.amount).toLocaleString('en-IN')}</td><td>${fmtDate(e.date)}</td><td>${esc(e.notes) || '—'}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteExpense('${e.id}')">Delete</button></td></tr>`).join('')
         || `<tr><td colspan="5" style="color:var(--muted);">No expenses recorded yet.</td></tr>`;
   }
@@ -1411,27 +2152,37 @@
     const rooms = getRooms().filter(r => r.status !== 'occupied');
     document.getElementById('visitorRoomsGrid').innerHTML = rooms.map(r => `
       <div class="visitor-room-card">
-        <h3>${r.type}</h3>
+        <h3>${esc(r.type)}</h3>
         <div class="price">₹${Number(r.price).toLocaleString('en-IN')} / mo</div>
-        <div class="facilities">${r.facilities || 'Contact us for details'}</div>
+        <div class="facilities">${esc(r.facilities) || 'Contact us for details'}</div>
       </div>`).join('') || `<p style="color:var(--muted);">No rooms currently available — please send an enquiry and we'll notify you.</p>`;
   }
   async function submitEnquiry(){
-    const name = document.getElementById('visName').value.trim();
-    const phone = document.getElementById('visPhone').value.trim();
-    const moveIn = document.getElementById('visMoveIn').value;
-    const roomType = document.getElementById('visRoomType').value;
-    const message = document.getElementById('visMessage').value.trim();
-    if (!name || !phone){ alert('Please enter your name and phone number.'); return; }
+    let first = null;
+    for (const id of Object.keys(VIS_RULES)){
+      const msg = VIS_RULES[id]();
+      setFieldError(id, msg);
+      if (msg && !first) first = id;
+    }
+    if (first){ document.getElementById(first).focus(); return; }
 
+    const btn = document.getElementById('visSubmitBtn');
+    const name = val('visName').trim().replace(/\s+/g, ' ');
+    const phone = normPhone(val('visPhone'));
+    const email = val('visEmail').trim();
+    const moveIn = val('visMoveIn');
+    const roomType = val('visRoomType');
+    const message = val('visMessage').trim();
+    btn.disabled = true; btn.textContent = 'Sending…';
     try{
-      await addDoc(collection(db, 'enquiries'), { name, phone, moveIn, roomType, message, submittedAt: new Date().toISOString() });
+      await addDoc(collection(db, 'enquiries'), { name, phone, email, moveIn, roomType, message, source: 'visitor-portal', submittedAt: new Date().toISOString() });
+      notifyAdminEmail(`New enquiry from ${name} — ${roomType}`, {
+        name, phone, email: email || undefined, roomType, checkInDate: moveIn || 'Not specified', message: message || '(none)'
+      });
       document.getElementById('enquiryConfirm').style.display = 'block';
-      document.getElementById('visName').value = '';
-      document.getElementById('visPhone').value = '';
-      document.getElementById('visMoveIn').value = '';
-      document.getElementById('visMessage').value = '';
-    } catch(e){ console.error(e); alert('Something went wrong sending your enquiry. Please try again.'); }
+      ['visName','visPhone','visEmail','visMoveIn','visMessage'].forEach(id => { document.getElementById(id).value = ''; setFieldError(id, ''); });
+    } catch(e){ console.error(e); alert('Something went wrong sending your enquiry. Please try again, or call +91 81068 12341.'); }
+    finally { btn.disabled = false; btn.textContent = 'Send enquiry'; }
   }
 
   // ---------- Expose functions used by inline HTML event handlers ----------
@@ -1440,7 +2191,9 @@
     deleteStaff, editRoom, editStaff, editTenant, enterVisitorView, generateBill, generateSalaryStatement,
     logout, markSalaryPaid, onCheckinChange, onStayTypeChange, showRoomDetail, submitAttendance,
     submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
-    switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord
+    switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
+    openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
+    bkIdTypeChanged, whatsappGuest
   });
 </script>
 

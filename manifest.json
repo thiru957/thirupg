@@ -1,7 +1,7 @@
 {
   "name": "CodeKasa — A Luxury Living",
   "short_name": "CodeKasa",
-  "description": "Luxury PG accommodation in Carmelaram, Sarjapur Road, Bengaluru — rooms, pricing and booking.",
+  "description": "Luxury serviced apartments in Carmelaram, Sarjapur Road, Bengaluru — rooms, pricing and booking.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

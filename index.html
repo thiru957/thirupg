@@ -148,7 +148,7 @@
     cursor:pointer;
   }
 
-  @media (max-width:800px){
+  @media (max-width:1000px){
     .nav-links{
       position:absolute; top:100%; left:0; right:0;
       background:var(--paper);
@@ -159,7 +159,7 @@
       overflow:hidden;
       transition:max-height 0.25s ease;
     }
-    .nav-links.open{ max-height:320px; }
+    .nav-links.open{ max-height:420px; }
     .nav-links li{ border-top:1px solid var(--line); }
     .nav-links a{ display:block; padding:16px 28px; border-bottom:none; }
     .menu-btn{ display:block; }
@@ -234,6 +234,8 @@
   .btn-primary:hover{ background:#CBA872; }
   .btn-ghost{ border-color:rgba(255,255,255,0.5); color:var(--paper); background:transparent; }
   .btn-ghost:hover{ border-color:var(--paper); background:rgba(255,255,255,0.08); }
+  .btn-outline{ border-color:var(--rust); color:var(--ink); background:transparent; font-family:inherit; }
+  .btn-outline:hover{ background:var(--ivory); border-color:var(--pine); }
 
   @media (max-width:800px){
     .hero{ padding:110px 0 90px; min-height:auto; }
@@ -267,6 +269,17 @@
   .page-section{ display:none; }
   .page-section.active{ display:block; }
   .back-btn{ margin-bottom:20px; }
+  .policy-box{
+    margin-top:26px;
+    padding:20px 24px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:3px solid var(--rust);
+    border-radius:2px;
+  }
+  .policy-box h3{ font-size:1.05rem; margin-bottom:10px; }
+  .policy-box ul{ margin:0; padding-left:20px; color:var(--ink); font-size:0.92rem; line-height:1.7; }
+  .policy-box li + li{ margin-top:4px; }
   #homeDivider.hidden-nav{ display:none; }
 
   /* ---------- Facilities ---------- */
@@ -442,6 +455,8 @@
   input:focus, select:focus, textarea:focus{ border-color:var(--rust); }
   textarea{ resize:vertical; min-height:90px; }
   .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .field-err{ color:#C0392B; font-size:0.78rem; min-height:0; }
+  input.invalid, select.invalid, textarea.invalid{ border-color:#C0392B; }
   .form-note{ font-size:0.82rem; color:var(--muted); margin-top:2px; }
 
   .contact-side h3{ font-size:1.1rem; margin-bottom:14px; }
@@ -545,6 +560,7 @@
       <li><a href="#location" onclick="event.preventDefault(); showPage('location');">Location</a></li>
       <li><a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a></li>
       <li><a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a></li>
+      <li><a href="admin.html?manage=1">Manage Booking</a></li>
       <li><a href="admin.html">Login</a></li>
     </ul>
     <a href="#contact" class="nav-cta" onclick="event.preventDefault(); showPage('contact');">Enquire now</a>
@@ -554,9 +570,9 @@
 <section class="hero" id="top">
   <div class="wrap hero-content">
     <div class="hero-eyebrow">CodeKasa · A Luxury Living</div>
-    <h1>The Elevated PG Living</h1>
-    <p class="hero-sub">Just minutes away from the Sarjapur tech corridor</p>
-    <p>CodeKasa offers furnished single, family and shared rooms with kitchen access, daily housekeeping and round-the-clock security — a refined stay for professionals and students settling into a new city.</p>
+    <h1>Serviced Apartments, Made for Living Well</h1>
+    <p class="hero-sub">Fully furnished, fully looked after — minutes from the Sarjapur tech corridor</p>
+    <p>Step into elegantly furnished apartments where everything is taken care of: your own kitchen, high-speed WiFi, daily housekeeping, 24/7 security with CCTV, power backup, RO drinking water and attached bathrooms. Simply arrive, unpack and feel at home.</p>
     <div class="hero-actions">
       <a href="#rooms" class="btn btn-primary" onclick="event.preventDefault(); showPage('rooms');">See Rooms &amp; Pricing</a>
       <a href="#contact" class="btn btn-ghost" onclick="event.preventDefault(); showPage('contact');">Book a Visit</a>
@@ -626,7 +642,7 @@
     <div class="section-head">
       <div class="section-eyebrow">Rooms &amp; pricing</div>
       <h2>Choose the room that fits your stay</h2>
-      <p>All prices are per month; single and family rooms include kitchen access. A refundable deposit secures your room — pay online or in person.</p>
+      <p>All prices are per month; single and family rooms include kitchen access. Please read the stay terms and booking policies below before you book.</p>
     </div>
     <div class="room-list">
       <div class="room-row">
@@ -684,7 +700,14 @@
         <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Twin%20Sharing%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
     </div>
-    <p class="form-note" style="margin-top:18px;">Note: for monthly stays, one month's rent is required in advance to confirm your booking.</p>
+    <div class="policy-box">
+      <h3>Monthly stay terms</h3>
+      <ul>
+        <li><strong>Minimum 3 months</strong> booking is required for monthly stays.</li>
+        <li><strong>One month's rent as advance, plus ₹6,000 which is non-refundable.</strong></li>
+        <li>The advance is returned <strong>one week after you vacate</strong> the room.</li>
+      </ul>
+    </div>
 
     <div style="margin-top:52px;">
       <h3 style="font-size:1.25rem; margin-bottom:6px;">Day Stay (24 hours)</h3>
@@ -709,6 +732,18 @@
         <div class="room-price">Per day<strong>₹1,200</strong></div>
         <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Day%20Stay%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
+    </div>
+
+    <div class="policy-box">
+      <h3>Booking policies</h3>
+      <ul>
+        <li>A valid <strong>ID proof (Aadhaar number or passport number)</strong> is mandatory for every adult staying. It must belong to the person who is staying — if it does not match at check-in, the booking is cancelled and <strong>no refund is given</strong>.</li>
+        <li>Bookings can be made from today up to <strong>6 months ahead</strong>.</li>
+        <li>You can retrieve your booking with your mobile number or booking number, and <strong>edit it up to one week before check-in</strong>. Within one week of check-in, please call CodeKasa on +91 81068 12341 to make changes.</li>
+        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+        <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
+      </ul>
+      <p style="margin:14px 0 0;"><a href="admin.html?manage=1" class="btn btn-outline">Retrieve or edit my booking</a></p>
     </div>
   </div>
 </section>
@@ -778,17 +813,17 @@
   <div class="wrap">
     <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
     <div class="section-head">
-      <div class="section-eyebrow">Booking deposit</div>
+      <div class="section-eyebrow">Advance payment</div>
       <h2>Pay however suits you</h2>
-      <p>Secure your room with a refundable deposit — online in advance, or in person during your visit.</p>
+      <p>Pay the advance as per the stay terms on the Rooms page — online, by UPI, bank transfer, or in person during your visit.</p>
     </div>
   </div>
   <div class="wrap" style="padding:0;">
     <div class="pay-grid">
       <div class="pay-card">
         <h3>Pay online</h3>
-        <p>Pay your deposit securely by card, UPI or netbanking through our payment page.</p>
-        <a href="#upi-pay" class="btn btn-primary">Pay deposit online</a>
+        <p>Pay your advance securely by card, UPI or netbanking through our payment page.</p>
+        <a href="#upi-pay" class="btn btn-primary">Pay advance online</a>
       </div>
       <div class="pay-card" id="upi-pay">
         <h3>Scan &amp; pay via UPI</h3>
@@ -804,7 +839,7 @@
       </div>
       <div class="pay-card">
         <h3>Cash on visit</h3>
-        <p>Prefer to pay in person? Bring the deposit when you come see the room — no online step needed.</p>
+        <p>Prefer to pay in person? Bring the advance when you come see the room — no online step needed.</p>
         <a href="#contact" class="btn btn-ghost" style="border-color:var(--line); color:var(--ink);" onclick="event.preventDefault(); showPage('contact');">Schedule a visit</a>
       </div>
     </div>
@@ -820,15 +855,15 @@
       <p>Tell us what you're looking for and we'll reply within a day — or message us directly on WhatsApp.</p>
     </div>
     <div class="contact-grid">
-      <form id="enquiryForm" onsubmit="sendEnquiryEmail(event)">
+      <form id="enquiryForm" onsubmit="sendEnquiryEmail(event)" novalidate>
         <div class="field-row">
           <div class="field">
             <label for="name">Full name</label>
-            <input type="text" id="name" placeholder="Your name" required>
+            <input type="text" id="name" placeholder="Your name" maxlength="60" autocomplete="name">
           </div>
           <div class="field">
             <label for="phone">Phone number</label>
-            <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required>
+            <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="17" autocomplete="tel" inputmode="tel">
           </div>
         </div>
         <div class="field-row">
@@ -854,16 +889,16 @@
         <div class="field-row">
           <div class="field">
             <label for="enq-email">Email (optional)</label>
-            <input type="email" id="enq-email" placeholder="you@example.com">
+            <input type="email" id="enq-email" placeholder="you@example.com" maxlength="100" autocomplete="email">
           </div>
           <div class="field">
             <label for="enq-guests">Number of people</label>
-            <input type="number" id="enq-guests" min="1" value="1">
+            <input type="number" id="enq-guests" min="1" max="10" value="1">
           </div>
         </div>
         <div class="field">
           <label for="message">Message (optional)</label>
-          <textarea id="message" placeholder="Anything else we should know?"></textarea>
+          <textarea id="message" placeholder="Anything else we should know?" maxlength="500"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" id="enqSubmitBtn" style="align-self:flex-start;">Send enquiry</button>
         <div id="enquiryStatus" role="status" style="display:none; padding:12px 14px; border-radius:3px; font-size:0.9rem;"></div>
@@ -933,9 +968,143 @@
   const flashClose = document.getElementById('flashClose');
   flashClose.addEventListener('click', () => flashBanner.classList.add('hidden'));
 
-  // ---------- Enquiry form: saves to Firebase + emails info@codekasa.com ----------
-  // Paste your Formspree endpoint here (looks like https://formspree.io/f/abcdwxyz).
-  // Until you do, enquiries are still saved to the admin dashboard, but no email is sent.
+  // VALIDATORS START
+  const CK = {
+    ADMIN_PHONE: '8106812341',
+    NON_REFUNDABLE: 6000,
+    MIN_MONTHS: 3,
+    MAX_BOOK_MONTHS: 6,
+    EDIT_LOCK_DAYS: 7
+  };
+
+  // ----- dates (all local-time, never UTC, so IST users never see an off-by-one day) -----
+  function localISO(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function parseISO(s){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if (!m) return null;
+    const d = new Date(+m[1], +m[2]-1, +m[3]);
+    return (d.getFullYear() === +m[1] && d.getMonth() === +m[2]-1 && d.getDate() === +m[3]) ? d : null;
+  }
+  function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function addMonths(d, n){
+    const first = new Date(d.getFullYear(), d.getMonth() + n, 1);
+    const lastDay = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+    first.setDate(Math.min(d.getDate(), lastDay));
+    return first;
+  }
+  function bookingWindow(now){
+    const today = startOfDay(now || new Date());
+    return { min: today, max: addMonths(today, CK.MAX_BOOK_MONTHS) };
+  }
+  function daysUntil(dateStr, now){
+    const d = parseISO(dateStr);
+    if (!d) return null;
+    return Math.round((d - startOfDay(now || new Date())) / 86400000);
+  }
+  function longDate(d){
+    return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  // ----- field validators: each returns '' when valid, otherwise a message -----
+  function vName(v){
+    v = (v || '').trim().replace(/\s+/g, ' ');
+    if (!v) return 'Please enter the full name.';
+    if (v.length < 2) return 'Name is too short.';
+    if (v.length > 60) return 'Name is too long (60 characters max).';
+    if (!/^[\p{L}][\p{L} .'-]*$/u.test(v)) return "Name can contain only letters, spaces and . ' -";
+    return '';
+  }
+  function normPhone(v){
+    let s = String(v || '').replace(/[\s\-().]/g, '');
+    if (s.startsWith('+91')) s = s.slice(3);
+    else if (s.startsWith('0091')) s = s.slice(4);
+    else if (s.length === 12 && s.startsWith('91')) s = s.slice(2);
+    else if (s.length === 11 && s.startsWith('0')) s = s.slice(1);
+    return s;
+  }
+  function vPhone(v){
+    if (!String(v || '').trim()) return 'Please enter a mobile number.';
+    const s = normPhone(v);
+    if (!/^\d+$/.test(s)) return 'Mobile number can contain digits only.';
+    if (s.length !== 10) return 'Enter a 10-digit mobile number.';
+    if (!/^[6-9]/.test(s)) return 'Indian mobile numbers start with 6, 7, 8 or 9.';
+    if (/^(\d)\1{9}$/.test(s)) return 'Please enter a valid mobile number.';
+    return '';
+  }
+  function vEmail(v, required){
+    v = (v || '').trim();
+    if (!v) return required ? 'Please enter an email address.' : '';
+    if (v.length > 100) return 'Email address is too long.';
+    if (/\s/.test(v) || /\.\./.test(v)) return 'Please enter a valid email address.';
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) return 'Please enter a valid email address, e.g. name@example.com.';
+    return '';
+  }
+  function normId(type, v){
+    v = String(v || '');
+    return type === 'aadhaar' ? v.replace(/[\s-]/g, '') : v.replace(/\s/g, '').toUpperCase();
+  }
+  function vId(type, v){
+    const s = normId(type, v);
+    if (!s) return type === 'aadhaar' ? 'Please enter the Aadhaar number.' : 'Please enter the passport number.';
+    if (type === 'aadhaar'){
+      if (!/^\d+$/.test(s)) return 'Aadhaar number must contain digits only.';
+      if (s.length !== 12) return 'Aadhaar number must be exactly 12 digits.';
+      if (!/^[2-9]/.test(s)) return 'A valid Aadhaar number cannot start with 0 or 1.';
+      return '';
+    }
+    if (!/^[A-Z0-9]{6,9}$/.test(s) || !/\d/.test(s)) return 'Enter a valid passport number (6–9 letters/digits, e.g. A1234567).';
+    return '';
+  }
+  function vInt(v, min, max, label){
+    const n = Number(v);
+    if (!Number.isInteger(n) || n < min || n > max) return `${label} must be between ${min} and ${max}.`;
+    return '';
+  }
+  // required=false lets the enquiry form leave the date blank
+  function vCheckIn(str, required, now){
+    if (!str) return required ? 'Please select a check-in date.' : '';
+    const d = parseISO(str);
+    if (!d) return 'Please enter a valid date.';
+    const w = bookingWindow(now);
+    if (d < w.min) return 'Check-in date cannot be in the past.';
+    if (d > w.max) return `Bookings can be made up to 6 months ahead (latest ${longDate(w.max)}).`;
+    return '';
+  }
+
+  // ----- display helpers -----
+  function maskId(type, v){
+    const s = normId(type, v);
+    if (type === 'aadhaar') return 'XXXX XXXX ' + s.slice(-4);
+    return s.length > 3 ? '*'.repeat(s.length - 3) + s.slice(-3) : s;
+  }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  // ----- room / stay rules -----
+  function roomKind(type){
+    type = type || '';
+    if (/^Single/.test(type)) return 'single';
+    if (/^Family/.test(type)) return 'family';
+    if (/^Twin/.test(type)) return 'twin';
+    if (/^Day/.test(type)) return 'day';
+    return 'other';
+  }
+  function stayTypeOf(type){ return roomKind(type) === 'day' ? 'day' : 'month'; }
+  function makeRef(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const buf = new Uint32Array(8);
+    (globalThis.crypto || window.crypto).getRandomValues(buf);
+    let out = 'CK';
+    for (const n of buf) out += chars[n % chars.length];
+    return out;
+  }
+  // VALIDATORS END
+
+  // ---------- Enquiry form: validates, saves to Firebase + emails info@codekasa.com ----------
   const EMAIL_ENDPOINT = "https://formspree.io/f/mzezkqko";
 
   const FIREBASE_CONFIG = {
@@ -947,6 +1116,14 @@
     appId: "1:725605223433:web:fd9a635676e810eba57cd8"
   };
 
+  function setFieldError(id, msg){
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('invalid', !!msg);
+    let err = el.parentElement.querySelector('.field-err');
+    if (!err){ err = document.createElement('div'); err.className = 'field-err'; el.parentElement.appendChild(err); }
+    err.textContent = msg || '';
+  }
   function showEnquiryStatus(text, ok){
     const el = document.getElementById('enquiryStatus');
     el.textContent = text;
@@ -954,22 +1131,48 @@
     el.style.background = ok ? '#E4F6EB' : '#FBE7E7';
     el.style.color = ok ? '#1F9D55' : '#D64545';
   }
+  const ENQ_RULES = {
+    'name':       () => vName(document.getElementById('name').value),
+    'phone':      () => vPhone(document.getElementById('phone').value),
+    'enq-email':  () => vEmail(document.getElementById('enq-email').value, false),
+    'move-in':    () => vCheckIn(document.getElementById('move-in').value, false),
+    'enq-guests': () => vInt(document.getElementById('enq-guests').value, 1, 10, 'Number of people'),
+    'message':    () => document.getElementById('message').value.length > 500 ? 'Message is too long (500 characters max).' : ''
+  };
+  function validateEnquiry(){
+    let firstBad = null;
+    for (const id of Object.keys(ENQ_RULES)){
+      const msg = ENQ_RULES[id]();
+      setFieldError(id, msg);
+      if (msg && !firstBad) firstBad = id;
+    }
+    if (firstBad) document.getElementById(firstBad).focus();
+    return !firstBad;
+  }
+  (function initEnquiryForm(){
+    const w = bookingWindow();
+    const d = document.getElementById('move-in');
+    d.min = localISO(w.min);
+    d.max = localISO(w.max);
+    Object.keys(ENQ_RULES).forEach(id => {
+      document.getElementById(id).addEventListener('blur', () => setFieldError(id, ENQ_RULES[id]()));
+    });
+  })();
 
   async function sendEnquiryEmail(event){
     event.preventDefault();
     const btn = document.getElementById('enqSubmitBtn');
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
+    if (!validateEnquiry()){
+      showEnquiryStatus('Please correct the highlighted fields and try again.', false);
+      return;
+    }
+    const name = document.getElementById('name').value.trim().replace(/\s+/g, ' ');
+    const phone = normPhone(document.getElementById('phone').value);
     const email = document.getElementById('enq-email').value.trim();
-    const guests = parseInt(document.getElementById('enq-guests').value) || 1;
+    const guests = parseInt(document.getElementById('enq-guests').value, 10) || 1;
     const roomType = document.getElementById('room-type').value;
     const moveIn = document.getElementById('move-in').value;
     const message = document.getElementById('message').value.trim();
-
-    if (!name || !phone){
-      showEnquiryStatus('Please enter your name and phone number.', false);
-      return;
-    }
 
     btn.disabled = true;
     btn.textContent = 'Sending…';
@@ -1012,6 +1215,7 @@
       showEnquiryStatus(`Thank you, ${name}! Your enquiry has been received — we'll contact you shortly.`, true);
       document.getElementById('enquiryForm').reset();
       document.getElementById('enq-guests').value = '1';
+      Object.keys(ENQ_RULES).forEach(id => setFieldError(id, ''));
     } else {
       showEnquiryStatus("Sorry, we couldn't send your enquiry just now. Please call or WhatsApp us on +91 81068 12341 or email info@codekasa.com.", false);
     }
