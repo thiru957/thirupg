@@ -1,11 +1,12 @@
 // CodeKasa service worker: makes the site installable and lets it open offline.
-const CACHE_NAME = "codekasa-cache-v7";
+const CACHE_NAME = "codekasa-cache-v8";
 const ASSETS_TO_CACHE = [
   "./index.html", "./admin.html",
   "./manifest.json", "./manifest-admin.json",
   "./building.jpg", "./upi-qr.png", "./room-tour.mp4",
   "./icon-180.png", "./icon-192.png", "./icon-512.png",
-  "./icon-maskable-192.png", "./icon-maskable-512.png"
+  "./icon-maskable-192.png", "./icon-maskable-512.png",
+  "./screenshot-home-narrow.jpg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -33,13 +34,20 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
 
+  // Installer downloads (APK, MSIX, EXE, DMG, IPA…) and the apps.json list go straight to the network:
+  // large files must never be copied into the cache, and the list must always be fresh.
+  const path = new URL(event.request.url).pathname;
+  if (/\.(apk|aab|msix|msixbundle|appx|appxbundle|exe|msi|dmg|pkg|deb|rpm|appimage|ipa|zip)$/i.test(path) || /\/apps\.json$/i.test(path)) return;
+
   const isPage = event.request.mode === "navigate" || event.request.url.split("?")[0].endsWith(".html");
   if (isPage) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          if (response.ok) {                      // never keep error pages (404 etc.) for offline use
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
           return response;
         })
         .catch(() =>

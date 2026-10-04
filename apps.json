@@ -1,0 +1,23 @@
+{
+  "_readme": "Fill in a platform to show a Download / store button for it on the website's 'Get the app' page. Use a file path in your site (e.g. CodeKasa.apk) and/or a store link (https://...). Leave \"\" to hide.",
+  "android": {
+    "file": "",
+    "store": ""
+  },
+  "ios": {
+    "file": "",
+    "store": ""
+  },
+  "windows": {
+    "file": "",
+    "store": ""
+  },
+  "mac": {
+    "file": "",
+    "store": ""
+  },
+  "linux": {
+    "file": "",
+    "store": ""
+  }
+}

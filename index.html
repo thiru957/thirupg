@@ -93,7 +93,9 @@
     justify-content:space-between;
     padding:18px 28px;
   }
-  .brand{ font-size:1.4rem; letter-spacing:0.01em; }
+  .wrap.nav{ max-width:1240px; }
+  .brand{ font-size:1.4rem; letter-spacing:0.01em; white-space:nowrap; }
+  .brand-link{ flex:none; }
   .brand-link{
     display:inline-flex;
     align-items:center;
@@ -115,7 +117,7 @@
   .brand span{ color:var(--rust); }
   .nav-links{
     display:flex;
-    gap:30px;
+    gap:22px;
     list-style:none;
     margin:0; padding:0;
     font-size:0.78rem;
@@ -128,19 +130,25 @@
     padding-bottom:3px;
     border-bottom:1px solid transparent;
     font-weight:500;
+    white-space:nowrap;
   }
   .nav-links a:hover{ border-bottom-color:var(--rust); }
   .nav-cta{
     display:inline-block;
-    background:var(--pine);
-    color:var(--paper);
+    flex:none;
+    background:var(--rust);
+    color:#1A1714;
     text-decoration:none;
-    padding:9px 18px;
-    border-radius:2px;
-    font-size:0.92rem;
+    padding:12px 22px;
+    border:1px solid transparent;
+    border-radius:1px;
     font-weight:500;
+    font-size:0.78rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    white-space:nowrap;
   }
-  .nav-cta:hover{ background:var(--pine-deep); }
+  .nav-cta:hover{ background:#CBA872; }
   .menu-btn{
     display:none;
     background:none; border:none;
@@ -149,7 +157,7 @@
     cursor:pointer;
   }
 
-  @media (max-width:1000px){
+  @media (max-width:1140px){
     .nav-links{
       position:absolute; top:100%; left:0; right:0;
       background:var(--paper);
@@ -270,6 +278,16 @@
   .page-section{ display:none; }
   .page-section.active{ display:block; }
   .back-btn{ margin-bottom:20px; }
+  /* ---------- Get-the-app page ---------- */
+  .app-cards{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }
+  .app-card{ background:var(--paper); border:1px solid var(--line); border-radius:2px; padding:20px; display:flex; flex-direction:column; gap:10px; }
+  .app-card.mine{ border-color:var(--rust); border-top:3px solid var(--rust); box-shadow:0 6px 22px rgba(0,0,0,0.07); }
+  .app-card h3{ font-size:1.05rem; margin:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .app-card .badge-mine{ font-family:'Work Sans',sans-serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; background:var(--rust); color:#1A1714; padding:3px 8px; border-radius:20px; font-weight:600; }
+  .app-card p{ margin:0; font-size:0.88rem; color:var(--muted); line-height:1.55; }
+  .app-card .app-actions{ display:flex; flex-direction:column; gap:8px; margin-top:auto; padding-top:6px; }
+  .app-card .btn{ text-align:center; padding:12px 18px; width:100%; }
+
   /* ---------- Install-as-app banner ---------- */
   .install-bar{ position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:70; width:min(560px, calc(100% - 24px)); display:flex; align-items:center; gap:12px; background:var(--pine-deep); color:var(--paper); border:1px solid rgba(232,207,160,0.35); border-radius:6px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,0.35); }
   .install-bar.hidden, .install-modal.hidden{ display:none !important; }
@@ -594,7 +612,7 @@
       <li><a href="admin.html?manage=1">Manage Booking</a></li>
       <li><a href="admin.html">Login</a></li>
     </ul>
-    <a href="#contact" class="nav-cta" onclick="event.preventDefault(); showPage('contact');">Enquire now</a>
+    <a href="#contact" class="nav-cta" onclick="event.preventDefault(); showPage('contact');">Enquire Now</a>
   </div>
 </header>
 
@@ -841,6 +859,28 @@
   </div>
 </section>
 
+<section id="app" class="page-section">
+  <div class="wrap">
+    <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
+    <div class="section-head">
+      <div class="section-eyebrow">Get the app</div>
+      <h2>CodeKasa on every device</h2>
+      <p>Open CodeKasa from your home screen or desktop in its own window, with its own icon. View rooms, book, pay and manage your stay in a couple of taps.</p>
+    </div>
+    <div id="appInstalledNote" class="policy-box hidden-nav" style="margin-top:0; margin-bottom:20px;"><strong>✓ You are already using the CodeKasa app on this device.</strong></div>
+    <div id="appCards" class="app-cards"></div>
+    <div class="policy-box">
+      <h3>What you get</h3>
+      <ul>
+        <li>Opens from its own icon, full screen, without browser bars.</li>
+        <li>Home-screen shortcuts to <strong>Rooms</strong>, <strong>My booking</strong>, <strong>Payment</strong> and <strong>Contact</strong> (long-press the icon on Android and desktop).</li>
+        <li>Still opens when your signal is weak. Booking and payment need an internet connection.</li>
+        <li>Always up to date: it updates itself whenever we improve the site.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <section id="payment" class="page-section">
   <div class="wrap">
     <button class="btn btn-outline back-btn" onclick="showHome()">&larr; Back to Home</button>
@@ -981,7 +1021,7 @@
           <a href="#facilities" onclick="event.preventDefault(); showPage('facilities');">Facilities</a>
           <a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a>
           <a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a>
-          <a href="#" id="footerInstall" onclick="event.preventDefault(); openInstall();">Install app</a>
+          <a href="#app" id="footerInstall" onclick="event.preventDefault(); showPage('app');">Get the app</a>
         </div>
       </div>
       <div>
@@ -1280,6 +1320,7 @@
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) target.classList.add('active');
+    if (id === 'app' && window.__ckRenderApp) window.__ckRenderApp();
     document.getElementById('top').style.display = 'none';
     document.getElementById('homeDivider').classList.add('hidden-nav');
     window.scrollTo({top:0, behavior:'instant'});
@@ -1353,10 +1394,58 @@
     }
 
     window.__ckInstall = install;
-    if (standalone()){ if (footerLink) footerLink.classList.add('hidden-nav'); return; }       // already running as an installed app
 
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; maybeShowBar(); });
-    window.addEventListener('appinstalled', () => { deferred = null; setBar(false); if (footerLink) footerLink.classList.add('hidden-nav'); });
+    // ----- "Get the app" page -----
+    const device = isIOS ? 'ios' : (isAndroid ? 'android' : (/Windows/.test(ua) ? 'windows' : (/Macintosh/.test(ua) ? 'mac' : (/CrOS|Linux|X11/.test(ua) ? 'linux' : 'other'))));
+    const PLATFORMS = [
+      { key: 'android', name: 'Android phones & tablets', text: 'Install from Chrome, Edge or Samsung Internet in one tap.' },
+      { key: 'ios',     name: 'iPhone & iPad',            text: 'Add CodeKasa to your Home Screen from Safari. Apple does not let any website install an app with one tap, so this takes three quick steps.' },
+      { key: 'windows', name: 'Windows',                  text: 'Install from Edge or Chrome in one click. It gets its own window and a Start menu entry.' },
+      { key: 'mac',     name: 'Mac',                      text: 'Chrome or Edge: one click. Safari 17 or newer: File → Add to Dock.' },
+      { key: 'linux',   name: 'Linux & Chromebook',       text: 'Install from Chrome or Edge in one click.' }
+    ];
+    let apps = {};
+    // only plain relative paths or https links are accepted from apps.json
+    function safeUrl(u){
+      if (typeof u !== 'string' || !u.trim()) return '';
+      u = u.trim();
+      if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return /^https:\/\//i.test(u) ? u : '';
+      return (!u.startsWith('//') && /^[\w./%~+-]+$/.test(u)) ? u : '';
+    }
+    function appCardHtml(p){
+      const mine = p.key === device, a = apps[p.key] || {};
+      const file = safeUrl(a.file), store = safeUrl(a.store);
+      const actions = [];
+      if (mine && !standalone()){
+        actions.push(deferred ? '<button type="button" class="btn btn-primary" data-act="install">Install now</button>'
+                              : '<button type="button" class="btn btn-primary" data-act="how">Show me how</button>');
+      }
+      if (store) actions.push(`<a class="btn btn-outline" href="${store}" target="_blank" rel="noopener">Get it from the store</a>`);
+      if (file) actions.push(`<a class="btn btn-outline" href="${file}" download>Download the installer</a>`);
+      const note = mine ? '' : (actions.length ? '' : '<p style="font-size:0.8rem;">Open <strong>codekasa.com</strong> on this kind of device to install.</p>');
+      return `<div class="app-card${mine ? ' mine' : ''}" data-platform="${p.key}"><h3>${p.name}${mine ? '<span class="badge-mine">Your device</span>' : ''}</h3><p>${p.text}</p>${note}<div class="app-actions">${actions.join('')}</div></div>`;
+    }
+    function renderAppPage(){
+      const list = PLATFORMS.slice().sort((x, y) => (y.key === device) - (x.key === device));
+      document.getElementById('appCards').innerHTML = list.map(appCardHtml).join('');
+      document.getElementById('appInstalledNote').classList.toggle('hidden-nav', !standalone());
+    }
+    window.__ckRenderApp = async function(){
+      renderAppPage();
+      try { const r = await fetch('apps.json', { cache: 'no-store' }); if (r.ok){ apps = await r.json(); renderAppPage(); } } catch(e){ /* no installers published yet */ }
+    };
+    document.getElementById('appCards').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      if (b.dataset.act === 'install') install(); else openHelp();
+    });
+
+    if (standalone()) return;                                   // already running as an installed app: no banner
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferred = e; maybeShowBar();
+      if (document.getElementById('app').classList.contains('active')) renderAppPage();     // turn "Show me how" into a real "Install now" button
+    });
+    window.addEventListener('appinstalled', () => { deferred = null; setBar(false); renderAppPage(); });
     btn.addEventListener('click', install);
     closeBtn.addEventListener('click', () => { snooze(); setBar(false); });
     helpClose.addEventListener('click', closeHelp);
