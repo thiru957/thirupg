@@ -1,12 +1,13 @@
 // CodeKasa service worker: makes the site installable and lets it open offline.
-const CACHE_NAME = "codekasa-cache-v8";
+const CACHE_NAME = "codekasa-cache-v9";
 const ASSETS_TO_CACHE = [
   "./index.html", "./admin.html",
   "./manifest.json", "./manifest-admin.json",
   "./building.jpg", "./upi-qr.png", "./room-tour.mp4",
   "./icon-180.png", "./icon-192.png", "./icon-512.png",
   "./icon-maskable-192.png", "./icon-maskable-512.png",
-  "./screenshot-home-narrow.jpg"
+  "./screenshot-home-narrow.jpg",
+  "./qr-location.png", "./qr-app.png"
 ];
 
 self.addEventListener("install", (event) => {

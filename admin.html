@@ -271,6 +271,7 @@
 <!-- ================= LOGIN SCREEN ================= -->
 <div id="loginScreen">
   <div class="login-card">
+    <div style="text-align:right; margin:-6px 0 8px;"><a class="btn btn-outline btn-sm" id="loginHomeBtn" href="index.html">&larr; Home</a></div>
     <div class="login-brand">
       <span class="namam-mark" aria-hidden="true">
         <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
@@ -497,7 +498,7 @@
         </span>
         <span class="brand">Code<span style="color:#E5342E;">K</span>asa — Admin</span>
       </div>
-      <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Log out</button>
+      <div style="display:flex; gap:8px;"><a class="btn btn-outline" id="adminHomeBtn" style="color:#fff; border-color:rgba(255,255,255,0.4);" href="index.html">Home</a><button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Log out</button></div>
     </div>
   </div>
 
@@ -505,7 +506,6 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="rooms" onclick="switchTab('rooms')">Rooms</button>
       <button class="tab-btn" data-tab="occupancy" onclick="switchTab('occupancy')">Occupancy</button>
-      <button class="tab-btn" data-tab="availability" onclick="switchTab('availability')">Availability</button>
       <button class="tab-btn" data-tab="tenants" onclick="switchTab('tenants')">Tenants</button>
       <button class="tab-btn" data-tab="staff" onclick="switchTab('staff')">Staff</button>
       <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">Expenses</button>
@@ -563,25 +563,21 @@
 
     <!-- OCCUPANCY TAB -->
     <div class="tab-panel" id="tab-occupancy">
-      <div class="stat-grid" id="occupancyStats"></div>
       <div class="card">
-        <h3>Click a room to see details</h3>
-        <div class="room-grid" id="occupancyGrid"></div>
-        <div class="detail-panel empty" id="occupancyDetail">Select a room above to see its status.</div>
-      </div>
-    </div>
-
-    <!-- AVAILABILITY TAB -->
-    <div class="tab-panel" id="tab-availability">
-      <div class="card">
-        <h3>Room availability</h3>
-        <p class="hint" style="margin:0 0 12px;">Green rooms are free for the whole period; red rooms have a confirmed booking or a tenant on those dates. Check-out and check-in on the same day are allowed.</p>
+        <h3>Occupancy &amp; availability</h3>
+        <p class="hint" style="margin:0 0 12px;">Pick the dates to see how many rooms are free or taken for exactly that period. For a single night choose tomorrow as the check-out date. Check-out and check-in on the same day are allowed.</p>
         <div class="form-grid">
           <div class="field"><label for="avFrom">From (check-in)</label><input type="date" id="avFrom"></div>
           <div class="field"><label for="avTo">To (check-out)</label><input type="date" id="avTo"></div>
-          <div class="field"><button class="btn btn-rust" onclick="renderAvailability()">Show availability</button></div>
+          <div class="field"><button class="btn btn-rust" id="occSearchBtn" onclick="renderOccupancy()">Search</button></div>
+          <div class="field"><button class="btn btn-outline" onclick="occToday()">Tonight</button></div>
         </div>
+      </div>
+      <div class="stat-grid" id="occupancyStats"></div>
+      <div class="card">
+        <h3>Rooms for this period <span class="hint" style="font-weight:400;">(click a room to see who is staying)</span></h3>
         <div id="avBody"></div>
+        <div class="detail-panel empty" id="occupancyDetail">Click a room above to see who is staying.</div>
       </div>
     </div>
 
@@ -620,12 +616,20 @@
       </div>
       <div class="card">
         <h3>Current tenants</h3>
+        <div class="form-grid" style="margin-bottom:6px;">
+          <div class="field"><label for="tnFrom">Who is staying between</label><input type="date" id="tnFrom"></div>
+          <div class="field"><label for="tnTo">and (included)</label><input type="date" id="tnTo"></div>
+          <div class="field"><button class="btn btn-rust" id="tnShowBtn" onclick="applyTenantRange()">Show who is staying</button></div>
+          <div class="field"><button class="btn btn-outline" onclick="clearTenantRange()">Show all</button></div>
+        </div>
+        <div class="hint" id="tenantRangeNote" style="margin-bottom:10px;"></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Name</th><th>Room</th><th>Guests</th><th>Stay type</th><th>Check-in</th><th>Checkout</th><th>Days left</th><th>Rent</th><th>Paid</th><th>Due</th><th>ID</th><th>Extend?</th><th>Actions</th></tr></thead>
             <tbody id="tenantsTableBody"></tbody>
           </table>
         </div>
+        <div id="tenantRangeBookings"></div>
       </div>
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -742,22 +746,59 @@
 
     <!-- REPORTS TAB -->
     <div class="tab-panel" id="tab-reports">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="margin:0;">Lodge reports</h3>
-        <button class="btn btn-outline" onclick="window.print()">Print reports</button>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+          <h3 style="margin:0;">Lodge reports</h3>
+          <button class="btn btn-outline" onclick="window.print()">Print reports</button>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label for="rpFrom">From</label><input type="date" id="rpFrom"></div>
+          <div class="field"><label for="rpTo">To (included)</label><input type="date" id="rpTo"></div>
+          <div class="field"><button class="btn btn-rust" id="rpShowBtn" onclick="renderReports()">Show report</button></div>
+        </div>
+        <div class="btn-row" style="margin:8px 0 0;">
+          <button class="btn btn-outline btn-sm" onclick="rpPreset('today')">Today</button>
+          <button class="btn btn-outline btn-sm" onclick="rpPreset('last7')">Last 7 days</button>
+          <button class="btn btn-outline btn-sm" onclick="rpPreset('month')">This month</button>
+          <button class="btn btn-outline btn-sm" onclick="rpPreset('lastmonth')">Last month</button>
+          <button class="btn btn-outline btn-sm" onclick="rpPreset('year')">This year</button>
+        </div>
+        <div class="hint" id="rpTitle" style="margin-top:6px;"></div>
       </div>
       <div class="stat-grid" id="reportStats"></div>
 
       <div class="card">
+        <h3>Money in and out</h3>
+        <div class="table-wrap"><table><tbody id="reportMoney"></tbody></table></div>
+        <p class="hint" id="reportMoneyNote" style="margin:10px 0 0;"></p>
+      </div>
+
+      <div class="card">
+        <h3>Check-ins in this period</h3>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Guest</th><th>Phone</th><th>Room</th><th>Guests</th><th>Source</th></tr></thead><tbody id="reportCheckins"></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>Check-outs in this period</h3>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Guest</th><th>Phone</th><th>Room</th><th>Guests</th><th>Source</th></tr></thead><tbody id="reportCheckouts"></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>Online payments received in this period</h3>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Booking no.</th><th>Guest</th><th>Method</th><th>Amount</th></tr></thead><tbody id="reportPayments"></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>Bookings and enquiries received in this period</h3>
+        <div class="stat-grid" id="reportRequests" style="margin:0;"></div>
+      </div>
+
+      <h3 style="margin:26px 0 12px;">Right now <span class="hint" style="font-weight:400;">(as of today, not affected by the dates above)</span></h3>
+      <div class="card">
         <h3>Upcoming checkouts (next 7 days)</h3>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Checkout date</th><th>Extend requested?</th></tr></thead><tbody id="upcomingCheckoutsBody"></tbody></table></div>
       </div>
-
       <div class="card">
         <h3>Extension requests</h3>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Current checkout</th></tr></thead><tbody id="extensionsBody"></tbody></table></div>
       </div>
-
       <div class="card">
         <h3>Pending dues</h3>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Room</th><th>Rent</th><th>Paid</th><th>Due</th></tr></thead><tbody id="pendingDuesBody"></tbody></table></div>
@@ -803,7 +844,7 @@
         </span>
         <span class="brand">Code<span style="color:#E5342E;">K</span>asa</span>
       </div>
-      <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Back to login</button>
+      <div style="display:flex; gap:8px;"><a class="btn btn-outline" id="visitorHomeBtn" style="color:#fff; border-color:rgba(255,255,255,0.4);" href="index.html">Home</a><button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.4);" onclick="logout()">Back to login</button></div>
     </div>
   </div>
   <div class="wrap-main">
@@ -1121,7 +1162,7 @@
       bookingsCache = snapToArray(snap);
       bookingsLoaded = true; scheduleAvailSync();
       renderBookings();
-      if (document.getElementById('tab-availability').classList.contains('active')) renderAvailability();
+      if (document.getElementById('tab-occupancy').classList.contains('active')) renderOccupancy();
     }, (err) => console.error('bookings listener error', err));
 
     onSnapshot(collection(db, 'bookingIds'), (snap) => {
@@ -1987,9 +2028,10 @@
         <a class="btn btn-rust btn-block" href="index.html">Back to CodeKasa website</a>`;
     }
     if (b.status === 'cancelled'){
-      return `<h3 style="margin:0 0 6px;">Booking cancelled</h3><p class="sub">Booking ${esc(b.id)} has been cancelled. For any help, call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</p>`;
+      return `<h3 style="margin:0 0 6px;">Booking cancelled</h3><p class="sub">Booking ${esc(b.id)} has been cancelled. For any help, call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</p><a class="btn btn-outline btn-block" href="index.html">&larr; Back to CodeKasa website</a>`;
     }
     const submitted = b.status === 'payment_submitted';
+    const homeBtn = '<a class="btn btn-outline btn-block" style="margin-top:14px;" href="index.html">&larr; Back to CodeKasa website</a>';
     const head = `<div class="pay-head"><div>
         <h3 style="margin:0 0 4px;">${submitted ? 'Payment received for verification' : 'Complete your payment'}</h3>
         <p class="sub" style="margin:0;">Booking <strong>${esc(b.id)}</strong> · ${esc(b.roomType)}</p></div>
@@ -2016,7 +2058,9 @@
           <button class="btn btn-outline btn-sm" onclick="showUtrForm()">Entered a wrong ID? Enter again</button>
         </div>
         ${utrForm}
-        ${callBox}`;
+        ${callBox}
+        <p class="hint">You can leave this page at any time. Your booking stays saved: find it later under <em>Retrieve my booking</em> with your mobile number or booking number.</p>
+        ${homeBtn}`;
     }
     return `${head}
       <div class="pay-amount"><span>Amount to pay</span><strong>${amt}</strong>
@@ -2043,7 +2087,8 @@
       </div>
       ${utrForm}
       ${callBox}
-      ${payRulesHtml(month)}`;
+      ${payRulesHtml(month)}
+      ${homeBtn}`;
   }
 
   async function submitUtr(){
@@ -2584,7 +2629,6 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-'+tab));
     if (tab==='occupancy') renderOccupancy();
-    if (tab==='availability') renderAvailability();
     if (tab==='reports') renderReports();
     if (tab==='enquiries') renderEnquiries();
     if (tab==='tenants') renderTenantRoomOptions();
@@ -2716,78 +2760,92 @@
       lastAvailJson = json;
     } catch(e){ console.error('availability sync failed', e); }
   }
-  function renderAvailability(){
-    const body = document.getElementById('avBody');
-    const rooms = getRooms().filter(isClassified);
-    if (!document.getElementById('avFrom').value) document.getElementById('avFrom').value = localISO(new Date());
-    if (!document.getElementById('avTo').value) document.getElementById('avTo').value = addDaysISO(document.getElementById('avFrom').value, 1);
-    if (!rooms.length){ body.innerHTML = '<p class="hint">Set up your rooms first: Rooms tab → “Load CodeKasa standard rooms (29)”.</p>'; return; }
-    const from = val('avFrom'), to = val('avTo');
-    if (!parseISO(from) || !parseISO(to) || to <= from){ body.innerHTML = '<p class="hint" style="color:var(--bad);">Choose a check-out date after the check-in date.</p>'; return; }
-    const occ = buildOccupancy(getBookings(), getTenants());
-    let totalFree = 0;
-    const groups = GROUP_ORDER.map(g => {
-      const list = rooms.filter(r => r.group === g).sort((a, b) => natCmp(a.number, b.number));
-      if (!list.length) return '';
-      const chips = list.map(r => {
-        const off = r.active === false, free = !off && isFree(occ, r.number, from, to);
-        if (free) totalFree++;
-        const why = off ? 'Not bookable' : (free ? 'Free' : (occ[r.number] || []).filter(rg => overlaps(rg, from, to)).map(rg => fmtDate(rg.f) + ' → ' + (rg.t === FAR_FUTURE ? 'open-ended' : fmtDate(rg.t))).join('; '));
-        return `<span class="av-chip ${off ? 'av-off' : (free ? 'av-free' : 'av-busy')}" title="${esc(why)}">${esc(r.number)}</span>`;
-      }).join('');
-      const nFree = list.filter(r => r.active !== false && isFree(occ, r.number, from, to)).length;
-      return `<div class="av-group"><h4>${esc(ROOM_GROUPS[g].label)} — ${nFree} of ${list.length} free</h4><div class="av-chips">${chips}</div></div>`;
-    }).join('');
-    body.innerHTML = `<p style="margin:14px 0 12px;"><strong>${totalFree}</strong> of ${rooms.length} rooms are free from ${esc(fmtDate(from))} to ${esc(fmtDate(to))}.</p>${groups}`;
-  }
-
   // ---------- Occupancy ----------
-  function renderOccupancy(){
-    const rooms = getRooms();
-    const total = rooms.length;
-    const occupied = rooms.filter(r => r.status==='occupied').length;
-    const available = total - occupied;
-    const rate = total ? Math.round((occupied/total)*100) : 0;
-
-    document.getElementById('occupancyStats').innerHTML = `
-      <div class="stat-card"><div class="num">${total}</div><div class="label">Total rooms</div></div>
-      <div class="stat-card"><div class="num">${occupied}</div><div class="label">Occupied</div></div>
-      <div class="stat-card"><div class="num">${available}</div><div class="label">Available</div></div>
-      <div class="stat-card"><div class="num">${rate}%</div><div class="label">Occupancy rate</div></div>
-    `;
-
-    const grid = document.getElementById('occupancyGrid');
-    grid.innerHTML = rooms.map(r => `
-      <button class="room-tile ${r.status}" onclick="showRoomDetail('${r.id}')">
-        ${esc(r.number)}<small>${r.status==='occupied' ? 'Occupied' : 'Free'}</small>
-      </button>`).join('') || `<p style="color:var(--muted);">Add rooms first from the Rooms tab.</p>`;
-    document.getElementById('occupancyDetail').innerHTML = 'Select a room above to see its status.';
-    document.getElementById('occupancyDetail').classList.add('empty');
+  function occRange(){
+    const f = document.getElementById('avFrom'), t = document.getElementById('avTo');
+    if (!f.value) f.value = localISO(new Date());
+    if (!t.value) t.value = addDaysISO(f.value, 1);
+    return { from: f.value, to: t.value };
   }
-  function showRoomDetail(roomId){
-    const room = getRooms().find(r => r.id===roomId);
-    const panel = document.getElementById('occupancyDetail');
-    if (!room){ panel.textContent = 'Room not found.'; return; }
-    panel.classList.remove('empty');
-    if (room.status === 'occupied'){
-      const tenant = getTenants().find(t => t.roomNumber === room.number);
-      if (tenant){
-        panel.innerHTML = `
-          <strong>Room ${esc(room.number)} — Occupied</strong><br>
-          Tenant: ${esc(tenant.name)} (${esc(tenant.phone) || 'no phone on file'})<br>
-          Stay: ${fmtDate(tenant.checkin)} → ${fmtDate(tenant.checkout)}<br>
-          Rent: ₹${Number(tenant.rent).toLocaleString('en-IN')} · Paid: ₹${Number(tenant.paid).toLocaleString('en-IN')}<br>
-          Extension requested: ${tenant.extend ? 'Yes' : 'No'}`;
-      } else {
-        panel.innerHTML = `<strong>Room ${esc(room.number)} — marked occupied</strong>, but no tenant record found. Check the Tenants tab.`;
-      }
-    } else {
-      panel.innerHTML = `
-        <strong>Room ${esc(room.number)} — Available</strong><br>
-        Category: ${esc(roomLabel(room))}${Number(room.price) > 0 ? ' · Price: ₹' + Number(room.price).toLocaleString('en-IN') + '/mo' : ''}<br>
-        Facilities: ${esc(room.facilities) || '—'}<br>
-        <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${esc(room.number)}'; updateRentFromRoom();">Add tenant to this room</button>`;
+  function occToday(){
+    const t = localISO(new Date());
+    document.getElementById('avFrom').value = t;
+    document.getElementById('avTo').value = addDaysISO(t, 1);
+    renderOccupancy();
+  }
+  function roomStateFor(r, occ, from, to){
+    if (isClassified(r) && r.active === false) return 'off';
+    const today = localISO(new Date());
+    const flaggedOnly = r.status === 'occupied' && from <= today && today < to && !(occ[String(r.number)] || []).length;   // old manual "occupied" flag
+    return (!isFree(occ, String(r.number), from, to) || flaggedOnly) ? 'busy' : 'free';
+  }
+  function renderOccupancy(){
+    const { from, to } = occRange();
+    const stats = document.getElementById('occupancyStats'), body = document.getElementById('avBody'), detail = document.getElementById('occupancyDetail');
+    detail.classList.add('empty'); detail.textContent = 'Click a room above to see who is staying.';
+    if (!parseISO(from) || !parseISO(to) || to <= from){
+      stats.innerHTML = '';
+      body.innerHTML = '<p class="hint" style="color:var(--bad);">Choose a check-out date after the check-in date.</p>';
+      return;
     }
+    const rooms = [...getRooms()].sort((a, b) => natCmp(a.number, b.number));
+    if (!rooms.length){ stats.innerHTML = ''; body.innerHTML = '<p class="hint">Add rooms first: Rooms tab → “Load CodeKasa standard rooms (29)”.</p>'; return; }
+    const occ = buildOccupancy(getBookings(), getTenants());
+    const state = {};
+    rooms.forEach(r => { state[r.number] = roomStateFor(r, occ, from, to); });
+    const count = s => rooms.filter(r => state[r.number] === s).length;
+    const busy = count('busy'), free = count('free'), off = count('off'), usable = rooms.length - off;
+    stats.innerHTML = `
+      <div class="stat-card"><div class="num">${rooms.length}</div><div class="label">Total rooms${off ? ' (' + off + ' not bookable)' : ''}</div></div>
+      <div class="stat-card"><div class="num">${busy}</div><div class="label">Occupied</div></div>
+      <div class="stat-card"><div class="num">${free}</div><div class="label">Available</div></div>
+      <div class="stat-card"><div class="num">${usable ? Math.round(busy / usable * 100) : 0}%</div><div class="label">Occupancy rate</div></div>`;
+    const chip = r => {
+      const st = state[r.number];
+      const why = st === 'off' ? 'Not bookable' : (st === 'free' ? 'Free' : 'Occupied');
+      return `<button type="button" class="av-chip av-${st}" title="${esc(why)}" onclick="showRoomWho('${esc(r.number)}')">${esc(r.number)}</button>`;
+    };
+    const groups = GROUP_ORDER.map(g => {
+      const list = rooms.filter(r => r.group === g);
+      if (!list.length) return '';
+      const nFree = list.filter(r => state[r.number] === 'free').length;
+      return `<div class="av-group"><h4>${esc(ROOM_GROUPS[g].label)} — ${nFree} of ${list.length} free</h4><div class="av-chips">${list.map(chip).join('')}</div></div>`;
+    }).join('');
+    const other = rooms.filter(r => !isClassified(r));
+    const otherHtml = other.length ? `<div class="av-group"><h4>Other rooms — set a category in the Rooms tab</h4><div class="av-chips">${other.map(chip).join('')}</div></div>` : '';
+    body.innerHTML = `<p style="margin:0 0 12px;"><strong>${free}</strong> of ${rooms.length} rooms are free from ${esc(fmtDate(from))} to ${esc(fmtDate(to))}.</p>${groups}${otherHtml}`;
+  }
+  // everyone with a room in the period: tenants + confirmed bookings (a booking that became a tenant is shown once)
+  function stayersOf(number, from, to){
+    const list = [], seen = new Set();
+    getTenants().filter(t => String(t.roomNumber) === String(number) && (t.checkin || '') < to && (t.checkout || FAR_FUTURE) > from).forEach(t => {
+      seen.add((t.checkin || '') + '|' + (t.checkout || ''));
+      list.push({ kind: 'Tenant', name: t.name, phone: t.phone, from: t.checkin, to: t.checkout, guests: t.guests || 1 });
+    });
+    getBookings().filter(b => b.status === 'confirmed' && String(b.roomNumber) === String(number) && b.moveIn < to && b.checkOut > from).forEach(b => {
+      if (seen.has(b.moveIn + '|' + b.checkOut)) return;
+      list.push({ kind: 'Booking ' + b.id, name: b.name, phone: b.phone, from: b.moveIn, to: b.checkOut, guests: b.guests || ((b.adults || 1) + (b.kids || 0)) });
+    });
+    return list;
+  }
+  function showRoomWho(number){
+    const { from, to } = occRange();
+    const room = getRooms().find(r => String(r.number) === String(number));
+    const panel = document.getElementById('occupancyDetail');
+    panel.classList.remove('empty');
+    if (!room){ panel.textContent = 'Room not found.'; return; }
+    const occ = buildOccupancy(getBookings(), getTenants());
+    const st = roomStateFor(room, occ, from, to), period = `${esc(fmtDate(from))} → ${esc(fmtDate(to))}`;
+    if (st === 'off'){ panel.innerHTML = `<strong>Room ${esc(room.number)}</strong> (${esc(roomLabel(room))}) is switched off for booking.`; return; }
+    if (st === 'free'){
+      panel.innerHTML = `<strong>Room ${esc(room.number)} — free</strong> for ${period}<br>Category: ${esc(roomLabel(room))}${room.facilities ? ' · ' + esc(room.facilities) : ''}<br>
+        <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${esc(room.number)}'; updateRentFromRoom();">Add tenant to this room</button>`;
+      return;
+    }
+    const who = stayersOf(room.number, from, to);
+    panel.innerHTML = `<strong>Room ${esc(room.number)} — occupied</strong> during ${period}<br>Category: ${esc(roomLabel(room))}<br>` +
+      (who.length ? who.map(x => `• <strong>${esc(x.name)}</strong> (${esc(x.phone) || 'no phone'}) · ${esc(fmtDate(x.from))} → ${x.to ? esc(fmtDate(x.to)) : 'open-ended'} · ${esc(x.guests)} guest${x.guests > 1 ? 's' : ''} · ${esc(x.kind)}`).join('<br>')
+                   : 'Marked occupied, but no tenant or booking record was found. Check the Tenants tab.');
   }
 
   // ---------- Tenants ----------
@@ -2963,8 +3021,26 @@
     if (!t || !t.idCardUrl) return;
     window.open(t.idCardUrl, '_blank');
   }
+  let tenantRange = null;            // { from, to } both included, or null = everyone
+  function tenantInRange(t, r){ return (!t.checkin || t.checkin <= r.to) && (!t.checkout || t.checkout > r.from); }
+  function applyTenantRange(){
+    let from = document.getElementById('tnFrom').value, to = document.getElementById('tnTo').value;
+    const note = document.getElementById('tenantRangeNote');
+    if (!from && !to){ note.textContent = 'Choose at least one date.'; return; }
+    if (!from) from = to;
+    if (!to) to = from;
+    if (!parseISO(from) || !parseISO(to) || to < from){ note.textContent = 'The second date must be the same as or after the first date.'; return; }
+    tenantRange = { from, to };
+    renderTenantsTable();
+  }
+  function clearTenantRange(){
+    tenantRange = null;
+    document.getElementById('tnFrom').value = ''; document.getElementById('tnTo').value = '';
+    renderTenantsTable();
+  }
   function renderTenantsTable(){
-    const tenants = getTenants();
+    const all = getTenants();
+    const tenants = tenantRange ? all.filter(t => tenantInRange(t, tenantRange)) : all;
     const tbody = document.getElementById('tenantsTableBody');
     tbody.innerHTML = tenants.map(t => {
       const daysLeft = t.checkout ? daysBetween(t.checkout) : null;
@@ -2994,41 +3070,139 @@
           <button class="btn btn-danger btn-sm" onclick="vacateTenant('${t.id}')">Vacate</button>
         </td>
       </tr>`;
-    }).join('') || `<tr><td colspan="13" style="color:var(--muted);">No tenants yet.</td></tr>`;
-  }
+    }).join('') || `<tr><td colspan="13" style="color:var(--muted);">${tenantRange ? 'No tenants staying in this period.' : 'No tenants yet.'}</td></tr>`;
 
+    const note = document.getElementById('tenantRangeNote'), extra = document.getElementById('tenantRangeBookings');
+    if (!tenantRange){ note.textContent = ''; extra.innerHTML = ''; return; }
+    // confirmed online bookings with a room that fall in the period and are not already a tenant row
+    const have = new Set(all.map(t => String(t.roomNumber) + '|' + (t.checkin || '') + '|' + (t.checkout || '')));
+    const bookings = getBookings().filter(b => b.status === 'confirmed' && b.roomNumber && b.moveIn <= tenantRange.to && b.checkOut > tenantRange.from &&
+      !have.has(String(b.roomNumber) + '|' + b.moveIn + '|' + b.checkOut)).sort((a, b) => a.moveIn.localeCompare(b.moveIn));
+    const people = tenants.reduce((s, t) => s + (Number(t.guests) || 1), 0) + bookings.reduce((s, b) => s + (b.guests || ((b.adults || 1) + (b.kids || 0))), 0);
+    const when = tenantRange.from === tenantRange.to ? esc(fmtDate(tenantRange.from)) : `${esc(fmtDate(tenantRange.from))} and ${esc(fmtDate(tenantRange.to))}`;
+    note.innerHTML = `<strong>${tenants.length}</strong> tenant${tenants.length === 1 ? '' : 's'} and <strong>${bookings.length}</strong> confirmed booking${bookings.length === 1 ? '' : 's'} staying ${tenantRange.from === tenantRange.to ? 'on' : 'between'} ${when} — <strong>${people}</strong> guest${people === 1 ? '' : 's'} in total.`;
+    extra.innerHTML = bookings.length ? `<h3 style="margin:18px 0 10px;">Confirmed bookings in this period</h3>
+      <div class="table-wrap"><table><thead><tr><th>Booking no.</th><th>Guest</th><th>Phone</th><th>Room</th><th>Guests</th><th>Check-in</th><th>Check-out</th></tr></thead><tbody>${
+        bookings.map(b => `<tr><td style="font-family:monospace; font-size:0.78rem;">${esc(b.id)}</td><td>${esc(b.name)}</td><td>${esc(b.phone)}</td><td>${esc(b.roomNumber)}</td><td>${b.guests || ((b.adults || 1) + (b.kids || 0))}</td><td>${esc(fmtDate(b.moveIn))}</td><td>${esc(fmtDate(b.checkOut))}</td></tr>`).join('')
+      }</tbody></table></div>` : '';
+  }
   // ---------- Reports ----------
+  function rpPreset(kind){
+    const now = new Date(), today = localISO(now);
+    let from = today, to = today;
+    if (kind === 'last7') from = addDaysISO(today, -6);
+    if (kind === 'month') from = today.slice(0, 8) + '01';
+    if (kind === 'lastmonth'){ from = localISO(new Date(now.getFullYear(), now.getMonth() - 1, 1)); to = localISO(new Date(now.getFullYear(), now.getMonth(), 0)); }
+    if (kind === 'year') from = now.getFullYear() + '-01-01';
+    document.getElementById('rpFrom').value = from; document.getElementById('rpTo').value = to;
+    renderReports();
+  }
+  const dayOf = iso => iso ? localISO(new Date(iso)) : '';             // a saved timestamp → its local calendar day
+  const inPeriod = (d, from, to) => !!d && d >= from && d <= to;
+  const money = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+  function periodOccupancy(from, to){
+    const rooms = getRooms().filter(r => !isClassified(r) || r.active !== false);
+    if (!rooms.length) return null;
+    const occ = buildOccupancy(getBookings(), getTenants());
+    let nights = 0, busy = 0;
+    for (let d = from; d <= to; d = addDaysISO(d, 1)){
+      nights++;
+      const next = addDaysISO(d, 1);
+      rooms.forEach(r => { if (!isFree(occ, String(r.number), d, next)) busy++; });
+    }
+    return { pct: Math.round(busy / (nights * rooms.length) * 100), nights, rooms: rooms.length };
+  }
+  // check-ins / check-outs from tenants and confirmed bookings (a booking that became a tenant is counted once)
+  function movements(field, from, to){
+    const rows = [], seen = new Set();
+    const key = (room, a, b) => String(room) + '|' + (a || '') + '|' + (b || '');
+    getTenants().forEach(t => {
+      seen.add(key(t.roomNumber, t.checkin, t.checkout));
+      const d = field === 'in' ? t.checkin : t.checkout;
+      if (inPeriod(d, from, to)) rows.push({ date: d, name: t.name, phone: t.phone, room: t.roomNumber, guests: t.guests || 1, source: 'Tenant' });
+    });
+    getBookings().filter(b => b.status === 'confirmed' && !seen.has(key(b.roomNumber, b.moveIn, b.checkOut))).forEach(b => {
+      const d = field === 'in' ? b.moveIn : b.checkOut;
+      if (inPeriod(d, from, to)) rows.push({ date: d, name: b.name, phone: b.phone, room: b.roomNumber || '—', guests: b.guests || ((b.adults || 1) + (b.kids || 0)), source: 'Booking ' + b.id });
+    });
+    return rows.sort((a, b) => a.date.localeCompare(b.date));
+  }
   function renderReports(){
+    const fEl = document.getElementById('rpFrom'), tEl = document.getElementById('rpTo');
+    if (!fEl.value || !tEl.value){                                  // first visit: this month so far
+      const today = localISO(new Date());
+      fEl.value = today.slice(0, 8) + '01'; tEl.value = today;
+    }
+    const from = fEl.value, to = tEl.value, title = document.getElementById('rpTitle');
+    const dayCount = parseISO(from) && parseISO(to) ? Math.round((parseISO(to) - parseISO(from)) / 86400000) + 1 : 0;
+    if (!dayCount || dayCount < 1){ title.style.color = 'var(--bad)'; title.textContent = 'Choose a start date and an end date that is the same as or after it.'; return; }
+    if (dayCount > 366){ title.style.color = 'var(--bad)'; title.textContent = 'Please choose a period of up to one year.'; return; }
+    title.style.color = ''; title.textContent = `Report for ${fmtDate(from)} to ${fmtDate(to)} (${dayCount} day${dayCount > 1 ? 's' : ''}).`;
+
     const tenants = getTenants();
-    const rooms = getRooms();
-    const totalCollected = tenants.reduce((s,t) => s + (t.paid||0), 0);
-    const totalDue = tenants.reduce((s,t) => s + Math.max(0, (t.rent||0)-(t.paid||0)), 0);
-    const occupied = rooms.filter(r => r.status==='occupied').length;
-    const rate = rooms.length ? Math.round((occupied/rooms.length)*100) : 0;
+    // --- money in ---
+    const bookingPays = getBookings().filter(b => b.status === 'confirmed' && b.payment && inPeriod(b.payment.paidOn, from, to)).sort((a, b) => a.payment.paidOn.localeCompare(b.payment.paidOn));
+    const inBookings = bookingPays.reduce((s, b) => s + (Number(b.payment.amount) || 0), 0);
+    const tenantsStarted = tenants.filter(t => inPeriod(t.checkin, from, to));
+    const inTenants = tenantsStarted.reduce((s, t) => s + (Number(t.paid) || 0), 0);
+    // --- money out ---
+    const exp = getExpenses().filter(e => inPeriod(e.date, from, to));
+    const byType = {}; exp.forEach(e => { byType[e.type] = (byType[e.type] || 0) + (Number(e.amount) || 0); });
+    const expTotal = exp.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    const sal = getSalaryPayments().filter(p => inPeriod(p.paidDate, from, to));
+    const salTotal = sal.reduce((s, p) => s + (Number(p.amountPaid) || 0), 0);
+    const totalIn = inBookings + inTenants, totalOut = expTotal + salTotal, net = totalIn - totalOut;
+    const ins = movements('in', from, to), outs = movements('out', from, to);
+    const occ = periodOccupancy(from, to);
 
     document.getElementById('reportStats').innerHTML = `
-      <div class="stat-card"><div class="num">₹${totalCollected.toLocaleString('en-IN')}</div><div class="label">Total collected</div></div>
-      <div class="stat-card"><div class="num">₹${totalDue.toLocaleString('en-IN')}</div><div class="label">Total pending dues</div></div>
-      <div class="stat-card"><div class="num">${occupied}/${rooms.length}</div><div class="label">Rooms occupied</div></div>
-      <div class="stat-card"><div class="num">${rate}%</div><div class="label">Occupancy rate</div></div>
-    `;
+      <div class="stat-card"><div class="num">${money(totalIn)}</div><div class="label">Money in</div></div>
+      <div class="stat-card"><div class="num">${money(totalOut)}</div><div class="label">Money out</div></div>
+      <div class="stat-card"><div class="num" style="color:${net < 0 ? 'var(--bad)' : 'inherit'};">${net < 0 ? '−' : ''}${money(Math.abs(net))}</div><div class="label">Net</div></div>
+      <div class="stat-card"><div class="num">${occ ? occ.pct + '%' : '—'}</div><div class="label">Average occupancy</div></div>
+      <div class="stat-card"><div class="num">${ins.length}</div><div class="label">Check-ins</div></div>
+      <div class="stat-card"><div class="num">${outs.length}</div><div class="label">Check-outs</div></div>`;
 
+    const row = (label, val, strong) => `<tr${strong ? ' style="font-weight:600;"' : ''}><td>${label}</td><td style="text-align:right;">${val}</td></tr>`;
+    document.getElementById('reportMoney').innerHTML =
+      row(`Online booking payments (${bookingPays.length})`, money(inBookings)) +
+      row(`Tenant payments for stays that started in this period (${tenantsStarted.length})`, money(inTenants)) +
+      row('Total in', money(totalIn), true) +
+      (Object.keys(byType).sort().map(t => row(`Expenses — ${esc(t)}`, money(byType[t]))).join('') || row('Expenses', money(0))) +
+      row(`Salaries paid (${sal.length})`, money(salTotal)) +
+      row('Total out', money(totalOut), true) +
+      row('Net (in − out)', (net < 0 ? '−' : '') + money(Math.abs(net)), true);
+    document.getElementById('reportMoneyNote').textContent = 'Tenant payments are saved without a date, so they are counted in the period the stay started. Online booking payments use the date you recorded the payment. If a guest paid online and you also typed the same amount as “Paid” on their tenant record, it will be counted twice, so enter only what was paid in person.';
+
+    const mv = rows => rows.map(r => `<tr><td>${esc(fmtDate(r.date))}</td><td>${esc(r.name)}</td><td>${esc(r.phone) || '—'}</td><td>${esc(r.room)}</td><td>${esc(r.guests)}</td><td>${esc(r.source)}</td></tr>`).join('');
+    document.getElementById('reportCheckins').innerHTML = mv(ins) || '<tr><td colspan="6" style="color:var(--muted);">No check-ins in this period.</td></tr>';
+    document.getElementById('reportCheckouts').innerHTML = mv(outs) || '<tr><td colspan="6" style="color:var(--muted);">No check-outs in this period.</td></tr>';
+    document.getElementById('reportPayments').innerHTML = bookingPays.map(b => `<tr><td>${esc(fmtDate(b.payment.paidOn))}</td><td style="font-family:monospace; font-size:0.78rem;">${esc(b.id)}</td><td>${esc(b.name)}</td><td>${esc(b.payment.method)}</td><td>${money(b.payment.amount)}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--muted);">No online payments in this period.</td></tr>';
+
+    const made = getBookings().filter(b => inPeriod(dayOf(b.submittedAt), from, to));
+    const cnt = s => made.filter(b => b.status === s).length;
+    const enq = getEnquiries().filter(q => inPeriod(dayOf(q.submittedAt), from, to)).length;
+    document.getElementById('reportRequests').innerHTML = `
+      <div class="stat-card"><div class="num">${made.length}</div><div class="label">Booking requests</div></div>
+      <div class="stat-card"><div class="num">${cnt('confirmed')}</div><div class="label">Confirmed</div></div>
+      <div class="stat-card"><div class="num">${cnt('pending_payment') + cnt('payment_submitted')}</div><div class="label">Waiting for payment</div></div>
+      <div class="stat-card"><div class="num">${cnt('rejected') + cnt('cancelled')}</div><div class="label">Rejected / cancelled</div></div>
+      <div class="stat-card"><div class="num">${enq}</div><div class="label">Enquiries</div></div>`;
+
+    // --- as of today ---
     const upcoming = tenants.filter(t => t.checkout && daysBetween(t.checkout) >= 0 && daysBetween(t.checkout) <= 7);
     document.getElementById('upcomingCheckoutsBody').innerHTML = upcoming.map(t => `
       <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>${fmtDate(t.checkout)}</td><td>${t.extend ? 'Yes' : 'No'}</td></tr>
     `).join('') || `<tr><td colspan="4" style="color:var(--muted);">No checkouts in the next 7 days.</td></tr>`;
-
     const extensions = tenants.filter(t => t.extend);
     document.getElementById('extensionsBody').innerHTML = extensions.map(t => `
       <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>${fmtDate(t.checkout)}</td></tr>
     `).join('') || `<tr><td colspan="3" style="color:var(--muted);">No pending extension requests.</td></tr>`;
-
     const dues = tenants.filter(t => ((t.rent||0)-(t.paid||0)) > 0);
     document.getElementById('pendingDuesBody').innerHTML = dues.map(t => `
       <tr><td>${esc(t.name)}</td><td>${esc(t.roomNumber)}</td><td>₹${Number(t.rent||0).toLocaleString('en-IN')}</td><td>₹${Number(t.paid||0).toLocaleString('en-IN')}</td><td>₹${((t.rent||0)-(t.paid||0)).toLocaleString('en-IN')}</td></tr>
     `).join('') || `<tr><td colspan="5" style="color:var(--muted);">No pending dues.</td></tr>`;
   }
-
   // ---------- Enquiries ----------
   function renderEnquiries(){
     const enquiries = [...getEnquiries()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
@@ -3064,12 +3238,25 @@
     onCheckinChange();
     pendingIdCardUrl = rec.idCardUrl || null;
 
-    const match = getRooms().find(r => r.type === rec.roomType && r.status !== 'occupied');
-    if (match){
-      document.getElementById('tenantRoom').value = match.number;
+    // the room allotted to the booking; otherwise the best free room for these dates; otherwise (old data) a room of the same type
+    let roomNo = rec.roomNumber ? String(rec.roomNumber) : '';
+    if (!roomNo && kind === 'booking' && inventoryReady(getRooms()) && rec.moveIn && rec.checkOut){
+      const free = freeEligible(getRooms(), buildOccupancy(getBookings(), getTenants(), rec.id), reqOf(rec));
+      if (free.length) roomNo = String(free[0].number);
+    }
+    if (!roomNo){
+      const match = getRooms().find(r => r.type === rec.roomType && r.status !== 'occupied');
+      if (match) roomNo = String(match.number);
+    }
+    if (roomNo){
+      document.getElementById('tenantRoom').value = roomNo;
       updateRentFromRoom();
     } else {
-      alert(`No free room of type "${rec.roomType}" was found. The tenant form is filled in — please pick a room manually (or add rooms in the Rooms tab).`);
+      alert(`No free room was found for "${rec.roomType}". The tenant form is filled in — please pick a room manually (or add rooms in the Rooms tab).`);
+    }
+    if (kind === 'booking'){
+      if (rec.checkOut) document.getElementById('tenantCheckout').value = rec.checkOut;
+      if (rec.rate) document.getElementById('tenantRent').value = isDay ? rec.rate * (Number(rec.nights) || 1) : rec.rate;
     }
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -3314,7 +3501,7 @@
   Object.assign(window, {
     attemptAdminLogin, deleteAttendance, deleteBooking, deleteEnquiry, deleteExpense, deleteRoom,
     deleteStaff, editRoom, editStaff, editTenant, enterVisitorView, generateBill, generateSalaryStatement,
-    logout, markSalaryPaid, onCheckinChange, onStayTypeChange, showRoomDetail, submitAttendance,
+    logout, markSalaryPaid, onCheckinChange, onStayTypeChange, submitAttendance,
     submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
     switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
@@ -3322,7 +3509,8 @@
     submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
     adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged,
     rejectFromModal, openRoomModal, closeRoomModal, saveRoomChange,
-    roomGroupChanged, seedStandardRooms, renderAvailability
+    roomGroupChanged, seedStandardRooms, renderOccupancy, occToday, showRoomWho,
+    applyTenantRange, clearTenantRange, renderReports, rpPreset
   });
 </script>
 

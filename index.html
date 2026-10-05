@@ -157,7 +157,7 @@
     cursor:pointer;
   }
 
-  @media (max-width:1140px){
+  @media (max-width:1190px){
     .nav-links{
       position:absolute; top:100%; left:0; right:0;
       background:var(--paper);
@@ -226,6 +226,7 @@
     gap:16px;
     flex-wrap:wrap;
   }
+  .hero-actions .btn{ padding:15px 24px; }
   .btn{
     display:inline-block;
     text-decoration:none;
@@ -278,6 +279,22 @@
   .page-section{ display:none; }
   .page-section.active{ display:block; }
   .back-btn{ margin-bottom:20px; }
+  /* ---------- Home: scan & go ---------- */
+  body.page-open .home-only{ display:none; }
+  .home-only{ padding:64px 0 76px; }
+  .scan-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:22px; max-width:1000px; margin:0 auto; }
+  .scan-card{ display:flex; gap:22px; align-items:center; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--rust); border-radius:2px; padding:22px; }
+  .scan-card img{ width:180px; height:180px; flex:none; border:1px solid var(--line); background:#fff; padding:6px; }
+  .scan-text h3{ font-size:1.15rem; margin:0 0 6px; }
+  .scan-text p{ margin:0 0 10px; font-size:0.9rem; color:var(--muted); line-height:1.55; }
+  .scan-text .scan-addr{ font-size:0.8rem; }
+  .scan-text .btn{ margin-top:4px; padding:12px 20px; }
+  @media (max-width:900px){ .scan-grid{ grid-template-columns:1fr; } }
+  @media (max-width:520px){ .scan-card{ flex-direction:column; text-align:center; } .scan-card img{ width:160px; height:160px; } }
+  .loc-qr{ display:flex; gap:16px; align-items:center; margin-top:22px; padding-top:18px; border-top:1px solid var(--line); font-size:0.88rem; color:var(--muted); line-height:1.55; }
+  .loc-qr img{ width:120px; height:120px; flex:none; border:1px solid var(--line); background:#fff; padding:4px; }
+  .loc-qr a{ color:var(--rust); font-weight:500; }
+
   /* ---------- Get-the-app page ---------- */
   .app-cards{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }
   .app-card{ background:var(--paper); border:1px solid var(--line); border-radius:2px; padding:20px; display:flex; flex-direction:column; gap:10px; }
@@ -609,6 +626,7 @@
       <li><a href="#location" onclick="event.preventDefault(); showPage('location');">Location</a></li>
       <li><a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a></li>
       <li><a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a></li>
+      <li><a href="#app" id="navApp" onclick="event.preventDefault(); showPage('app');">Get App</a></li>
       <li><a href="admin.html?manage=1">Manage Booking</a></li>
       <li><a href="admin.html">Login</a></li>
     </ul>
@@ -625,6 +643,7 @@
     <div class="hero-actions">
       <a href="#rooms" class="btn btn-primary" onclick="event.preventDefault(); showPage('rooms');">See Rooms &amp; Pricing</a>
       <a href="#contact" class="btn btn-ghost" onclick="event.preventDefault(); showPage('contact');">Book a Visit</a>
+      <a href="#app" class="btn btn-ghost" id="heroApp" onclick="event.preventDefault(); showPage('app');">Get the App</a>
     </div>
   </div>
 </section>
@@ -634,6 +653,35 @@
   <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
   <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
 </div>
+
+<section class="home-only" id="homeScan">
+  <div class="wrap">
+    <div class="section-head" style="margin-left:auto; margin-right:auto; text-align:center;">
+      <div class="section-eyebrow">Scan &amp; go</div>
+      <h2>Find us. Take us with you.</h2>
+      <p>Point your phone camera at a code.</p>
+    </div>
+    <div class="scan-grid">
+      <div class="scan-card" id="scanLocation">
+        <img src="qr-location.png" alt="QR code. Scan to open CodeKasa on Google Maps" width="180" height="180" loading="lazy">
+        <div class="scan-text">
+          <h3>Find us on the map</h3>
+          <p>Scan to open our location and get directions.</p>
+          <p class="scan-addr">Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035</p>
+          <a class="btn btn-primary" id="scanMapBtn" href="https://www.google.com/maps/search/?api=1&amp;query=Petra+Pebbles+Ambalipura+Sarjapur+Rd+Carmelaram+Mullur+Karnataka+560035" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+      </div>
+      <div class="scan-card" id="scanApp">
+        <img src="qr-app.png" alt="QR code. Scan to get the CodeKasa app" width="180" height="180" loading="lazy">
+        <div class="scan-text">
+          <h3>Get the CodeKasa app</h3>
+          <p>Scan with your phone, or install it on this device. Works on Android, iPhone, Windows, Mac and Linux.</p>
+          <a class="btn btn-primary" id="scanAppBtn" href="#app" onclick="event.preventDefault(); showPage('app');">Get the app</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="facilities" class="page-section">
   <div class="wrap">
@@ -853,6 +901,10 @@
         <div class="addr-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg>
           <div>info@codekasa.com</div>
+        </div>
+        <div class="loc-qr">
+          <img src="qr-location.png" alt="QR code. Scan to open CodeKasa on Google Maps" width="120" height="120" loading="lazy">
+          <div><strong>Scan for directions</strong><br>Open this location on Google Maps on your phone.<br><a href="https://www.google.com/maps/search/?api=1&amp;query=Petra+Pebbles+Ambalipura+Sarjapur+Rd+Carmelaram+Mullur+Karnataka+560035" target="_blank" rel="noopener">Open in Google Maps</a></div>
         </div>
       </div>
     </div>
@@ -1323,6 +1375,7 @@
     if (id === 'app' && window.__ckRenderApp) window.__ckRenderApp();
     document.getElementById('top').style.display = 'none';
     document.getElementById('homeDivider').classList.add('hidden-nav');
+    document.body.classList.add('page-open');
     window.scrollTo({top:0, behavior:'instant'});
     navLinks.classList.remove('open');
   }
@@ -1330,6 +1383,7 @@
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.getElementById('top').style.display = '';
     document.getElementById('homeDivider').classList.remove('hidden-nav');
+    document.body.classList.remove('page-open');
     window.scrollTo({top:0, behavior:'instant'});
     navLinks.classList.remove('open');
   }
@@ -1391,6 +1445,7 @@
       if (!ready || standalone() || snoozed()) return;
       if (deferred){ btn.textContent = 'Install'; setBar(true); }
       else if (manualPlatform){ btn.textContent = 'How to install'; setBar(true); }
+      else { btn.textContent = 'Get the app'; setBar(true); }                // every other device: open the page that explains the options
     }
 
     window.__ckInstall = install;
@@ -1446,7 +1501,7 @@
       if (document.getElementById('app').classList.contains('active')) renderAppPage();     // turn "Show me how" into a real "Install now" button
     });
     window.addEventListener('appinstalled', () => { deferred = null; setBar(false); renderAppPage(); });
-    btn.addEventListener('click', install);
+    btn.addEventListener('click', () => { if (deferred || manualPlatform) install(); else showPage('app'); });
     closeBtn.addEventListener('click', () => { snooze(); setBar(false); });
     helpClose.addEventListener('click', closeHelp);
     help.addEventListener('click', (e) => { if (e.target === help) closeHelp(); });
