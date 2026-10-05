@@ -193,6 +193,24 @@
   a.btn{ text-decoration:none; }
   .call-box a:not(.btn), .info-box a:not(.btn), .booking-card .sub a{ color:var(--pine-deep); font-weight:600; }
 
+  .avail-line{ border-radius:4px; padding:10px 14px; font-size:0.86rem; margin:-4px 0 14px; line-height:1.5; }
+  .avail-ok{ background:#E7F2EA; color:#1F5C33; }
+  .avail-warn{ background:#FBF1DC; color:#7A5410; }
+  .avail-bad{ background:#F8E3E0; color:#8A2A1F; }
+  .avail-line a{ color:inherit; font-weight:600; }
+
+  .checks{ display:flex; gap:14px; flex-wrap:wrap; padding-top:10px; font-size:0.88rem; }
+  .checks label{ display:flex; align-items:center; gap:6px; margin:0; font-weight:400; }
+  .avail-detail{ font-size:0.84rem; color:var(--muted); margin:0 0 14px; line-height:1.6; }
+  .avail-detail ul{ margin:6px 0 8px; padding-left:18px; }
+  .av-group{ margin-bottom:18px; }
+  .av-group h4{ margin:0 0 8px; font-size:0.95rem; font-family:'Work Sans',sans-serif; }
+  .av-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .av-chip{ min-width:58px; text-align:center; padding:8px 10px; border-radius:4px; font-weight:600; font-size:0.9rem; border:1px solid transparent; }
+  .av-free{ background:#E7F2EA; color:#1F5C33; border-color:#BBD9C4; }
+  .av-busy{ background:#F8E3E0; color:#8A2A1F; border-color:#E8B9B2; }
+  .av-off{ background:#EEE9E1; color:#8A8378; border-color:#DDD6CA; text-decoration:line-through; }
+
   /* ---------- Payment step ---------- */
   .pay-head{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; }
   .pay-amount{ background:var(--ivory); border:1px solid var(--line); border-left:3px solid var(--rust); border-radius:4px; padding:14px 18px; margin:0 0 18px; display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; }
@@ -339,6 +357,7 @@
           <div class="field"><label for="bkDuration" id="bkDurationLabel">Stay duration *</label><select id="bkDuration"></select></div>
         </div>
         <div class="hint" id="bkCheckoutLine" style="margin:-6px 0 14px;"></div>
+        <div class="avail-line hidden" id="bkAvail" role="status" aria-live="polite"></div>
 
         <div class="field-row" id="bkCountsRow">
           <div class="field" id="bkGuestsField"><label for="bkGuests">Number of people staying *</label><select id="bkGuests"></select></div>
@@ -486,6 +505,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="rooms" onclick="switchTab('rooms')">Rooms</button>
       <button class="tab-btn" data-tab="occupancy" onclick="switchTab('occupancy')">Occupancy</button>
+      <button class="tab-btn" data-tab="availability" onclick="switchTab('availability')">Availability</button>
       <button class="tab-btn" data-tab="tenants" onclick="switchTab('tenants')">Tenants</button>
       <button class="tab-btn" data-tab="staff" onclick="switchTab('staff')">Staff</button>
       <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">Expenses</button>
@@ -496,23 +516,35 @@
     <!-- ROOMS TAB -->
     <div class="tab-panel active" id="tab-rooms">
       <div class="card">
-        <h3 id="roomFormTitle">Add a room</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
+          <h3 id="roomFormTitle" style="margin:0;">Add a room</h3>
+          <button class="btn btn-teal btn-sm" id="seedRoomsBtn" onclick="seedStandardRooms()">Load CodeKasa standard rooms (29)</button>
+        </div>
+        <p class="hint" style="margin:0 0 14px;">Each room belongs to a category. Guests are only offered rooms that suit their stay and group, and only on dates the room is free. Monthly: <strong>Small</strong> (up to 2 people), <strong>RK</strong> (big rooms), <strong>1 BHK</strong>. Day / week: <strong>standard</strong> (single or twin) and <strong>family</strong> (kids, or 3-4 people).</p>
         <div class="form-grid">
-          <div class="field"><label>Room number</label><input type="text" id="roomNumber" placeholder="e.g. 101"></div>
-          <div class="field"><label>Room type</label>
-            <select id="roomType">
-              <option>Single Stay — AC</option>
-              <option>Single Stay — Non-AC</option>
-              <option>Family Stay — AC</option>
-              <option>Family Stay — Non-AC</option>
-              <option>Twin Sharing — AC</option>
-              <option>Twin Sharing — Non-AC</option>
-              <option>Day Stay — AC</option>
-              <option>Day Stay — Non-AC</option>
+          <div class="field"><label for="roomNumber">Room number</label><input type="text" id="roomNumber" maxlength="6" placeholder="e.g. 101"></div>
+          <div class="field"><label for="roomGroup">Category</label>
+            <select id="roomGroup" onchange="roomGroupChanged()">
+              <option value="">— choose —</option>
+              <option value="SMALL">Small room (monthly)</option>
+              <option value="RK">RK — big room (monthly)</option>
+              <option value="ONEBHK">1 BHK (monthly)</option>
+              <option value="DAY_STANDARD">Day / week — standard (single / twin)</option>
+              <option value="DAY_FAMILY">Day / week — family (kids, 3-4 people)</option>
             </select>
           </div>
-          <div class="field"><label>Price (₹ / month)</label><input type="number" id="roomPrice" placeholder="e.g. 15000"></div>
-          <div class="field"><label>Facilities</label><input type="text" id="roomFacilities" placeholder="WiFi, Kitchen, AC, Attached bathroom"></div>
+          <div class="field"><label for="roomMaxGuests">Max guests (adults + kids)</label><input type="number" id="roomMaxGuests" min="1" max="12"></div>
+          <div class="field"><label>Suits</label>
+            <div class="checks">
+              <label><input type="checkbox" id="roomParty_single"> Single</label>
+              <label><input type="checkbox" id="roomParty_twin"> Twin</label>
+              <label><input type="checkbox" id="roomParty_family"> Family</label>
+            </div>
+          </div>
+          <div class="field"><label for="roomAc">AC</label>
+            <select id="roomAc"><option value="both">AC or Non-AC bookings</option><option value="ac">AC bookings only</option><option value="nonac">Non-AC bookings only</option></select></div>
+          <div class="field"><label for="roomFacilities">Facilities</label><input type="text" id="roomFacilities" placeholder="WiFi, Kitchen, AC, Attached bathroom"></div>
+          <div class="field"><label class="check-row" style="margin:26px 0 0;"><input type="checkbox" id="roomActive" checked><span>Available for booking</span></label></div>
           <div class="field">
             <button class="btn btn-rust" id="roomSubmitBtn" onclick="submitRoom()">Add Room</button>
           </div>
@@ -522,7 +554,7 @@
         <h3>All rooms</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Room No.</th><th>Type</th><th>Price / mo</th><th>Facilities</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Room</th><th>Category</th><th>Stay</th><th>Max guests</th><th>Suits</th><th>AC</th><th>Bookable</th><th>Facilities</th><th>Actions</th></tr></thead>
             <tbody id="roomsTableBody"></tbody>
           </table>
         </div>
@@ -536,6 +568,20 @@
         <h3>Click a room to see details</h3>
         <div class="room-grid" id="occupancyGrid"></div>
         <div class="detail-panel empty" id="occupancyDetail">Select a room above to see its status.</div>
+      </div>
+    </div>
+
+    <!-- AVAILABILITY TAB -->
+    <div class="tab-panel" id="tab-availability">
+      <div class="card">
+        <h3>Room availability</h3>
+        <p class="hint" style="margin:0 0 12px;">Green rooms are free for the whole period; red rooms have a confirmed booking or a tenant on those dates. Check-out and check-in on the same day are allowed.</p>
+        <div class="form-grid">
+          <div class="field"><label for="avFrom">From (check-in)</label><input type="date" id="avFrom"></div>
+          <div class="field"><label for="avTo">To (check-out)</label><input type="date" id="avTo"></div>
+          <div class="field"><button class="btn btn-rust" onclick="renderAvailability()">Show availability</button></div>
+        </div>
+        <div id="avBody"></div>
       </div>
     </div>
 
@@ -811,6 +857,8 @@
     <h3 id="pmTitle" style="margin-bottom:10px;">Confirm payment</h3>
     <div class="info-box" id="pmInfo"></div>
     <div class="error-msg" id="pmWarn" role="alert"></div>
+    <div id="pmAvail"></div>
+    <div class="field" id="pmRoomField"><label for="pmRoom">Allot room *</label><select id="pmRoom"></select></div>
     <div class="field"><label for="pmMethod">Payment method</label>
       <select id="pmMethod" onchange="pmMethodChanged()"><option>UPI</option><option>Cash</option><option>Bank transfer</option><option>Other</option></select></div>
     <div class="field"><label for="pmRef" id="pmRefLabel">UPI transaction ID (UTR) *</label><input type="text" id="pmRef" maxlength="30" autocomplete="off"></div>
@@ -821,9 +869,26 @@
     <div class="field-err" id="pmErr"></div>
     <div class="btn-row" style="margin-top:8px;">
       <button class="btn btn-rust" id="pmSaveBtn" onclick="savePayConfirm()">Confirm booking</button>
-      <button class="btn btn-outline" onclick="closePayModal()">Cancel</button>
+      <button class="btn btn-danger" id="pmRejectBtn" onclick="rejectFromModal()">Reject booking</button>
+      <button class="btn btn-outline" onclick="closePayModal()">Close</button>
     </div>
+    <div class="field" style="margin-top:4px;"><label for="pmRejectReason">If you reject: message shown to the guest</label><input type="text" id="pmRejectReason" maxlength="160"></div>
     <p class="hint">Confirming marks the booking as paid and unlocks the guest's bill. Only confirm after you have checked the money in your account.</p>
+  </div>
+</div>
+
+<!-- ================= ADMIN: CHANGE A BOOKING'S ROOM ================= -->
+<div id="roomModal" class="hidden modal-backdrop">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
+    <h3 id="rmTitle" style="margin-bottom:10px;">Allot / change room</h3>
+    <div class="info-box" id="rmInfo"></div>
+    <div id="rmAvail"></div>
+    <div class="field"><label for="rmRoom">Room</label><select id="rmRoom"></select></div>
+    <div class="field-err" id="rmErr"></div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-rust" id="rmSaveBtn" onclick="saveRoomChange()">Save room</button>
+      <button class="btn btn-outline" onclick="closeRoomModal()">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -831,7 +896,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
   import {
     getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot,
-    getDoc, writeBatch, arrayUnion
+    getDoc, setDoc, writeBatch, arrayUnion
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
   import {
     getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
@@ -1004,6 +1069,8 @@
   let bookingsCache = [];
   let bookingIdsCache = [];
   let bookingPaymentsCache = [];
+  let bookingsLoaded = false, tenantsLoaded = false, availTimer = null, lastAvailJson = '';
+  let availRanges = {}, availLoaded = false;       // what guests may see: date ranges per room, no names
   let staffCache = [];
   let attendanceCache = [];
   let salaryPaymentsCache = [];
@@ -1026,6 +1093,7 @@
   onSnapshot(collection(db, 'rooms'), (snap) => {
     roomsCache = snapToArray(snap);
     renderRoomsTable();
+    renderBookings();
     renderTenantRoomOptions();
     renderOccupancy();
     if (!document.getElementById('visitorApp').classList.contains('hidden')) renderVisitorRooms();
@@ -1038,6 +1106,7 @@
 
     onSnapshot(collection(db, 'tenants'), (snap) => {
       tenantsCache = snapToArray(snap);
+      tenantsLoaded = true; scheduleAvailSync();
       renderTenantsTable();
       renderOccupancy();
       renderReports();
@@ -1050,7 +1119,9 @@
 
     onSnapshot(collection(db, 'bookings'), (snap) => {
       bookingsCache = snapToArray(snap);
+      bookingsLoaded = true; scheduleAvailSync();
       renderBookings();
+      if (document.getElementById('tab-availability').classList.contains('active')) renderAvailability();
     }, (err) => console.error('bookings listener error', err));
 
     onSnapshot(collection(db, 'bookingIds'), (snap) => {
@@ -1176,13 +1247,123 @@
     pending_payment:   { label: 'Awaiting payment',           cls: 'badge-warn' },
     payment_submitted: { label: 'Payment under verification', cls: 'badge-warn' },
     confirmed:         { label: 'Confirmed',                  cls: 'badge-ok' },
-    cancelled:         { label: 'Cancelled',                  cls: 'badge-bad' }
+    cancelled:         { label: 'Cancelled',                  cls: 'badge-bad' },
+    rejected:          { label: 'Not confirmed',              cls: 'badge-bad' }
   };
   function statusOf(b){ return STATUS[b.status] || { label: b.status || 'Confirmed', cls: 'badge-ok' }; }
   function upiLink(amount, ref){
     return `upi://pay?pa=${PAY.UPI_ID}&pn=${encodeURIComponent(PAY.PAYEE)}&am=${Number(amount).toFixed(2)}&cu=INR&tn=${encodeURIComponent('CodeKasa ' + ref)}`;
   }
   // PAYMENT HELPERS END
+
+  // ALLOCATION START
+  // ---- Room categories. Admin can change capacity / suits / AC / bookable per room; the category fixes day-vs-monthly. ----
+  const ROOM_GROUPS = {
+    SMALL:        { label: 'Small room',              stay: 'month', maxGuests: 2, parties: ['single', 'twin', 'family'] },
+    RK:           { label: 'RK (big room)',           stay: 'month', maxGuests: 4, parties: ['single', 'twin', 'family'] },
+    ONEBHK:       { label: '1 BHK',                   stay: 'month', maxGuests: 6, parties: ['family'] },
+    DAY_STANDARD: { label: 'Day / week — standard',   stay: 'day',   maxGuests: 2, parties: ['single', 'twin'] },
+    DAY_FAMILY:   { label: 'Day / week — family',     stay: 'day',   maxGuests: 4, parties: ['family'] }
+  };
+  const GROUP_ORDER = ['SMALL', 'RK', 'ONEBHK', 'DAY_STANDARD', 'DAY_FAMILY'];     // who is offered first
+  const STANDARD_ROOMS = {
+    SMALL:        ['104', '105', '106', '404', '405', '406'],
+    RK:           ['101', '102', '103', '401', '402', '403', '501', '502', '503'],
+    ONEBHK:       ['504', '505'],
+    DAY_STANDARD: ['204', '205', '206', '304', '305', '306'],
+    DAY_FAMILY:   ['201', '202', '203', '301', '302', '303']
+  };
+  const FAR_FUTURE = '9999-12-31';
+
+  function roomLabel(r){ const g = ROOM_GROUPS[r && r.group]; return g ? g.label : ((r && r.type) || 'Room'); }
+  function isClassified(r){ return !!(r && ROOM_GROUPS[r.group]); }
+  function inventoryReady(rooms){ return rooms.some(r => isClassified(r) && r.active !== false); }
+  function productAc(type){ return /Non-AC/i.test(type || '') ? 'nonac' : 'ac'; }
+  function natCmp(a, b){ return (Number(a) - Number(b)) || String(a).localeCompare(String(b)); }
+
+  // Who is staying: monthly follows the product (single / twin / family). A day stay is decided by the group itself.
+  function partyOfBooking(b){
+    const kind = roomKind(b.roomType);
+    const adults = Number(b.adults) || Number(b.guests) || 1, kids = Number(b.kids) || 0, total = adults + kids;
+    if (kind === 'single') return 'single';
+    if (kind === 'twin') return 'twin';
+    if (kind === 'day') return (kids > 0 || total > 2) ? 'family' : (total === 1 ? 'single' : 'twin');
+    return 'family';
+  }
+  function reqOf(b){
+    const adults = Number(b.adults) || Number(b.guests) || 1, kids = Number(b.kids) || 0;
+    return {
+      stay: roomKind(b.roomType) === 'day' || b.stayType === 'day' ? 'day' : 'month',
+      party: partyOfBooking(b), total: adults + kids, adults, kids,
+      ac: productAc(b.roomType), from: b.moveIn, to: b.checkOut
+    };
+  }
+  function roomFits(r, q){
+    if (!isClassified(r) || r.active === false) return false;
+    const g = ROOM_GROUPS[r.group];
+    const max = Number(r.maxGuests) || g.maxGuests, parties = Array.isArray(r.parties) && r.parties.length ? r.parties : g.parties, ac = r.ac || 'both';
+    return g.stay === q.stay && parties.includes(q.party) && q.total <= max && (ac === 'both' || ac === q.ac);
+  }
+  function prefCmp(a, b){
+    return (GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)) ||
+           ((Number(a.maxGuests) || ROOM_GROUPS[a.group].maxGuests) - (Number(b.maxGuests) || ROOM_GROUPS[b.group].maxGuests)) ||
+           natCmp(a.number, b.number);
+  }
+  function eligibleRooms(rooms, q){ return rooms.filter(r => roomFits(r, q)).sort(prefCmp); }
+
+  // dates are 'YYYY-MM-DD'; ranges are [from, to) so a check-out and a check-in on the same day do not clash
+  function overlaps(rg, from, to){ return rg.f < to && rg.t > from; }
+  function isFree(occ, number, from, to, ignore){
+    return !(occ[number] || []).some(rg => !(ignore && ignore.room === number && ignore.f === rg.f && ignore.t === rg.t) && overlaps(rg, from, to));
+  }
+  function freeEligible(rooms, occ, q, ignore){ return eligibleRooms(rooms, q).filter(r => isFree(occ, r.number, q.from, q.to, ignore)); }
+  function otherFree(rooms, occ, q, ignore){          // active rooms that are free but not the usual kind (admin override only)
+    const usual = new Set(eligibleRooms(rooms, q).map(r => r.number));
+    return rooms.filter(r => isClassified(r) && r.active !== false && !usual.has(r.number) && isFree(occ, r.number, q.from, q.to, ignore)).sort(prefCmp);
+  }
+
+  // What is taken: confirmed bookings that have a room, plus tenants. No names or booking numbers — this is what guests may see.
+  function buildOccupancy(bookings, tenants, skipBookingId){
+    const occ = {}, seen = new Set();
+    const add = (room, f, t) => {
+      if (!room || !f) return;
+      const key = room + '|' + f + '|' + (t || FAR_FUTURE);
+      if (seen.has(key)) return; seen.add(key);
+      (occ[room] = occ[room] || []).push({ f, t: t || FAR_FUTURE });
+    };
+    bookings.forEach(b => { if (b.id !== skipBookingId && b.status === 'confirmed' && b.roomNumber) add(String(b.roomNumber), b.moveIn, b.checkOut); });
+    tenants.forEach(t => add(String(t.roomNumber), t.checkin, t.checkout));
+    Object.keys(occ).forEach(k => occ[k].sort((a, b) => a.f.localeCompare(b.f)));
+    return occ;
+  }
+  function pruneOccupancy(occ, todayISO){        // old stays are irrelevant to anyone booking from today
+    const out = {};
+    Object.keys(occ).forEach(k => { const keep = occ[k].filter(rg => rg.t >= todayISO); if (keep.length) out[k] = keep; });
+    return out;
+  }
+  function addDaysISO(s, n){ return localISO(addDays(parseISO(s), n)); }
+  function earliestStart(rooms, occ, q, minISO, maxISO){       // first check-in date (same length of stay) with a suitable room free
+    const span = Math.round((parseISO(q.to) - parseISO(q.from)) / 86400000);
+    for (let d = minISO; d <= maxISO; d = addDaysISO(d, 1)){
+      const test = { ...q, from: d, to: addDaysISO(d, span) };
+      if (freeEligible(rooms, occ, test).length) return d;
+    }
+    return '';
+  }
+  // Pending / payment-submitted requests that want the same kind of room on overlapping dates (so admin sees the competition)
+  function competingRequests(rooms, bookings, b){
+    const q = reqOf(b), mine = new Set(eligibleRooms(rooms, q).map(r => r.number));
+    return bookings.filter(o => o.id !== b.id && (o.status === 'pending_payment' || o.status === 'payment_submitted') && o.moveIn < q.to && o.checkOut > q.from &&
+      eligibleRooms(rooms, reqOf(o)).some(r => mine.has(r.number)));
+  }
+  // Confirmed bookings of different guests that ended up on the same room on overlapping dates
+  function clashingBookingIds(bookings){
+    const byRoom = {}, bad = new Set();
+    bookings.filter(b => b.status === 'confirmed' && b.roomNumber).forEach(b => (byRoom[b.roomNumber] = byRoom[b.roomNumber] || []).push(b));
+    Object.values(byRoom).forEach(list => list.forEach((a, i) => list.slice(i + 1).forEach(c => { if (a.moveIn < c.checkOut && a.checkOut > c.moveIn){ bad.add(a.id); bad.add(c.id); } })));
+    return bad;
+  }
+  // ALLOCATION END
 
   function siteLink(query){
     return window.location.origin + window.location.pathname + (query ? '?' + query : '');
@@ -1198,6 +1379,7 @@
       '',
       `Booking number: ${b.id}`,
       `Room: ${b.roomType}`,
+      ...(b.roomNumber ? [`Room number: ${b.roomNumber}`] : []),
       `Check-in: ${fmtDate(b.moveIn)} (from 2:00 PM)`,
       `Check-out: ${fmtDate(b.checkOut)} (by 10:00 AM)`,
       `Stay: ${stayLabel(b)}`,
@@ -1279,6 +1461,7 @@
     return `<div class="sum-card">
       <div class="sum-eyebrow">Your stay</div>
       <div class="sum-room">${esc(m.roomType)}</div>${st}
+      ${m.roomNumber ? row('Room no.', esc(m.roomNumber)) : ''}
       ${row('Check-in', dateTxt(m.moveIn, 'from 2:00 PM'))}
       ${row('Check-out', dateTxt(m.checkOut, 'by 10:00 AM'))}
       ${row('Stay', m.stay ? esc(m.stay) : '—')}
@@ -1293,7 +1476,7 @@
   function modelOf(b){
     const count = b.stayType === 'day' ? b.nights : b.months;
     return {
-      roomType: b.roomType, moveIn: b.moveIn, checkOut: b.checkOut, stay: stayLabel(b), guests: guestsLabel(b),
+      roomType: b.roomType, roomNumber: b.roomNumber, moveIn: b.moveIn, checkOut: b.checkOut, stay: stayLabel(b), guests: guestsLabel(b),
       amounts: amountsFor(b.roomType, Number(b.rate) || listedPrice(b.roomType), count),
       status: b.status
     };
@@ -1342,7 +1525,7 @@
         <div>
           <h4>Booking</h4>
           <div>Booking no.: <strong>${esc(b.id)}</strong></div>
-          <div>Room: ${esc(b.roomType)}</div>
+          <div>Room: ${esc(b.roomType)}${b.roomNumber ? ' · Room no. <strong>' + esc(b.roomNumber) + '</strong>' : ''}</div>
           <div>Check-in: ${esc(fmtDate(b.moveIn))} (from 2:00 PM)</div>
           <div>Check-out: ${esc(fmtDate(b.checkOut))} (by 10:00 AM)</div>
           <div>Stay: ${esc(stayLabel(b))} · Guests: ${esc(guestsLabel(b))}</div>
@@ -1462,20 +1645,21 @@
     if (isDay) fillSelect('bkDuration', 1, 30, n => `${n} night${n > 1 ? 's' : ''}`);
     else fillSelect('bkDuration', CK.MIN_MONTHS, 12, n => `${n} months`);
   }
+  const usesAdultKids = kind => kind === 'family' || kind === 'day';
   function bkSetupCounts(){
-    const kind = roomKind(pendingBookRoom);
+    const kind = roomKind(pendingBookRoom), ak = usesAdultKids(kind);
     fillSelect('bkGuests', 1, 2, n => n === 1 ? '1 person' : '2 people');
     fillSelect('bkAdults', 1, 4, n => `${n} adult${n > 1 ? 's' : ''}`);
-    fillSelect('bkKids', 0, 4, n => n === 0 ? 'No kids' : `${n} kid${n > 1 ? 's' : ''}`);
+    fillSelect('bkKids', 0, kind === 'day' ? 3 : 4, n => n === 0 ? 'No kids' : `${n} kid${n > 1 ? 's' : ''}`);
     document.getElementById('bkCountsRow').classList.toggle('hidden', kind === 'single');      // single stay = one person, no guest column
-    document.getElementById('bkGuestsField').classList.toggle('hidden', kind === 'single' || kind === 'family');
-    document.getElementById('bkAdultsField').classList.toggle('hidden', kind !== 'family');
-    document.getElementById('bkKidsField').classList.toggle('hidden', kind !== 'family');
+    document.getElementById('bkGuestsField').classList.toggle('hidden', kind === 'single' || ak);
+    document.getElementById('bkAdultsField').classList.toggle('hidden', !ak);
+    document.getElementById('bkKidsField').classList.toggle('hidden', !ak);
   }
   function bkPersonCount(){
     const kind = roomKind(pendingBookRoom);
     if (kind === 'single') return 1;
-    if (kind === 'family') return Number(val('bkAdults')) || 1;
+    if (usesAdultKids(kind)) return Number(val('bkAdults')) || 1;
     return Number(val('bkGuests')) || 1;
   }
   function bkCapturePersons(){
@@ -1492,7 +1676,7 @@
     for (let i = 0; i < count; i++){
       const p = bkPersons[i] || { name: '', idType: 'aadhaar', idNo: '' };
       const title = kind === 'single' ? 'ID proof of the guest staying'
-        : kind === 'family' ? (i === 0 ? 'Adult 1 — you' : `Adult ${i + 1}`)
+        : usesAdultKids(kind) ? (i === 0 ? 'Adult 1 — you' : `Adult ${i + 1}`)
         : (i === 0 ? 'Guest 1 — you' : `Guest ${i + 1}`);
       html += `<div class="person-block"><h4>${title}</h4>
         ${i > 0 ? `<div class="field"><label for="bkPName${i}">Full name (as on ID proof) *</label><input type="text" id="bkPName${i}" maxlength="60" value="${esc(p.name)}"></div>` : ''}
@@ -1525,7 +1709,7 @@
     const dateOk = !vCheckIn(val('bkMoveIn'), true);
     const out = dateOk ? bkComputeCheckout() : null;
     let guests = '1 adult';
-    if (kind === 'family') guests = guestsLabel({ adults: Number(val('bkAdults')) || 1, kids: Number(val('bkKids')) || 0 });
+    if (usesAdultKids(kind)) guests = guestsLabel({ adults: Number(val('bkAdults')) || 1, kids: Number(val('bkKids')) || 0 });
     else if (kind !== 'single') guests = guestsLabel({ adults: Number(val('bkGuests')) || 1, kids: 0 });
     return {
       roomType: type, moveIn: dateOk ? val('bkMoveIn') : '', checkOut: out ? localISO(out) : '',
@@ -1537,6 +1721,47 @@
     const out = vCheckIn(val('bkMoveIn'), true) ? null : bkComputeCheckout();
     document.getElementById('bkCheckoutLine').textContent = out ? `Check-out: ${longDate(out)} by 10:00 AM` : '';
     renderChrome(1, bkModel());
+    bkRenderAvail();
+  }
+
+  // ---- room availability (guest side). Reads only the published date ranges; never anyone's details ----
+  async function loadAvailability(){
+    try{
+      const s = await getDoc(doc(db, 'availability', 'current'));
+      availRanges = s.exists() ? (s.data().rooms || {}) : {};
+      availLoaded = true;
+    } catch(e){ console.warn('availability not loaded', e); availLoaded = false; }
+  }
+  function bkQuery(){
+    if (vCheckIn(val('bkMoveIn'), true)) return null;
+    const out = bkComputeCheckout();
+    if (!out) return null;
+    const kind = roomKind(pendingBookRoom), ak = usesAdultKids(kind);
+    return reqOf({
+      roomType: pendingBookRoom, stayType: stayTypeOf(pendingBookRoom),
+      adults: ak ? (Number(val('bkAdults')) || 1) : (kind === 'single' ? 1 : (Number(val('bkGuests')) || 1)),
+      kids: ak ? (Number(val('bkKids')) || 0) : 0,
+      moveIn: val('bkMoveIn'), checkOut: localISO(out)
+    });
+  }
+  function bkAvailability(){
+    const rooms = getRooms();
+    if (!inventoryReady(rooms)) return { state: 'off' };            // room list not set up yet: don't block anyone
+    const q = bkQuery();
+    if (!q) return { state: 'wait' };
+    if (!eligibleRooms(rooms, q).length) return { state: 'noroom', q };
+    const free = freeEligible(rooms, availRanges, q);
+    if (free.length) return { state: free.length <= 2 ? 'limited' : 'ok', count: free.length, q };
+    return { state: 'none', q, next: earliestStart(rooms, availRanges, q, q.from, localISO(bookingWindow().max)) };
+  }
+  function bkRenderAvail(){
+    const el = document.getElementById('bkAvail'), a = bkAvailability();
+    const show = (cls, html) => { el.className = 'avail-line ' + cls; el.innerHTML = html; };
+    if (a.state === 'off' || a.state === 'wait'){ el.className = 'avail-line hidden'; el.innerHTML = ''; }
+    else if (a.state === 'ok') show('avail-ok', '✓ Rooms are available for your dates.');
+    else if (a.state === 'limited') show('avail-warn', `Only ${a.count} room${a.count > 1 ? 's are' : ' is'} left for your dates — book soon.`);
+    else if (a.state === 'noroom') show('avail-bad', 'We do not have an online room that fits this group size. Please call <a href="tel:+918106812341">+91 81068 12341</a> and we will arrange it.');
+    else show('avail-bad', `✕ No room is free for these dates for your group.${a.next ? ' The earliest check-in available is <strong>' + esc(fmtDate(a.next)) + '</strong>.' : ''} Please choose other dates, or call <a href="tel:+918106812341">+91 81068 12341</a>.`);
   }
   function openBookingForm(roomType){
     pendingBookRoom = roomType;
@@ -1550,6 +1775,7 @@
     bkFillDurations();
     bkSetupCounts();
     bkRenderPersons();
+    loadAvailability().then(bkRefresh);
     ['bkName','bkPhone','bkEmail','bkMoveIn','bkDuration','bkGuests','bkAdults','bkKids'].forEach(id => setFieldError(id, ''));
     document.getElementById('bkAgreeErr').textContent = '';
     document.getElementById('bookingError').style.display = 'none';
@@ -1598,10 +1824,11 @@
     mark('bkDuration', durErr);
 
     let adults = 1, kids = 0, guests = 1;
-    if (kind === 'family'){
+    if (usesAdultKids(kind)){
       mark('bkAdults', vInt(val('bkAdults'), 1, 4, 'Adults'));
-      mark('bkKids', vInt(val('bkKids'), 0, 4, 'Kids'));
+      mark('bkKids', vInt(val('bkKids'), 0, kind === 'day' ? 3 : 4, 'Kids'));
       adults = Number(val('bkAdults')) || 1; kids = Number(val('bkKids')) || 0; guests = adults + kids;
+      if (kind === 'day' && adults + kids > 4) mark('bkKids', 'A day / week stay room holds up to 4 people in total (adults + kids). Please call us for larger groups.');
     } else if (kind !== 'single'){
       mark('bkGuests', vInt(val('bkGuests'), 1, 2, 'Number of people'));
       guests = Number(val('bkGuests')) || 1; adults = guests;
@@ -1653,6 +1880,17 @@
       return;
     }
     errEl.style.display = 'none';
+    await loadAvailability();                                       // fresh look right before creating the booking
+    bkRenderAvail();
+    const avail = bkAvailability();
+    if (avail.state === 'none' || avail.state === 'noroom'){
+      errEl.textContent = avail.state === 'none'
+        ? 'Sorry — no room is free for these dates for your group.' + (avail.next ? ' The earliest check-in available is ' + fmtDate(avail.next) + '.' : '') + ' Please choose other dates or call +91 81068 12341.'
+        : 'We do not have an online room that fits this group size. Please call +91 81068 12341.';
+      errEl.style.display = 'block';
+      errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     const btn = document.getElementById('bkSubmitBtn');
     bkSubmitting = true;
     btn.disabled = true;
@@ -1741,6 +1979,13 @@
     const month = b.stayType !== 'day';
     const amt = rupee(b.amountDue);
     const st = statusOf(b);
+    if (b.status === 'rejected'){
+      return `<h3 style="margin:0 0 6px;">We could not confirm this booking</h3>
+        <p class="sub">Booking <strong>${esc(b.id)}</strong> · ${esc(b.roomType)}</p>
+        <div class="info-box warn"><strong>${esc(b.rejectReason || 'No room is available for the dates requested.')}</strong><br>
+          If you have already paid, please call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a> and we will sort out your payment. You are welcome to choose other dates and book again.</div>
+        <a class="btn btn-rust btn-block" href="index.html">Back to CodeKasa website</a>`;
+    }
     if (b.status === 'cancelled'){
       return `<h3 style="margin:0 0 6px;">Booking cancelled</h3><p class="sub">Booking ${esc(b.id)} has been cancelled. For any help, call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</p>`;
     }
@@ -1841,6 +2086,7 @@
       ['Name', esc(b.name)],
       ['Mobile', esc(b.phone)],
       ['Room', esc(b.roomType)],
+      ...(b.roomNumber ? [['Room number', `<strong>${esc(b.roomNumber)}</strong>`]] : []),
       ['Check-in', `${esc(fmtDate(b.moveIn))} (from 2:00 PM)`],
       ['Check-out', `${esc(fmtDate(b.checkOut))} (by 10:00 AM)`],
       ['Stay', esc(stayLabel(b))],
@@ -1874,6 +2120,7 @@
   let mgFlash = '';
   function editState(b){
     if (b.status === 'cancelled') return { ok: false, why: 'This booking is cancelled.' };
+    if (b.status === 'rejected') return { ok: false, why: 'This booking could not be confirmed. Please call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.' };
     if (b.status !== 'confirmed') return { ok: false, why: 'Complete your payment to confirm this booking. After that you can edit it here.' };
     const d = daysUntil(b.moveIn);
     if (d === null) return { ok: false, why: 'This booking cannot be edited online.' };
@@ -1931,7 +2178,7 @@
         <h4>Booking ${esc(b.id)} <span class="badge ${st.cls}">${esc(st.label)}</span></h4>
         <table class="kv">
           <tr><td>Name</td><td>${esc(b.name)}</td></tr>
-          <tr><td>Room</td><td>${esc(b.roomType)}</td></tr>
+          <tr><td>Room</td><td>${esc(b.roomType)}${b.roomNumber ? ' · Room no. <strong>' + esc(b.roomNumber) + '</strong>' : ''}</td></tr>
           <tr><td>Check-in</td><td>${esc(fmtDate(b.moveIn))} (from 2:00 PM)</td></tr>
           <tr><td>Check-out</td><td>${esc(fmtDate(b.checkOut))} (by 10:00 AM)</td></tr>
           <tr><td>Stay</td><td>${b.stayType ? esc(stayLabel(b)) : '—'}</td></tr>
@@ -2004,6 +2251,13 @@
         changes.months = dur;
         changes.checkOut = localISO(addMonths(parseISO(newDate), dur));
       }
+      if (b.roomNumber && inventoryReady(getRooms())){
+        await loadAvailability();
+        if (availLoaded && !isFree(availRanges, String(b.roomNumber), changes.moveIn, changes.checkOut, { room: String(b.roomNumber), f: b.moveIn, t: b.checkOut })){
+          errEl.textContent = 'Your room is not free for those dates. Please choose other dates, or call CodeKasa on +91 81068 12341.';
+          return;
+        }
+      }
       await updateDoc(doc(db, 'bookings', ref), changes);
       const updated = remember({ ...b, ...changes });
       const i = mgBookings.findIndex(x => x.id === ref);
@@ -2032,7 +2286,9 @@
     return html;
   }
   function renderBookings(){
-    const bookings = [...getBookings()].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    const bookings = [...getBookings()].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    const clash = clashingBookingIds(getBookings());
+    const ready = inventoryReady(getRooms());
     document.getElementById('bookingsTableBody').innerHTML = bookings.map(b => {
       const st = statusOf(b), pay = paymentFor(b.id);
       const open = b.status === 'pending_payment' || b.status === 'payment_submitted';
@@ -2040,16 +2296,24 @@
       if (b.amountDue) statusCell += `<br>Due ${rupee(b.amountDue)}`;
       if (open && pay && pay.utr) statusCell += `<br>Guest UTR <strong>${esc(pay.utr)}</strong>`;
       if (b.status === 'confirmed' && b.payment) statusCell += `<br>Paid ${rupee(b.payment.amount)} · ${esc(b.payment.method)}`;
+      if (b.status === 'rejected' && b.rejectReason) statusCell += `<br><span class="hint">${esc(b.rejectReason)}</span>`;
+      if (open && ready){
+        const n = freeEligible(getRooms(), buildOccupancy(getBookings(), getTenants(), b.id), reqOf(b)).length;
+        statusCell += `<br><span class="badge ${n ? 'badge-ok' : 'badge-bad'}">${n ? n + ' room' + (n > 1 ? 's' : '') + ' free' : 'No room free'}</span>`;
+      }
+      if (clash.has(b.id)) statusCell += `<br><span class="badge badge-bad">⚠ Room clash</span>`;
+      const roomCell = esc(b.roomType) + (b.roomNumber ? `<br>Room no. <strong>${esc(b.roomNumber)}</strong>` : (b.status === 'confirmed' && ready ? '<br><span class="badge badge-warn">No room allotted</span>' : ''));
       return `<tr>
         <td style="font-family:monospace; font-size:0.78rem;">${esc(b.id)}</td>
         <td>${esc(b.name)}<br>${esc(b.phone)}<br>${esc(b.email)}</td>
-        <td>${esc(b.roomType)}</td>
+        <td>${roomCell}</td>
         <td>${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}<br>${b.stayType ? esc(stayLabel(b)) : ''}${b.updatedAt && b.status === 'confirmed' ? '<br><span class="badge badge-warn">Edited by guest</span>' : ''}</td>
         <td>${occupantsHtml(b)}</td>
         <td>${statusCell}</td>
         <td>${esc(fmtDate(b.submittedAt))}</td>
         <td class="actions-cell">
-          ${open ? `<button class="btn btn-rust btn-sm" onclick="openPayModal('${b.id}')">Confirm payment</button>` : ''}
+          ${open ? `<button class="btn btn-rust btn-sm" onclick="openPayModal('${b.id}')">Review &amp; confirm</button>` : ''}
+          ${b.status === 'confirmed' && ready ? `<button class="btn btn-outline btn-sm" onclick="openRoomModal('${b.id}')">${b.roomNumber ? 'Change room' : 'Allot room'}</button>` : ''}
           ${b.status === 'confirmed' && b.payment ? `<button class="btn btn-blue btn-sm" onclick="adminBill('${b.id}')">Bill (PDF)</button>` : ''}
           <button class="btn btn-teal btn-sm" onclick="whatsappGuest('${b.id}')">WhatsApp guest</button>
           <button class="btn btn-outline btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
@@ -2058,12 +2322,20 @@
       </tr>`;
     }).join('') || `<tr><td colspan="8" style="color:var(--muted);">No bookings yet.</td></tr>`;
   }
+  function waRejectText(b){
+    return [
+      `Hello ${b.name},`,
+      `We are sorry — we could not confirm your CodeKasa booking ${b.id} (${b.roomType}, ${fmtDate(b.moveIn)} to ${fmtDate(b.checkOut)}).`,
+      b.rejectReason || 'No room is available for the dates requested.',
+      'If you have already paid, please call +91 81068 12341 and we will sort out your payment. You are welcome to choose other dates and book again.'
+    ].join('\n');
+  }
   function whatsappGuest(id){
     const b = getBookings().find(x => x.id === id);
     if (!b) return;
     const phone = normPhone(b.phone);
     if (vPhone(phone)){ alert('This booking has no valid mobile number.'); return; }
-    window.open(waLink(phone, b.status === 'confirmed' ? waGuestText(b) : waPendingText(b)), '_blank');
+    window.open(waLink(phone, b.status === 'confirmed' ? waGuestText(b) : (b.status === 'rejected' ? waRejectText(b) : waPendingText(b))), '_blank');
   }
   function adminBill(id){
     const b = getBookings().find(x => x.id === id);
@@ -2085,11 +2357,49 @@
     window.open(b.idCardUrl, '_blank');
   }
 
-  // --- confirm a payment (the only way a booking becomes "confirmed") ---
+  // --- review a booking: rooms free on its dates, then confirm (after payment) or reject ---
   let payModalId = null;
   function expectedTotal(b){
     const count = b.stayType === 'day' ? Number(b.nights) : Number(b.months);
     return amountsFor(b.roomType, listedPrice(b.roomType), count).total;
+  }
+  function occFor(b){ return buildOccupancy(getBookings(), getTenants(), b.id); }     // everyone else's stays (not this booking's own)
+  function availBoxHtml(b, plain){
+    const rooms = getRooms();
+    if (!inventoryReady(rooms)) return `<div class="avail-line avail-warn" style="margin:0 0 12px;">The room list is not set up yet. Open the <strong>Rooms</strong> tab and click “Load CodeKasa standard rooms (29)” so availability can be checked. Until then you can confirm without a room.</div>`;
+    const q = reqOf(b), occ = occFor(b);
+    const elig = eligibleRooms(rooms, q), free = freeEligible(rooms, occ, q), comp = competingRequests(rooms, getBookings(), b);
+    const lines = GROUP_ORDER.map(g => {
+      const e = elig.filter(r => r.group === g); if (!e.length) return '';
+      const f = free.filter(r => r.group === g);
+      return `<li>${esc(ROOM_GROUPS[g].label)}: <strong>${f.length}</strong> of ${e.length} free${f.length ? ' (' + f.map(r => esc(r.number)).join(', ') + ')' : ''}</li>`;
+    }).join('');
+    let head = '';
+    if (!plain){
+      let cls, text;
+      if (!elig.length){
+        cls = 'avail-bad'; text = `No room in your list suits this group (${q.total} people). <strong>Suggested: REJECT</strong>, or arrange it by phone.`;
+      } else if (!free.length){
+        const next = earliestStart(rooms, occ, q, q.from, addDaysISO(q.from, 400));
+        cls = 'avail-bad'; text = `<strong>Suggested: REJECT</strong> — no suitable room is free from ${esc(fmtDate(q.from))} to ${esc(fmtDate(q.to))}.${next ? ' The earliest check-in with a room free is <strong>' + esc(fmtDate(next)) + '</strong>.' : ''}`;
+      } else if (comp.length >= free.length){
+        cls = 'avail-warn'; text = `<strong>Suggested: CONFIRM</strong> — but ${comp.length} other request${comp.length > 1 ? 's are' : ' is'} waiting for the same kind of room on overlapping dates and only ${free.length} room${free.length > 1 ? 's are' : ' is'} free. The first one you confirm gets the room.`;
+      } else {
+        cls = 'avail-ok'; text = `<strong>Suggested: CONFIRM</strong> — room <strong>${esc(free[0].number)}</strong> (${esc(roomLabel(free[0]))}) is free for these dates.`;
+      }
+      head = `<div class="avail-line ${cls}" style="margin:0 0 12px;">${text}</div>`;
+    }
+    const compTxt = plain ? '' : (comp.length ? `Other requests for the same kind of room on overlapping dates: <strong>${comp.length}</strong> (${comp.filter(x => x.status === 'payment_submitted').length} with payment submitted).` : 'No other requests are competing for these dates.');
+    return `${head}<div class="avail-detail">Looking for: ${esc(b.roomType)} · ${esc(guestsLabel(b))} · ${q.stay === 'day' ? 'day / week stay' : 'monthly stay'}<br>Dates: ${esc(fmtDate(q.from))} → ${esc(fmtDate(q.to))}<ul>${lines || '<li>No matching room category.</li>'}</ul>${compTxt}</div>`;
+  }
+  function roomOptionsHtml(b, selected){
+    const rooms = getRooms(), q = reqOf(b), occ = occFor(b);
+    const free = freeEligible(rooms, occ, q), other = otherFree(rooms, occ, q);
+    const opt = (r, tag) => `<option value="${esc(r.number)}"${selected && String(r.number) === String(selected) ? ' selected' : ''}>${esc(r.number)} — ${esc(roomLabel(r))}${tag || ''}</option>`;
+    let h = (free.length || selected) ? '' : '<option value="">— choose a room —</option>';
+    h += free.map((r, i) => opt(r, i === 0 && !selected ? ' (suggested)' : '')).join('');
+    if (other.length) h += `<optgroup label="Other free rooms — not the usual kind for this guest">${other.map(r => opt(r)).join('')}</optgroup>`;
+    return h;
   }
   function pmMethodChanged(){
     const m = val('pmMethod');
@@ -2107,6 +2417,11 @@
       (pay && pay.utr ? `<br>UTR submitted by guest: <strong>${esc(pay.utr)}</strong>` : '<br>No UTR submitted yet (for cash / phone confirmations).');
     document.getElementById('pmWarn').style.display = mismatch ? 'block' : 'none';
     document.getElementById('pmWarn').textContent = mismatch ? `Check this: the amount on the booking (${rupee(b.amountDue || 0)}) does not match the price list (${rupee(expected)}). Confirm only the amount you actually received.` : '';
+    const ready = inventoryReady(getRooms());
+    document.getElementById('pmAvail').innerHTML = availBoxHtml(b);
+    document.getElementById('pmRoomField').classList.toggle('hidden', !ready);
+    if (ready) document.getElementById('pmRoom').innerHTML = roomOptionsHtml(b);
+    document.getElementById('pmRejectReason').value = 'No room is available for the dates requested.';
     document.getElementById('pmMethod').value = 'UPI';
     document.getElementById('pmRef').value = pay && pay.utr ? pay.utr : '';
     document.getElementById('pmAmount').value = expected;
@@ -2130,31 +2445,90 @@
     mark('pmDate', !d ? 'Enter the date received.' : (d > startOfDay(new Date()) ? 'The date cannot be in the future.' : ''));
     return first ? { ok: false, first } : { ok: true, method, ref: method === 'UPI' ? normUtr(ref) : ref, amount, paidOn };
   }
+  function showAdminNotice(html){
+    document.getElementById('adminNotice').innerHTML = `<div class="confirm-msg" style="display:block;">${html}</div>`;
+    document.getElementById('adminNotice').scrollIntoView({ block: 'nearest' });
+  }
   async function savePayConfirm(){
     const b = getBookings().find(x => x.id === payModalId);
     if (!b) return;
     const v = vPayConfirm();
     if (!v.ok){ document.getElementById(v.first).focus(); return; }
-    const btn = document.getElementById('pmSaveBtn'), errEl = document.getElementById('pmErr');
-    btn.disabled = true; btn.textContent = 'Confirming…'; errEl.textContent = '';
+    const errEl = document.getElementById('pmErr');
+    errEl.textContent = '';
+    // the room: must be chosen, and must still be free right now
+    const ready = inventoryReady(getRooms());
+    let room = '';
+    if (ready){
+      room = val('pmRoom');
+      if (!room){ errEl.textContent = 'Choose a room to allot, or reject this booking.'; return; }
+      const q = reqOf(b);
+      if (!isFree(occFor(b), room, q.from, q.to)){ errEl.textContent = `Room ${room} is not free for these dates. Please choose another room.`; return; }
+      const usual = eligibleRooms(getRooms(), q).some(r => String(r.number) === String(room));
+      if (!usual && !confirm(`Room ${room} is not the usual kind of room for this guest (${b.roomType}, ${guestsLabel(b)}). Allot it anyway?`)) return;
+    }
+    const btn = document.getElementById('pmSaveBtn');
+    btn.disabled = true; btn.textContent = 'Confirming…';
     try{
       const nowIso = new Date().toISOString();
       const payment = { method: v.method, amount: v.amount, paidOn: v.paidOn, refMasked: v.ref ? maskRef(v.ref) : '' };
       const batch = writeBatch(db);
-      batch.update(doc(db, 'bookings', b.id), { status: 'confirmed', payment, confirmedAt: nowIso, updatedAt: nowIso });
+      batch.update(doc(db, 'bookings', b.id), { status: 'confirmed', payment, confirmedAt: nowIso, updatedAt: nowIso, ...(room ? { roomNumber: String(room) } : {}) });
       batch.set(doc(db, 'bookingPayments', b.id), { utr: v.ref, method: v.method, amount: v.amount, paidOn: v.paidOn, verified: true, confirmedAt: nowIso, name: b.name, phone: b.phone, amountDue: b.amountDue || 0 }, { merge: true });
       await batch.commit();
-      const done = { ...b, status: 'confirmed', payment };
+      const done = { ...b, status: 'confirmed', payment, ...(room ? { roomNumber: String(room) } : {}) };
       closePayModal();
-      const notice = document.getElementById('adminNotice');
       const phone = normPhone(b.phone);
-      notice.innerHTML = `<div class="confirm-msg" style="display:block;">Booking <strong>${esc(b.id)}</strong> is now confirmed.
+      showAdminNotice(`Booking <strong>${esc(b.id)}</strong> is now confirmed${room ? ' — <strong>room ' + esc(room) + '</strong>' : ''}.
         ${vPhone(phone) ? '' : `<a class="btn btn-wa btn-sm" style="margin-left:10px;" target="_blank" rel="noopener" href="${waLink(phone, waGuestText(done))}">Send confirmation to ${esc(b.name)} on WhatsApp</a>`}
-        <button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminBill('${b.id}')">Open bill (PDF)</button></div>`;
+        <button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminBill('${b.id}')">Open bill (PDF)</button>`);
     } catch(e){
       console.error(e);
       errEl.textContent = 'Could not save. Please check your connection and try again.';
     } finally { btn.disabled = false; btn.textContent = 'Confirm booking'; }
+  }
+  async function rejectFromModal(){
+    const b = getBookings().find(x => x.id === payModalId);
+    if (!b) return;
+    const reason = (val('pmRejectReason').trim() || 'No room is available for the dates requested.').slice(0, 160);
+    if (!confirm(`Reject booking ${b.id}?\n\nThe guest will see: “${reason}”. If they have already paid, you will need to refund them yourself.`)) return;
+    const errEl = document.getElementById('pmErr');
+    try{
+      const nowIso = new Date().toISOString();
+      await updateDoc(doc(db, 'bookings', b.id), { status: 'rejected', rejectReason: reason, rejectedAt: nowIso, updatedAt: nowIso });
+      closePayModal();
+      const phone = normPhone(b.phone);
+      showAdminNotice(`Booking <strong>${esc(b.id)}</strong> was rejected.
+        ${vPhone(phone) ? '' : `<a class="btn btn-wa btn-sm" style="margin-left:10px;" target="_blank" rel="noopener" href="${waLink(phone, waRejectText({ ...b, rejectReason: reason }))}">Tell ${esc(b.name)} on WhatsApp</a>`}`);
+    } catch(e){ console.error(e); errEl.textContent = 'Could not reject. Please try again.'; }
+  }
+
+  // --- allot / change the room of a confirmed booking ---
+  let roomModalId = null;
+  function openRoomModal(id){
+    const b = getBookings().find(x => x.id === id);
+    if (!b) return;
+    roomModalId = id;
+    document.getElementById('rmInfo').innerHTML = `<strong>${esc(b.id)}</strong> · ${esc(b.name)} · ${esc(b.roomType)}<br>${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))} · ${esc(guestsLabel(b))}<br>Current room: <strong>${esc(b.roomNumber || 'none yet')}</strong>`;
+    document.getElementById('rmAvail').innerHTML = availBoxHtml(b, true);
+    document.getElementById('rmRoom').innerHTML = roomOptionsHtml(b, b.roomNumber);
+    document.getElementById('rmErr').textContent = '';
+    document.getElementById('roomModal').classList.remove('hidden');
+  }
+  function closeRoomModal(){ document.getElementById('roomModal').classList.add('hidden'); roomModalId = null; }
+  async function saveRoomChange(){
+    const b = getBookings().find(x => x.id === roomModalId);
+    if (!b) return;
+    const room = val('rmRoom'), errEl = document.getElementById('rmErr');
+    if (!room){ errEl.textContent = 'Choose a room.'; return; }
+    const q = reqOf(b);
+    if (!isFree(occFor(b), room, q.from, q.to)){ errEl.textContent = `Room ${room} is not free for these dates.`; return; }
+    if (!eligibleRooms(getRooms(), q).some(r => String(r.number) === String(room)) && !confirm(`Room ${room} is not the usual kind of room for this guest. Use it anyway?`)) return;
+    try{
+      await updateDoc(doc(db, 'bookings', b.id), { roomNumber: String(room), updatedAt: new Date().toISOString() });
+      closeRoomModal();
+      showAdminNotice(`Booking <strong>${esc(b.id)}</strong> is now in <strong>room ${esc(room)}</strong>. Tell the guest: they can see it under “Retrieve my booking”.`);
+    } catch(e){ console.error(e); errEl.textContent = 'Could not save. Please try again.'; }
   }
 
   function daysBetween(dateStr){
@@ -2210,6 +2584,7 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-'+tab));
     if (tab==='occupancy') renderOccupancy();
+    if (tab==='availability') renderAvailability();
     if (tab==='reports') renderReports();
     if (tab==='enquiries') renderEnquiries();
     if (tab==='tenants') renderTenantRoomOptions();
@@ -2218,60 +2593,152 @@
   }
 
   // ---------- Rooms ----------
+  const PARTY_IDS = ['single', 'twin', 'family'];
+  function roomGroupChanged(){
+    const g = ROOM_GROUPS[val('roomGroup')];
+    if (!g) return;
+    document.getElementById('roomMaxGuests').value = g.maxGuests;
+    PARTY_IDS.forEach(p => { document.getElementById('roomParty_' + p).checked = g.parties.includes(p); });
+  }
+  function resetRoomForm(){
+    editingRoomId = null;
+    document.getElementById('roomNumber').value = '';
+    document.getElementById('roomGroup').value = '';
+    document.getElementById('roomMaxGuests').value = '';
+    PARTY_IDS.forEach(p => { document.getElementById('roomParty_' + p).checked = false; });
+    document.getElementById('roomAc').value = 'both';
+    document.getElementById('roomFacilities').value = '';
+    document.getElementById('roomActive').checked = true;
+    document.getElementById('roomSubmitBtn').textContent = 'Add Room';
+    document.getElementById('roomFormTitle').textContent = 'Add a room';
+  }
   async function submitRoom(){
     const number = document.getElementById('roomNumber').value.trim();
-    const type = document.getElementById('roomType').value;
-    const price = parseFloat(document.getElementById('roomPrice').value) || 0;
-    const facilities = document.getElementById('roomFacilities').value.trim();
-    if (!number){ alert('Please enter a room number.'); return; }
-
+    const group = val('roomGroup'), g = ROOM_GROUPS[group];
+    const maxGuests = Number(val('roomMaxGuests'));
+    const parties = PARTY_IDS.filter(p => document.getElementById('roomParty_' + p).checked);
+    if (!/^[A-Za-z0-9-]{1,6}$/.test(number)){ alert('Please enter a room number (letters / digits, up to 6 characters).'); return; }
+    if (!g){ alert('Please choose a category for this room.'); return; }
+    if (!Number.isInteger(maxGuests) || maxGuests < 1 || maxGuests > 12){ alert('Max guests must be a whole number from 1 to 12.'); return; }
+    if (!parties.length){ alert('Tick at least one of Single / Twin / Family for this room.'); return; }
+    const data = { number, group, stay: g.stay, maxGuests, parties, ac: val('roomAc'), active: document.getElementById('roomActive').checked,
+                   facilities: document.getElementById('roomFacilities').value.trim(), type: g.label };
     try{
       if (editingRoomId){
-        await updateDoc(doc(db, 'rooms', editingRoomId), { number, type, price, facilities });
-        editingRoomId = null;
-        document.getElementById('roomSubmitBtn').textContent = 'Add Room';
-        document.getElementById('roomFormTitle').textContent = 'Add a room';
+        await updateDoc(doc(db, 'rooms', editingRoomId), data);
       } else {
-        if (getRooms().some(r => r.number === number)){ alert('A room with this number already exists.'); return; }
-        await addDoc(collection(db, 'rooms'), { number, type, price, facilities, status:'available' });
+        if (getRooms().some(r => String(r.number) === number)){ alert('A room with this number already exists.'); return; }
+        await addDoc(collection(db, 'rooms'), { ...data, price: 0, status: 'available' });
       }
     } catch(e){ console.error(e); alert('Could not save this room. Please try again.'); return; }
-
-    document.getElementById('roomNumber').value = '';
-    document.getElementById('roomPrice').value = '';
-    document.getElementById('roomFacilities').value = '';
+    resetRoomForm();
   }
   function editRoom(id){
-    const room = getRooms().find(r => r.id===id);
+    const room = getRooms().find(r => r.id === id);
     if (!room) return;
     editingRoomId = id;
     document.getElementById('roomNumber').value = room.number;
-    document.getElementById('roomType').value = room.type;
-    document.getElementById('roomPrice').value = room.price;
-    document.getElementById('roomFacilities').value = room.facilities;
+    document.getElementById('roomGroup').value = ROOM_GROUPS[room.group] ? room.group : '';
+    document.getElementById('roomMaxGuests').value = room.maxGuests || (ROOM_GROUPS[room.group] ? ROOM_GROUPS[room.group].maxGuests : '');
+    const parties = Array.isArray(room.parties) ? room.parties : (ROOM_GROUPS[room.group] ? ROOM_GROUPS[room.group].parties : []);
+    PARTY_IDS.forEach(p => { document.getElementById('roomParty_' + p).checked = parties.includes(p); });
+    document.getElementById('roomAc').value = room.ac || 'both';
+    document.getElementById('roomFacilities').value = room.facilities || '';
+    document.getElementById('roomActive').checked = room.active !== false;
     document.getElementById('roomSubmitBtn').textContent = 'Save changes';
-    document.getElementById('roomFormTitle').textContent = 'Edit room';
-    window.scrollTo({top:0, behavior:'smooth'});
+    document.getElementById('roomFormTitle').textContent = 'Edit room ' + room.number;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   async function deleteRoom(id){
-    if (!confirm('Delete this room? This will not remove any tenant record already linked to it.')) return;
+    if (!confirm('Delete this room? Bookings and tenants already linked to it keep their room number.')) return;
     try{ await deleteDoc(doc(db, 'rooms', id)); } catch(e){ console.error(e); alert('Could not delete this room.'); }
   }
+  // One click: add (or classify) the 29 CodeKasa rooms exactly as planned.
+  async function seedStandardRooms(){
+    const total = Object.values(STANDARD_ROOMS).reduce((n, l) => n + l.length, 0);
+    if (!confirm(`Add the ${total} CodeKasa rooms (101-106, 201-206, 301-306, 401-406, 501-505) with their categories?\n\nRooms that already have a category are left exactly as they are.`)) return;
+    const btn = document.getElementById('seedRoomsBtn');
+    btn.disabled = true;
+    let added = 0, updated = 0, kept = 0;
+    try{
+      const batch = writeBatch(db);
+      for (const [group, list] of Object.entries(STANDARD_ROOMS)){
+        const g = ROOM_GROUPS[group];
+        for (const number of list){
+          const existing = getRooms().find(r => String(r.number) === number);
+          const fields = { number, group, stay: g.stay, maxGuests: g.maxGuests, parties: g.parties, ac: 'both', active: true, type: g.label };
+          if (existing && isClassified(existing)){ kept++; }
+          else if (existing){ batch.update(doc(db, 'rooms', existing.id), fields); updated++; }
+          else { batch.set(doc(db, 'rooms', 'room-' + number), { ...fields, price: 0, facilities: '', status: 'available' }); added++; }
+        }
+      }
+      await batch.commit();
+      alert(`Done. ${added} room${added === 1 ? '' : 's'} added, ${updated} updated, ${kept} already set up.`);
+    } catch(e){ console.error(e); alert('Could not load the rooms. Please check your connection and try again.'); }
+    finally { btn.disabled = false; }
+  }
   function renderRoomsTable(){
-    const rooms = getRooms();
     const tbody = document.getElementById('roomsTableBody');
-    tbody.innerHTML = rooms.map(r => `
-      <tr>
-        <td>${esc(r.number)}</td>
-        <td>${esc(r.type)}</td>
-        <td>₹${Number(r.price).toLocaleString('en-IN')}</td>
+    const rooms = [...getRooms()].sort((a, b) => natCmp(a.number, b.number));
+    tbody.innerHTML = rooms.map(r => {
+      const g = ROOM_GROUPS[r.group];
+      const parties = Array.isArray(r.parties) ? r.parties : (g ? g.parties : []);
+      return `<tr>
+        <td><strong>${esc(r.number)}</strong></td>
+        <td>${g ? esc(g.label) : '<span class="badge badge-warn">Set a category</span> ' + esc(r.type || '')}</td>
+        <td>${g ? (g.stay === 'day' ? 'Day / week' : 'Monthly') : '—'}</td>
+        <td>${g ? esc(r.maxGuests || g.maxGuests) : '—'}</td>
+        <td>${parties.map(p => esc(p.charAt(0).toUpperCase() + p.slice(1))).join(', ') || '—'}</td>
+        <td>${r.ac === 'ac' ? 'AC only' : (r.ac === 'nonac' ? 'Non-AC only' : 'Either')}</td>
+        <td><span class="badge ${g && r.active !== false ? 'badge-ok' : 'badge-bad'}">${g && r.active !== false ? 'Yes' : 'No'}</span></td>
         <td>${esc(r.facilities) || '—'}</td>
-        <td><span class="badge ${r.status==='occupied' ? 'badge-bad' : 'badge-ok'}">${r.status==='occupied' ? 'Occupied' : 'Available'}</span></td>
         <td class="actions-cell">
           <button class="btn btn-outline btn-sm" onclick="editRoom('${r.id}')">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRoom('${r.id}')">Delete</button>
         </td>
-      </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">No rooms added yet.</td></tr>`;
+      </tr>`;
+    }).join('') || `<tr><td colspan="9" style="color:var(--muted);">No rooms yet. Click “Load CodeKasa standard rooms (29)” above to add them in one go.</td></tr>`;
+  }
+
+  // ---------- Availability: publish (dates only) + admin view ----------
+  function scheduleAvailSync(){
+    if (!bookingsLoaded || !tenantsLoaded) return;          // never publish a half-loaded picture
+    clearTimeout(availTimer);
+    availTimer = setTimeout(syncAvailability, 600);
+  }
+  async function syncAvailability(){
+    if (!auth.currentUser) return;
+    const occ = pruneOccupancy(buildOccupancy(getBookings(), getTenants()), localISO(new Date()));
+    const json = JSON.stringify(occ);
+    if (json === lastAvailJson) return;
+    try{
+      await setDoc(doc(db, 'availability', 'current'), { rooms: occ, updatedAt: new Date().toISOString() });
+      lastAvailJson = json;
+    } catch(e){ console.error('availability sync failed', e); }
+  }
+  function renderAvailability(){
+    const body = document.getElementById('avBody');
+    const rooms = getRooms().filter(isClassified);
+    if (!document.getElementById('avFrom').value) document.getElementById('avFrom').value = localISO(new Date());
+    if (!document.getElementById('avTo').value) document.getElementById('avTo').value = addDaysISO(document.getElementById('avFrom').value, 1);
+    if (!rooms.length){ body.innerHTML = '<p class="hint">Set up your rooms first: Rooms tab → “Load CodeKasa standard rooms (29)”.</p>'; return; }
+    const from = val('avFrom'), to = val('avTo');
+    if (!parseISO(from) || !parseISO(to) || to <= from){ body.innerHTML = '<p class="hint" style="color:var(--bad);">Choose a check-out date after the check-in date.</p>'; return; }
+    const occ = buildOccupancy(getBookings(), getTenants());
+    let totalFree = 0;
+    const groups = GROUP_ORDER.map(g => {
+      const list = rooms.filter(r => r.group === g).sort((a, b) => natCmp(a.number, b.number));
+      if (!list.length) return '';
+      const chips = list.map(r => {
+        const off = r.active === false, free = !off && isFree(occ, r.number, from, to);
+        if (free) totalFree++;
+        const why = off ? 'Not bookable' : (free ? 'Free' : (occ[r.number] || []).filter(rg => overlaps(rg, from, to)).map(rg => fmtDate(rg.f) + ' → ' + (rg.t === FAR_FUTURE ? 'open-ended' : fmtDate(rg.t))).join('; '));
+        return `<span class="av-chip ${off ? 'av-off' : (free ? 'av-free' : 'av-busy')}" title="${esc(why)}">${esc(r.number)}</span>`;
+      }).join('');
+      const nFree = list.filter(r => r.active !== false && isFree(occ, r.number, from, to)).length;
+      return `<div class="av-group"><h4>${esc(ROOM_GROUPS[g].label)} — ${nFree} of ${list.length} free</h4><div class="av-chips">${chips}</div></div>`;
+    }).join('');
+    body.innerHTML = `<p style="margin:14px 0 12px;"><strong>${totalFree}</strong> of ${rooms.length} rooms are free from ${esc(fmtDate(from))} to ${esc(fmtDate(to))}.</p>${groups}`;
   }
 
   // ---------- Occupancy ----------
@@ -2317,7 +2784,7 @@
     } else {
       panel.innerHTML = `
         <strong>Room ${esc(room.number)} — Available</strong><br>
-        Type: ${esc(room.type)} · Price: ₹${Number(room.price).toLocaleString('en-IN')}/mo<br>
+        Category: ${esc(roomLabel(room))}${Number(room.price) > 0 ? ' · Price: ₹' + Number(room.price).toLocaleString('en-IN') + '/mo' : ''}<br>
         Facilities: ${esc(room.facilities) || '—'}<br>
         <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchTab('tenants'); document.getElementById('tenantRoom').value='${esc(room.number)}'; updateRentFromRoom();">Add tenant to this room</button>`;
     }
@@ -2328,7 +2795,7 @@
     const rooms = getRooms();
     const select = document.getElementById('tenantRoom');
     const current = select.value;
-    select.innerHTML = rooms.map(r => `<option value="${esc(r.number)}">${esc(r.number)} — ${esc(r.type)} (₹${Number(r.price).toLocaleString('en-IN')})</option>`).join('');
+    select.innerHTML = [...rooms].sort((a, b) => natCmp(a.number, b.number)).map(r => `<option value="${esc(r.number)}">${esc(r.number)} — ${esc(roomLabel(r))}${Number(r.price) > 0 ? ' (₹' + Number(r.price).toLocaleString('en-IN') + ')' : ''}</option>`).join('');
     if (current) select.value = current;
     select.onchange = updateRentFromRoom;
     if (!editingTenantId) updateRentFromRoom();
@@ -2336,7 +2803,7 @@
   function updateRentFromRoom(){
     const roomNumber = document.getElementById('tenantRoom').value;
     const room = getRooms().find(r => r.number === roomNumber);
-    if (room) document.getElementById('tenantRent').value = room.price;
+    if (room && Number(room.price) > 0) document.getElementById('tenantRent').value = room.price;
   }
   function onStayTypeChange(){
     const isDay = document.getElementById('tenantStayType').value === 'day';
@@ -2481,7 +2948,7 @@
     document.getElementById('billPanel').classList.remove('empty');
     document.getElementById('billPanel').innerHTML = `
       <h3 style="margin-bottom:4px;">Bill — ${esc(t.name)}</h3>
-      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Room ${esc(t.roomNumber)} (${room ? esc(room.type) : '—'}) · ${t.stayType==='day' ? 'Day stay' : 'Month stay'} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}</p>
+      <p style="color:var(--muted); margin-top:0; font-size:0.85rem;">Room ${esc(t.roomNumber)} (${room ? esc(roomLabel(room)) : '—'}) · ${t.stayType==='day' ? 'Day stay' : 'Month stay'} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}</p>
       <table style="max-width:520px;">
         <tr><td>Rent</td><td style="text-align:right;">₹${rent.toLocaleString('en-IN')}</td></tr>
         <tr><td>Electricity ${hasReadings ? `(${units} units × ₹${rate})` : '(meter readings not entered)'}</td><td style="text-align:right;">₹${elecCharge.toLocaleString('en-IN')}</td></tr>
@@ -2805,13 +3272,15 @@
 
   // ---------- Visitor view ----------
   function renderVisitorRooms(){
-    const rooms = getRooms().filter(r => r.status !== 'occupied');
-    document.getElementById('visitorRoomsGrid').innerHTML = rooms.map(r => `
-      <div class="visitor-room-card">
-        <h3>${esc(r.type)}</h3>
-        <div class="price">₹${Number(r.price).toLocaleString('en-IN')} / mo</div>
-        <div class="facilities">${esc(r.facilities) || 'Contact us for details'}</div>
-      </div>`).join('') || `<p style="color:var(--muted);">No rooms currently available — please send an enquiry and we'll notify you.</p>`;
+    document.getElementById('visitorRoomsGrid').innerHTML = Object.keys(LISTED_PRICES).map(t => {
+      const day = stayTypeOf(t) === 'day';
+      return `<div class="visitor-room-card">
+        <h3>${esc(t)}</h3>
+        <div class="price">${rupee(listedPrice(t))} / ${day ? 'day' : 'month'}</div>
+        <div class="facilities">${day ? 'Day or week stays' : 'Minimum 3 months'}</div>
+        <a class="btn btn-rust btn-sm" style="margin-top:10px;" href="admin.html?book=${encodeURIComponent(t)}">Book now</a>
+      </div>`;
+    }).join('');
   }
   async function submitEnquiry(){
     let first = null;
@@ -2851,7 +3320,9 @@
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
     bkIdTypeChanged, whatsappGuest,
     submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
-    adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged
+    adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged,
+    rejectFromModal, openRoomModal, closeRoomModal, saveRoomChange,
+    roomGroupChanged, seedStandardRooms, renderAvailability
   });
 </script>
 
