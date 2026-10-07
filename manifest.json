@@ -128,5 +128,11 @@
       "form_factor": "narrow",
       "label": "Book your room in a few taps"
     }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://codekasa.com/manifest.json"
+    }
   ]
 }

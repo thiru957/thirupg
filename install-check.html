@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>CodeKasa — install check</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#1C1A18">
+<script>
+  /* catch the browser's "installable" signal as early as possible */
+  window.__ckPrompt = null; window.__ckPromptAt = null;
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); window.__ckPrompt = e; window.__ckPromptAt = Date.now(); window.dispatchEvent(new Event('ck-prompt-ready')); });
+</script>
+<style>
+  :root{ --ink:#1E1B18; --muted:#7A7268; --line:#E5E0D8; --rust:#B8935A; --ivory:#F5F1EA; --ok:#1F7A3E; --bad:#A8322A; --warn:#9A6A12; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:'Work Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background:var(--ivory); color:var(--ink); line-height:1.5; }
+  .wrap{ max-width:760px; margin:0 auto; padding:28px 18px 60px; }
+  h1{ font-family:Georgia, 'Times New Roman', serif; font-size:1.7rem; margin:0 0 6px; }
+  .sub{ color:var(--muted); margin:0 0 18px; font-size:0.95rem; }
+  .card{ background:#fff; border:1px solid var(--line); border-top:3px solid var(--rust); padding:6px 18px 12px; margin-bottom:16px; }
+  .verdict{ padding:16px 18px; margin-bottom:16px; border-left:4px solid var(--muted); background:#fff; font-size:1rem; }
+  .verdict.ok{ border-color:var(--ok); } .verdict.bad{ border-color:var(--bad); } .verdict.warn{ border-color:var(--warn); }
+  .row{ display:grid; grid-template-columns:28px 1fr; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:0.92rem; }
+  .row:last-child{ border-bottom:none; }
+  .mark{ font-weight:700; text-align:center; }
+  .ok .mark, .mark.ok{ color:var(--ok); } .mark.bad{ color:var(--bad); } .mark.warn{ color:var(--warn); } .mark.info{ color:var(--muted); }
+  .label{ font-weight:600; }
+  .detail{ color:var(--muted); font-size:0.85rem; word-break:break-word; }
+  .btns{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 0; }
+  button, a.btn{ font:inherit; font-size:0.85rem; padding:11px 18px; border:1px solid var(--rust); background:#fff; color:var(--ink); cursor:pointer; text-decoration:none; border-radius:2px; letter-spacing:0.04em; }
+  button.primary{ background:var(--rust); color:#1A1714; font-weight:600; }
+  button:disabled{ opacity:0.4; cursor:default; }
+  textarea{ width:100%; height:0; border:0; padding:0; position:absolute; left:-9999px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CodeKasa install check</h1>
+  <p class="sub">This page checks, on this device and in this browser, whether CodeKasa can be installed as an app, and tells you what is stopping it if not.</p>
+  <div id="verdict" class="verdict">Checking…</div>
+  <div class="card" id="results"></div>
+  <div class="btns">
+    <button class="primary" id="tryInstall" disabled>Install CodeKasa now</button>
+    <button id="runAgain">Check again</button>
+    <button id="copyBtn">Copy report</button>
+    <button id="resetBtn">Reset app cache &amp; reload</button>
+    <a class="btn" href="index.html">Back to website</a>
+  </div>
+  <p class="sub" id="copyNote" style="margin-top:12px;"></p>
+  <textarea id="reportText" aria-hidden="true"></textarea>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isFirefox = /Firefox|FxiOS/i.test(ua);
+  const isSafariMac = !isIOS && /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua);
+  const isInApp = /FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|Snapchat|Line\/|GSA\/|; wv\)/i.test(ua);
+  const isChromium = !isIOS && !isFirefox && !isSafariMac && !isInApp && /Chrome|Chromium|Edg|OPR|SamsungBrowser/i.test(ua);
+  const standalone = () => (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let report = [];
+
+  function browserName(){
+    if (isInApp) return 'A page opened inside another app (WhatsApp / Facebook / Instagram / similar)';
+    if (isIOS) return 'iPhone / iPad';
+    if (/Edg\//.test(ua)) return 'Microsoft Edge'; if (/SamsungBrowser/.test(ua)) return 'Samsung Internet'; if (/OPR\//.test(ua)) return 'Opera';
+    if (isFirefox) return 'Firefox'; if (isSafariMac) return 'Safari on Mac'; if (/Chrome|Chromium/.test(ua)) return 'Chrome'; return 'Unknown browser';
+  }
+  async function head(url){ try { const r = await fetch(url, { cache: 'no-store' }); return { ok: r.ok, status: r.status, type: r.headers.get('content-type') || '', res: r }; } catch(e){ return { ok: false, status: 0, type: '', err: e }; } }
+  function imgSize(url){ return new Promise(res => { const i = new Image(); i.onload = () => res({ w: i.naturalWidth, h: i.naturalHeight }); i.onerror = () => res(null); i.src = url; }); }
+
+  async function run(){
+    report = []; $('results').innerHTML = ''; $('tryInstall').disabled = true; $('verdict').className = 'verdict'; $('verdict').textContent = 'Checking…';
+    const add = (state, label, detail) => {
+      report.push(`${state === 'ok' ? '[OK]  ' : state === 'bad' ? '[FAIL]' : state === 'warn' ? '[WARN]' : '[INFO]'} ${label}${detail ? ' — ' + detail.replace(/<[^>]+>/g, '') : ''}`);
+      const row = document.createElement('div'); row.className = 'row';
+      row.innerHTML = `<div class="mark ${state}">${state === 'ok' ? '✓' : state === 'bad' ? '✕' : state === 'warn' ? '!' : 'i'}</div><div><div class="label">${esc(label)}</div>${detail ? `<div class="detail">${detail}</div>` : ''}</div>`;
+      $('results').appendChild(row);
+    };
+    const problems = [];
+
+    add('info', 'Browser', esc(browserName()) + '<br>' + esc(ua));
+    add(window.isSecureContext ? 'ok' : 'bad', 'Secure page (https)', esc(location.origin));
+    if (!window.isSecureContext) problems.push('Open the site with https:// — installing needs a secure page.');
+    if (isIOS) add('warn', 'iPhone / iPad', 'Apple does not let any website install an app with one tap. Use Safari → Share → Add to Home Screen.');
+    if (isFirefox && !/Android/i.test(ua)) add('warn', 'Firefox on a computer', 'Firefox on Windows / Mac / Linux cannot install web apps. Use Chrome or Edge.');
+    if (isSafariMac) add('warn', 'Safari on Mac', 'Safari installs with File → Add to Dock (Safari 17 or newer). It never shows an Install button.');
+    if (isInApp) { add('bad', 'Opened inside another app', 'Apps like WhatsApp, Facebook and Instagram open links in their own mini-browser, which cannot install anything. Open the link in Chrome (or Safari on iPhone).'); problems.push('Open this page in Chrome / Safari itself, not inside another app.'); }
+
+    const sa = standalone();
+    add(sa ? 'warn' : 'info', 'Running as an installed app?', sa ? 'Yes — you are already inside the installed CodeKasa app.' : 'No — this is a normal browser tab.');
+
+    // manifest
+    const link = document.querySelector('link[rel="manifest"]');
+    let manifest = null, mUrl = link ? link.href : '';
+    if (!link){ add('bad', 'Manifest linked', 'This page has no manifest link.'); problems.push('Upload the latest index.html and manifest.json.'); }
+    else {
+      const r = await head(mUrl);
+      if (!r.ok){ add('bad', 'manifest.json loads', `Could not load it (error ${r.status || 'network'}). ${esc(mUrl)}`); problems.push('Upload manifest.json to the website.'); }
+      else {
+        try { manifest = await r.res.json(); add('ok', 'manifest.json loads', `${esc(r.status)} · ${esc(r.type || 'no content-type')}`); }
+        catch(e){ add('bad', 'manifest.json is valid', 'The file loads but is not valid JSON.'); problems.push('Upload a correct manifest.json.'); }
+      }
+    }
+    if (manifest){
+      const need = [['name', manifest.name || manifest.short_name], ['start_url', manifest.start_url], ['display', /standalone|fullscreen|minimal-ui/.test(manifest.display || '')], ['icons', Array.isArray(manifest.icons) && manifest.icons.length]];
+      const missing = need.filter(n => !n[1]).map(n => n[0]);
+      add(missing.length ? 'bad' : 'ok', 'Manifest has what Chrome needs', missing.length ? 'Missing: ' + missing.join(', ') : `name “${esc(manifest.name || manifest.short_name)}”, display “${esc(manifest.display)}”, start_url “${esc(manifest.start_url)}”`);
+      if (missing.length) problems.push('manifest.json is missing: ' + missing.join(', '));
+      for (const want of ['192x192', '512x512']){
+        const icon = (manifest.icons || []).find(i => (i.sizes || '').split(' ').includes(want) && (i.purpose || 'any').split(' ').includes('any'));
+        if (!icon){ add('bad', `${want} icon`, 'Not listed in manifest.json.'); problems.push(`manifest.json needs a ${want} icon.`); continue; }
+        const url = new URL(icon.src, mUrl).href, size = await imgSize(url);
+        if (!size){ add('bad', `${want} icon`, `Could not load ${esc(icon.src)} — the file is missing from the website.`); problems.push(`Upload ${icon.src}.`); }
+        else if (size.w < parseInt(want, 10)){ add('bad', `${want} icon`, `${esc(icon.src)} is only ${size.w}×${size.h}.`); problems.push(`${icon.src} is too small.`); }
+        else add('ok', `${want} icon`, `${esc(icon.src)} (${size.w}×${size.h})`);
+      }
+      const st = await head(new URL(manifest.start_url || '.', mUrl).href);
+      add(st.ok ? 'ok' : 'bad', 'Start page opens', st.ok ? `${esc(manifest.start_url)} → ${st.status}` : `${esc(manifest.start_url)} → error ${st.status || 'network'}`);
+      if (!st.ok) problems.push('The manifest start_url does not open.');
+    }
+
+    // service worker
+    if (!('serviceWorker' in navigator)) add(isChromium ? 'bad' : 'info', 'Service worker', 'This browser has no service worker support.');
+    else {
+      try { await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 4000))]); } catch(e){}      // give a just-registered helper a moment to start
+      let reg = null; try { reg = await navigator.serviceWorker.getRegistration(); } catch(e){}
+      if (!reg){ add('bad', 'Service worker (offline helper)', 'Not registered. Reload this page once, then check again. If it stays like this, service-worker.js is missing or blocked.'); problems.push('Reload once; if it persists, upload service-worker.js.'); }
+      else { const s = reg.active ? 'active' : (reg.waiting ? 'waiting' : 'installing'); add(reg.active ? 'ok' : 'warn', 'Service worker (offline helper)', `${s}${navigator.serviceWorker.controller ? ', controlling this page' : ', not yet controlling this page (reload once)'}`); }
+    }
+
+    // already installed?
+    let installed = false;
+    try { if (navigator.getInstalledRelatedApps){ const apps = await navigator.getInstalledRelatedApps(); installed = !!(apps && apps.length); add(installed ? 'warn' : 'info', 'CodeKasa already installed on this device?', installed ? 'Yes — your browser reports CodeKasa as installed. That is why it offers no second install. Open it from your apps list / Start menu / home screen.' : 'The browser does not report an installed copy.'); } else add('info', 'CodeKasa already installed on this device?', 'This browser cannot tell. If you installed it before, look for it in your apps list or Start menu; Chrome then shows “open in app” instead of “install”.'); }
+    catch(e){ add('info', 'CodeKasa already installed on this device?', 'Could not check.'); }
+
+    // does the browser offer the install?
+    let offered = !!window.__ckPrompt;
+    if (!offered && isChromium && !sa && !installed){
+      $('verdict').textContent = 'Waiting a few seconds for your browser to offer the install…';
+      await new Promise(res => { const t = setTimeout(res, 7000); window.addEventListener('ck-prompt-ready', () => { clearTimeout(t); res(); }, { once: true }); });
+      offered = !!window.__ckPrompt;
+    }
+    if (isChromium) add(offered ? 'ok' : 'warn', 'Your browser offers the install', offered ? 'Yes — the install dialog is ready.' : 'Not offered. See the verdict above.');
+    $('tryInstall').disabled = !offered;
+
+    // verdict in plain words
+    const v = $('verdict');
+    if (sa){ v.className = 'verdict ok'; v.innerHTML = '<strong>You are already using the installed CodeKasa app.</strong>'; }
+    else if (offered){ v.className = 'verdict ok'; v.innerHTML = '<strong>Good news: this browser can install CodeKasa.</strong> Press “Install CodeKasa now”. (On the website, the “Install app” buttons do the same.)'; }
+    else if (isIOS){ v.className = 'verdict warn'; v.innerHTML = '<strong>iPhone / iPad:</strong> open this site in <strong>Safari</strong>, tap the <strong>Share</strong> button, then <strong>Add to Home Screen</strong>. Apple does not allow a one-tap install.'; }
+    else if (isSafariMac){ v.className = 'verdict warn'; v.innerHTML = '<strong>Safari on Mac:</strong> choose <strong>File → Add to Dock…</strong> (Safari 17 or newer), or use Chrome / Edge for a one-click install.'; }
+    else if (isFirefox && !/Android/i.test(ua)){ v.className = 'verdict warn'; v.innerHTML = '<strong>Firefox on a computer cannot install apps.</strong> Open codekasa.com in Chrome or Edge.'; }
+    else if (isInApp){ v.className = 'verdict bad'; v.innerHTML = '<strong>This page is open inside another app.</strong> Open codekasa.com in Chrome (or Safari on iPhone) and try again.'; }
+    else if (installed){ v.className = 'verdict warn'; v.innerHTML = '<strong>CodeKasa is already installed on this device</strong>, so the browser does not offer another install. Open it from your apps list, Start menu or home screen.'; }
+    else if (problems.length){ v.className = 'verdict bad'; v.innerHTML = '<strong>Something on the website is stopping the install:</strong><ul style="margin:8px 0 0 18px; padding:0;">' + problems.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>'; }
+    else { v.className = 'verdict warn'; v.innerHTML = '<strong>Everything on the website is fine, but this browser has not offered the install.</strong> The usual reasons: (1) CodeKasa was installed before on this device; (2) you pressed “Cancel” on the install earlier and the browser pauses its offer for a while; (3) a private / incognito window. Try the install icon at the right end of the address bar or the browser menu ⋮ → <em>Install CodeKasa</em>; or press “Reset app cache &amp; reload” below and check again.'; }
+    report.unshift('CodeKasa install check · ' + new Date().toISOString() + ' · ' + location.origin);
+    $('reportText').value = report.join('\n') + '\n\nVerdict: ' + v.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  $('runAgain').addEventListener('click', run);
+  $('tryInstall').addEventListener('click', async () => {
+    const d = window.__ckPrompt; if (!d) return;
+    window.__ckPrompt = null; $('tryInstall').disabled = true;
+    try { await d.prompt(); const c = await d.userChoice; $('copyNote').textContent = c.outcome === 'accepted' ? 'Installed. Open CodeKasa from your apps list or home screen.' : 'You cancelled the install. You can try again after reloading the page.'; } catch(e){}
+  });
+  $('copyBtn').addEventListener('click', async () => {
+    const txt = $('reportText').value;
+    try { await navigator.clipboard.writeText(txt); $('copyNote').textContent = 'Report copied. You can paste it into a message.'; }
+    catch(e){ $('reportText').style.cssText = 'position:static;height:160px;border:1px solid #ccc;padding:8px;'; $('reportText').select(); $('copyNote').textContent = 'Select and copy the text below.'; }
+  });
+  $('resetBtn').addEventListener('click', async () => {
+    try { const regs = await navigator.serviceWorker.getRegistrations(); for (const r of regs) await r.unregister(); } catch(e){}
+    try { for (const k of await caches.keys()) await caches.delete(k); } catch(e){}
+    try { localStorage.removeItem('ck_install_dismissed'); } catch(e){}
+    location.reload();
+  });
+  window.addEventListener('ck-prompt-ready', () => { $('tryInstall').disabled = false; });
+  window.addEventListener('load', () => {
+    let reg = Promise.resolve();
+    try { if (navigator.serviceWorker) reg = navigator.serviceWorker.register('service-worker.js').catch(() => {}); } catch(e){}
+    reg.then(() => setTimeout(run, 300));
+  });
+})();
+</script>
+</body>
+</html>

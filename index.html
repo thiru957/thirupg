@@ -157,7 +157,7 @@
     cursor:pointer;
   }
 
-  @media (max-width:1190px){
+  @media (max-width:1230px){
     .nav-links{
       position:absolute; top:100%; left:0; right:0;
       background:var(--paper);
@@ -279,6 +279,77 @@
   .page-section{ display:none; }
   .page-section.active{ display:block; }
   .back-btn{ margin-bottom:20px; }
+  /* ---------- Home: hero + search bar (look and feel only) ---------- */
+  .hero{ padding:34px 0 128px; min-height:0; display:block; }
+  .hero .hero-content{ max-width:1080px; }
+  .hero h1{ font-size:clamp(2rem, 3.6vw, 3rem); }
+  .hero-sub{ margin-top:10px; font-size:1.05rem; }
+  .hero p.hero-desc{ max-width:62ch; margin-top:12px; font-size:0.98rem; line-height:1.6; }
+  @media (max-width:800px){ .hero{ padding:28px 0 120px; } }
+  .search-wrap{ position:relative; z-index:6; margin-top:-92px; }
+  .search-card{ background:var(--paper); border-top:3px solid var(--rust); box-shadow:0 26px 64px rgba(0,0,0,0.30); padding:8px 24px 18px; }
+  .s-tabs{ display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:18px; }
+  .s-tab{ background:none; border:none; padding:16px 20px 13px; font:inherit; font-size:0.76rem; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .s-tab:hover{ color:var(--pine-deep); }
+  .s-tab.active{ color:var(--pine-deep); border-bottom-color:var(--rust); }
+  .s-fields{ display:grid; grid-template-columns:1.1fr 1fr 1.1fr auto; gap:16px; align-items:end; }
+  .s-field label{ display:block; font-size:0.66rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:7px; }
+  .s-input{ width:100%; padding:14px 14px; border:1px solid var(--line); background:#fff; font:inherit; font-size:0.96rem; color:var(--ink); border-radius:2px; text-align:left; height:52px; box-sizing:border-box; }
+  .s-input:focus{ outline:2px solid var(--rust); outline-offset:-1px; }
+  .s-guests{ position:relative; }
+  .s-guests-btn{ cursor:pointer; }
+  .s-pop{ position:absolute; top:calc(100% + 6px); left:0; min-width:280px; background:#fff; border:1px solid var(--line); box-shadow:0 18px 44px rgba(0,0,0,0.20); padding:12px 16px 16px; z-index:30; }
+  .s-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .s-step{ display:flex; align-items:center; gap:14px; }
+  .s-step span{ min-width:18px; text-align:center; font-weight:600; }
+  .s-step button{ width:34px; height:34px; border-radius:50%; border:1px solid var(--rust); background:#fff; color:var(--rust); font-size:1.2rem; line-height:1; cursor:pointer; }
+  .s-step button:disabled{ opacity:0.35; cursor:default; }
+  .s-done{ width:100%; margin-top:14px; padding:12px; }
+  .s-go{ padding:0 38px; height:52px; box-sizing:border-box; }
+  .s-meta{ margin-top:12px; font-size:0.84rem; color:var(--muted); min-height:1.1em; }
+  .s-error{ color:#A8322A; font-size:0.84rem; margin-top:4px; }
+  .s-error:empty{ display:none; }
+  @media (max-width:980px){ .s-fields{ grid-template-columns:1fr 1fr; } .s-go{ grid-column:1 / -1; } .search-wrap{ margin-top:-96px; } }
+  @media (max-width:560px){ .s-fields{ grid-template-columns:1fr; } .search-card{ padding:4px 16px 20px; } .s-tab{ padding:14px 12px 11px; font-size:0.7rem; } .s-pop{ min-width:0; right:0; } }
+
+  /* ---------- Home: sections ---------- */
+  .home-sec{ padding:90px 0; }
+  .section-head.center{ text-align:center; margin-left:auto; margin-right:auto; }
+  .stay-grid{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:22px; }
+  .stay-card{ background:var(--paper); border:1px solid var(--line); border-top:3px solid transparent; padding:30px 26px 26px; display:flex; flex-direction:column; gap:12px; transition:transform 0.2s, box-shadow 0.2s, border-top-color 0.2s; }
+  .stay-card:hover{ transform:translateY(-5px); box-shadow:0 16px 40px rgba(0,0,0,0.10); border-top-color:var(--rust); }
+  .stay-card svg{ width:38px; height:38px; color:var(--rust); }
+  .stay-card h3{ font-size:1.3rem; margin:0; }
+  .stay-desc{ margin:0; font-size:0.9rem; color:var(--muted); line-height:1.6; }
+  .stay-from{ margin-top:auto; padding-top:10px; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .stay-from strong{ display:block; margin-top:4px; font-family:'Fraunces', serif; font-size:1.55rem; letter-spacing:0; text-transform:none; color:var(--pine-deep); font-weight:600; }
+  .stay-card .btn{ width:100%; text-align:center; }
+  @media (max-width:1060px){ .stay-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+  @media (max-width:560px){ .stay-grid{ grid-template-columns:1fr; } .home-sec{ padding:64px 0; } }
+  .home-only.arch-row{ margin:34px 0 0; }
+  .about-grid{ display:grid; grid-template-columns:320px minmax(0, 1fr); gap:64px; align-items:center; }
+  .about-photo{ position:relative; width:320px; }
+  .about-photo::before{ content:''; position:absolute; inset:-14px 14px 14px -14px; border:1px solid var(--rust); border-radius:170px 170px 6px 6px; opacity:0.6; }
+  .about-photo img{ position:relative; display:block; width:100%; height:440px; object-fit:cover; object-position:center bottom; border-radius:170px 170px 6px 6px; box-shadow:0 22px 54px rgba(0,0,0,0.22); }
+  .about-text h2{ margin-bottom:14px; }
+  .about-text p{ color:var(--muted); line-height:1.7; max-width:56ch; }
+  .about-points{ list-style:none; padding:0; margin:18px 0 26px; display:grid; gap:10px; }
+  .about-points li{ padding-left:22px; position:relative; font-size:0.95rem; }
+  .about-points li::before{ content:''; position:absolute; left:0; top:0.55em; width:9px; height:9px; border:1.5px solid var(--rust); border-radius:50%; }
+  .about-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+  .scan-other{ display:inline-block; margin-left:14px; font-size:0.85rem; color:var(--rust); font-weight:500; }
+  @media (max-width:900px){ .about-grid{ grid-template-columns:1fr; gap:40px; } .about-photo{ margin:0 auto; width:min(300px, 80%); } .about-photo img{ height:400px; } }
+  #homeFacilities{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+  @media (max-width:900px){ #homeFacilities{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+  @media (max-width:560px){ #homeFacilities{ grid-template-columns:1fr; } }
+  .cta-band{ background:var(--pine-deep); color:var(--paper); padding:84px 0; text-align:center; }
+  .cta-band h2{ color:var(--paper); margin-bottom:10px; }
+  .cta-band p{ color:#CFC8BC; margin:0 auto; }
+  .cta-actions{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+  .rooms-filter{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--rust); padding:14px 18px; margin-bottom:22px; font-size:0.92rem; line-height:1.55; }
+  .rooms-filter.hidden-nav{ display:none; }
+  .filtered-out{ display:none !important; }
+
   /* ---------- Home: scan & go ---------- */
   body.page-open .home-only{ display:none; }
   .home-only{ padding:64px 0 76px; }
@@ -307,7 +378,7 @@
 
   /* ---------- Install-as-app banner ---------- */
   .install-bar{ position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:70; width:min(560px, calc(100% - 24px)); display:flex; align-items:center; gap:12px; background:var(--pine-deep); color:var(--paper); border:1px solid rgba(232,207,160,0.35); border-radius:6px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,0.35); }
-  .install-bar.hidden, .install-modal.hidden{ display:none !important; }
+  .install-bar.hidden, .install-hint.hidden{ display:none !important; }
   .install-bar img{ border-radius:9px; flex:none; }
   .install-text{ display:flex; flex-direction:column; line-height:1.3; min-width:0; flex:1; }
   .install-text strong{ font-size:0.9rem; font-weight:600; }
@@ -316,13 +387,12 @@
   .install-close:hover{ opacity:1; }
   .install-bar .btn{ padding:9px 16px; font-size:0.72rem; white-space:nowrap; }
   @media (max-width:700px){ body.install-showing .wa-float{ bottom:calc(var(--install-h, 72px) + 32px); } }
+  .install-hint{ position:fixed; left:50%; transform:translateX(-50%); bottom:calc(var(--install-h, 0px) + 36px); z-index:90; width:min(520px, calc(100% - 24px)); display:flex; gap:12px; align-items:flex-start; background:#fff; color:var(--ink); border-left:4px solid var(--rust); border-radius:4px; padding:13px 14px 13px 16px; box-shadow:0 14px 40px rgba(0,0,0,0.30); font-size:0.9rem; line-height:1.5; }
+  .install-hint > div{ flex:1; }
+  .install-hint .install-close{ color:var(--ink); padding:2px 6px; }
+  .install-hint .hint-link{ color:var(--rust); font-weight:600; }
+  .install-hint .hint-act{ display:inline-block; margin-top:2px; background:var(--rust); color:#1A1714; padding:6px 12px; border-radius:2px; font-weight:600; text-decoration:none; }
   @media (max-width:480px){ .install-text span{ display:none; } }
-  .install-modal{ position:fixed; inset:0; background:rgba(14,12,10,0.6); z-index:120; display:flex; align-items:center; justify-content:center; padding:16px; }
-  .install-card{ position:relative; background:var(--paper); max-width:460px; width:100%; border-radius:4px; padding:28px 26px 22px; max-height:90vh; overflow:auto; }
-  .install-card h3{ margin-bottom:12px; }
-  .install-card ol{ padding-left:20px; line-height:1.75; font-size:0.93rem; margin:0 0 10px; }
-  .install-card p{ font-size:0.85rem; color:var(--muted); margin:0 0 6px; }
-  .install-card .install-close{ position:absolute; top:8px; right:8px; color:var(--ink); }
 
   /* ---------- Payment page ---------- */
   .pay-layout{ display:grid; grid-template-columns:minmax(260px, 340px) 1fr; gap:32px; align-items:start; }
@@ -595,6 +665,12 @@
   .flash-banner.hidden{ display:none; }
 
 </style>
+<script>
+  /* Catch the browser's "this app can be installed" signal immediately, so one tap on any Install button can open the real install dialog. */
+  window.__ckPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); window.__ckPrompt = e; window.dispatchEvent(new Event('ck-prompt-ready')); });
+  window.addEventListener('appinstalled', function(){ window.__ckPrompt = null; window.dispatchEvent(new Event('ck-installed')); });
+</script>
 </head>
 <body>
 
@@ -626,7 +702,7 @@
       <li><a href="#location" onclick="event.preventDefault(); showPage('location');">Location</a></li>
       <li><a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a></li>
       <li><a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a></li>
-      <li><a href="#app" id="navApp" onclick="event.preventDefault(); showPage('app');">Get App</a></li>
+      <li><a href="#app" id="navApp" onclick="event.preventDefault(); openInstall();">Install App</a></li>
       <li><a href="admin.html?manage=1">Manage Booking</a></li>
       <li><a href="admin.html">Login</a></li>
     </ul>
@@ -639,20 +715,113 @@
     <div class="hero-eyebrow">CodeKasa · A Luxury Living</div>
     <h1>Serviced Apartments, Made for Living Well</h1>
     <p class="hero-sub">Fully furnished, fully looked after — minutes from the Sarjapur tech corridor</p>
-    <p>Step into elegantly furnished apartments where everything is taken care of: your own kitchen, high-speed WiFi, daily housekeeping, 24/7 security with CCTV, power backup, RO drinking water and attached bathrooms. Simply arrive, unpack and feel at home.</p>
-    <div class="hero-actions">
-      <a href="#rooms" class="btn btn-primary" onclick="event.preventDefault(); showPage('rooms');">See Rooms &amp; Pricing</a>
-      <a href="#contact" class="btn btn-ghost" onclick="event.preventDefault(); showPage('contact');">Book a Visit</a>
-      <a href="#app" class="btn btn-ghost" id="heroApp" onclick="event.preventDefault(); showPage('app');">Get the App</a>
-    </div>
+    <p class="hero-desc">Elegantly furnished apartments where everything is taken care of. Simply arrive, unpack and feel at home.</p>
   </div>
 </section>
 
-<div class="arch-row" id="homeDivider" aria-hidden="true">
+<div class="search-wrap home-only" id="homeSearch">
+  <div class="wrap">
+    <form class="search-card" id="searchForm" role="search" aria-label="Find a stay" novalidate>
+      <div class="s-tabs" role="tablist">
+        <button type="button" class="s-tab active" role="tab" aria-selected="true" data-stay="month" id="sTabMonth">Monthly stay</button>
+        <button type="button" class="s-tab" role="tab" aria-selected="false" data-stay="day" id="sTabDay">Day / week stay</button>
+      </div>
+      <div class="s-fields">
+        <div class="s-field"><label for="sCheckin">Check-in</label><input type="date" class="s-input" id="sCheckin"></div>
+        <div class="s-field"><label for="sDuration" id="sDurationLabel">Stay (minimum 3 months)</label><select class="s-input" id="sDuration"></select></div>
+        <div class="s-field s-guests"><label for="sGuestsBtn">Guests</label>
+          <button type="button" class="s-input s-guests-btn" id="sGuestsBtn" aria-haspopup="true" aria-expanded="false">1 adult</button>
+          <div class="s-pop hidden-nav" id="sGuestsPop" role="group" aria-label="Guests">
+            <div class="s-row"><strong>Adults</strong><div class="s-step"><button type="button" id="sAdultsMinus" aria-label="Fewer adults">&minus;</button><span id="sAdultsVal">1</span><button type="button" id="sAdultsPlus" aria-label="More adults">+</button></div></div>
+            <div class="s-row"><strong>Kids</strong><div class="s-step"><button type="button" id="sKidsMinus" aria-label="Fewer kids">&minus;</button><span id="sKidsVal">0</span><button type="button" id="sKidsPlus" aria-label="More kids">+</button></div></div>
+            <button type="button" class="btn btn-primary s-done" id="sGuestsDone">Done</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary s-go" id="sSearch">Search stays</button>
+      </div>
+      <div class="s-meta" id="sMeta"></div>
+      <div class="s-error" id="sError" role="alert"></div>
+    </form>
+  </div>
+</div>
+
+<div class="arch-row home-only" id="homeDivider" aria-hidden="true">
   <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
   <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
   <svg viewBox="0 0 22 14"><path d="M1 14V7C1 3 4 1 11 1C18 1 21 3 21 7V14" stroke="#B8935A" stroke-width="1.4" fill="none"/></svg>
 </div>
+
+<section class="home-only home-sec" id="homeStays">
+  <div class="wrap">
+    <div class="section-head center">
+      <div class="section-eyebrow">Stay your way</div>
+      <h2>Find the right room for you</h2>
+      <p>By the day, the week or the month: fully furnished and fully looked after.</p>
+    </div>
+    <div class="stay-grid">
+      <div class="stay-card" data-kind="single">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        <h3>Single Stay</h3>
+        <p class="stay-desc" data-desc="single"></p>
+        <div class="stay-from">From<strong data-from="single">₹13,000 / month</strong></div>
+        <button type="button" class="btn btn-outline" data-view="single">View rooms</button>
+      </div>
+      <div class="stay-card" data-kind="twin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.6 2.9-6.5 6.5-6.5S15.5 16.4 15.5 20M16 4.3a3.5 3.5 0 010 6.4M18 13.8c2 .8 3.5 2.8 3.5 5.2"/></svg>
+        <h3>Twin Sharing</h3>
+        <p class="stay-desc" data-desc="twin"></p>
+        <div class="stay-from">From<strong data-from="twin">₹7,000 / month</strong></div>
+        <button type="button" class="btn btn-outline" data-view="twin">View rooms</button>
+      </div>
+      <div class="stay-card" data-kind="family">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6"/></svg>
+        <h3>Family Stay</h3>
+        <p class="stay-desc" data-desc="family"></p>
+        <div class="stay-from">From<strong data-from="family">₹13,000 / month</strong></div>
+        <button type="button" class="btn btn-outline" data-view="family">View rooms</button>
+      </div>
+      <div class="stay-card" data-kind="day">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <h3>Day Stay</h3>
+        <p class="stay-desc" data-desc="day"></p>
+        <div class="stay-from">From<strong data-from="day">₹1,200 / day</strong></div>
+        <button type="button" class="btn btn-outline" data-view="day">View rooms</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="home-only home-sec" id="homeAbout">
+  <div class="wrap about-grid">
+    <div class="about-photo"><img src="hero-building.jpg" alt="CodeKasa building, lit up at night" width="320" height="480" loading="lazy"></div>
+    <div class="about-text">
+      <div class="section-eyebrow">About CodeKasa</div>
+      <h2>Fully furnished, fully looked after</h2>
+      <p>Step into elegantly furnished apartments where everything is taken care of: your own kitchen, high-speed WiFi, daily housekeeping, 24/7 security with CCTV, power backup, RO drinking water and attached bathrooms. Simply arrive, unpack and feel at home.</p>
+      <ul class="about-points">
+        <li>Day, week and monthly stays</li>
+        <li>Minutes from the Sarjapur tech corridor</li>
+        <li>Carmelaram, Sarjapur Road, Bengaluru</li>
+      </ul>
+      <div class="about-actions">
+        <a href="#rooms" class="btn btn-primary" onclick="event.preventDefault(); showPage('rooms');">See Rooms &amp; Pricing</a>
+        <a href="#contact" class="btn btn-outline" onclick="event.preventDefault(); showPage('contact');">Book a Visit</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="home-only home-sec alt" id="homeIncluded">
+  <div class="wrap">
+    <div class="section-head center">
+      <div class="section-eyebrow">What's included</div>
+      <h2>Everything taken care of</h2>
+      <p>Simply arrive, unpack and feel at home.</p>
+    </div>
+    <div class="facility-grid" id="homeFacilities"></div>
+    <div style="text-align:center; margin-top:34px;"><a href="#facilities" class="btn btn-outline" onclick="event.preventDefault(); showPage('facilities');">See all facilities</a></div>
+  </div>
+</section>
 
 <section class="home-only" id="homeScan">
   <div class="wrap">
@@ -675,10 +844,24 @@
         <img src="qr-app.png" alt="QR code. Scan to get the CodeKasa app" width="180" height="180" loading="lazy">
         <div class="scan-text">
           <h3>Get the CodeKasa app</h3>
-          <p>Scan with your phone, or install it on this device. Works on Android, iPhone, Windows, Mac and Linux.</p>
-          <a class="btn btn-primary" id="scanAppBtn" href="#app" onclick="event.preventDefault(); showPage('app');">Get the app</a>
+          <p>Install it on this device with one click, or scan the code with your phone. Works on Android, iPhone, Windows, Mac and Linux.</p>
+          <a class="btn btn-primary" id="scanAppBtn" href="#app" onclick="event.preventDefault(); openInstall();">Install app</a>
+          <a class="scan-other" id="scanOther" href="#app" onclick="event.preventDefault(); showPage('app');">Other devices</a>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="home-only cta-band" id="homeCta">
+  <div class="wrap">
+    <div class="section-eyebrow" style="color:var(--marigold);">Plan your stay</div>
+    <h2>Speak to us about your stay</h2>
+    <p>Call, message us on WhatsApp or send an enquiry.</p>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="tel:+918106812341">Call +91 81068 12341</a>
+      <a class="btn btn-ghost" href="https://wa.me/918106812341?text=Hello%20CodeKasa%2C%20I%20would%20like%20to%20know%20more%20about%20a%20stay." target="_blank" rel="noopener">WhatsApp us</a>
+      <a class="btn btn-ghost" href="#contact" onclick="event.preventDefault(); showPage('contact');">Send an enquiry</a>
     </div>
   </div>
 </section>
@@ -741,6 +924,10 @@
       <h2>Choose the room that fits your stay</h2>
       <p>All prices are per month; single and family rooms include kitchen access. Please read the stay terms and booking policies below before you book.</p>
     </div>
+    <div class="rooms-filter hidden-nav" id="roomsFilter">
+      <div id="roomsFilterText"></div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="showAllRooms()">Show all room types</button>
+    </div>
     <div class="room-list">
       <div class="room-row">
         <div class="room-num">01</div>
@@ -797,7 +984,7 @@
         <div class="room-actions"><a href="#contact" class="btn btn-primary" onclick="event.preventDefault(); showPage('contact');">Enquire</a><a href="admin.html?book=Twin%20Sharing%20%E2%80%94%20Non-AC" class="btn btn-teal">Book Now</a></div>
       </div>
     </div>
-    <div class="policy-box">
+    <div class="policy-box" id="monthlyTerms">
       <h3>Monthly stay terms</h3>
       <ul>
         <li><strong>Minimum 3 months</strong> booking is required for monthly stays.</li>
@@ -806,7 +993,7 @@
       </ul>
     </div>
 
-    <div style="margin-top:52px;">
+    <div style="margin-top:52px;" id="dayHead">
       <h3 style="font-size:1.25rem; margin-bottom:6px;">Day Stay (24 hours)</h3>
       <p class="form-note" style="margin-bottom:0;">Check-in 2:00 PM · Check-out 10:00 AM next day</p>
     </div>
@@ -1073,7 +1260,7 @@
           <a href="#facilities" onclick="event.preventDefault(); showPage('facilities');">Facilities</a>
           <a href="#payment" onclick="event.preventDefault(); showPage('payment');">Payment</a>
           <a href="#contact" onclick="event.preventDefault(); showPage('contact');">Contact</a>
-          <a href="#app" id="footerInstall" onclick="event.preventDefault(); showPage('app');">Get the app</a>
+          <a href="#app" id="footerInstall" onclick="event.preventDefault(); openInstall();">Install app</a>
         </div>
       </div>
       <div>
@@ -1086,7 +1273,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 CodeKasa. All rights reserved.</span>
-      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a> · Placeholder content — replace with your details before publishing.</span>
+      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a></span>
     </div>
   </div>
 </footer>
@@ -1094,16 +1281,13 @@
 <div id="installBar" class="install-bar hidden" role="region" aria-label="Install the CodeKasa app">
   <img src="icon-192.png" alt="" width="40" height="40">
   <div class="install-text"><strong>Install the CodeKasa app</strong><span>Open it from your home screen — faster booking and payments.</span></div>
-  <button type="button" class="btn btn-primary" id="installBtn">Install</button>
+  <button type="button" class="btn btn-primary" id="installBtn">Install app</button>
   <button type="button" class="install-close" id="installClose" aria-label="Not now">✕</button>
 </div>
 
-<div id="installHelp" class="install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
-  <div class="install-card">
-    <button type="button" class="install-close" id="installHelpClose" aria-label="Close">✕</button>
-    <h3 id="installHelpTitle">Install CodeKasa on your device</h3>
-    <div id="installHelpBody"></div>
-  </div>
+<div id="installHint" class="install-hint hidden" role="status" aria-live="polite">
+  <div id="installHintText"></div>
+  <button type="button" class="install-close" id="installHintClose" aria-label="Close">✕</button>
 </div>
 
 <a class="wa-float" href="https://wa.me/918106812341" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
@@ -1373,6 +1557,8 @@
     const target = document.getElementById(id);
     if (target) target.classList.add('active');
     if (id === 'app' && window.__ckRenderApp) window.__ckRenderApp();
+    if (window.__setRoomFilter && !(id === 'rooms' && window.__roomsFilterKeep)) window.__setRoomFilter(null);
+    window.__roomsFilterKeep = false;
     document.getElementById('top').style.display = 'none';
     document.getElementById('homeDivider').classList.add('hidden-nav');
     document.body.classList.add('page-open');
@@ -1402,64 +1588,34 @@
   // ---------- Install as an app: Android, iPhone/iPad, Windows, Mac, Linux, Chromebook ----------
   function openInstall(){ if (window.__ckInstall) window.__ckInstall(); }
   (function installSupport(){
+    const $ = id => document.getElementById(id);
     const ua = navigator.userAgent || '';
     const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const isAndroid = /Android/i.test(ua);
     const isFirefox = /Firefox|FxiOS/i.test(ua);
     const isSafariMac = !isIOS && /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua);
+    const isInApp = /FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|Snapchat|Line\/|GSA\/|; wv\)/i.test(ua);      // a page opened inside another app (WhatsApp, Facebook, Instagram…) cannot be installed from there
     const standalone = () => (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
     const KEY = 'ck_install_dismissed', SNOOZE_DAYS = 14;
     const snoozed = () => { try { const t = Number(localStorage.getItem(KEY)); return !!t && (Date.now() - t) < SNOOZE_DAYS * 864e5; } catch(e){ return false; } };
     const snooze = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch(e){} };
 
-    const bar = document.getElementById('installBar'), btn = document.getElementById('installBtn'), closeBtn = document.getElementById('installClose');
-    const help = document.getElementById('installHelp'), helpBody = document.getElementById('installHelpBody'), helpClose = document.getElementById('installHelpClose');
-    const footerLink = document.getElementById('footerInstall');
-    const manualPlatform = isIOS || isSafariMac || (isAndroid && isFirefox);   // browsers that can install but never show an automatic prompt
-    let deferred = null, ready = false;
+    const bar = $('installBar'), btn = $('installBtn'), closeBtn = $('installClose');
+    const hintEl = $('installHint'), hintText = $('installHintText'), hintClose = $('installHintClose');
+    const device = isIOS ? 'ios' : (isAndroid ? 'android' : (/Windows/.test(ua) ? 'windows' : (/Macintosh/.test(ua) ? 'mac' : (/CrOS|Linux|X11/.test(ua) ? 'linux' : 'other'))));
+    let deferred = window.__ckPrompt || null, ready = false, hintTimer = null, apps = {};
 
     function setBar(visible){
       bar.classList.toggle('hidden', !visible);
       document.body.classList.toggle('install-showing', visible);
       if (visible) document.documentElement.style.setProperty('--install-h', bar.offsetHeight + 'px');   // lets the WhatsApp button clear the banner on any screen width
     }
-    function helpHtml(){
-      if (isIOS) return `<ol><li>Tap the <strong>Share</strong> button (the square with an arrow pointing up) in your browser.</li><li>Scroll down and tap <strong>Add to Home Screen</strong>.</li><li>Tap <strong>Add</strong>. CodeKasa now opens from your home screen like an app.</li></ol><p>On iPhone and iPad use Safari, or Chrome / Edge on iOS 16.4 or newer.</p>`;
-      if (isSafariMac) return `<ol><li>In the menu bar choose <strong>File → Add to Dock…</strong> (or click <strong>Share → Add to Dock</strong>).</li><li>Click <strong>Add</strong>. CodeKasa appears in your Dock.</li></ol><p>This needs Safari 17 or newer.</p>`;
-      if (isAndroid && isFirefox) return `<ol><li>Tap the <strong>⋮</strong> menu in Firefox.</li><li>Tap <strong>Install</strong>.</li><li>Tap <strong>Add</strong> to put CodeKasa on your home screen.</li></ol>`;
-      if (isAndroid) return `<ol><li>Tap the <strong>⋮</strong> (or ≡) menu in your browser.</li><li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Tap <strong>Install</strong>.</li></ol>`;
-      if (isFirefox) return `<p style="font-size:0.93rem; color:var(--ink);">Firefox on computers cannot install apps. Open <strong>codekasa.com</strong> in <strong>Chrome</strong>, <strong>Edge</strong> or <strong>Safari</strong> to install it, or press <strong>Ctrl+D</strong> (<strong>Cmd+D</strong> on Mac) to bookmark this page.</p>`;
-      return `<ol><li>Look for the <strong>install icon</strong> (a screen with a down-arrow) at the right end of the address bar and click it, then click <strong>Install</strong>.</li><li>Or open the browser menu (<strong>⋮</strong>) and choose <strong>Install CodeKasa…</strong> (in Edge: <strong>Apps → Install this site as an app</strong>).</li></ol><p>If you do not see these options, CodeKasa may already be installed on this device.</p>`;
+    function hideHint(){ hintEl.classList.add('hidden'); clearTimeout(hintTimer); }
+    function showHint(html){
+      hintText.innerHTML = html; hintEl.classList.remove('hidden');
+      document.documentElement.style.setProperty('--install-h', (bar.classList.contains('hidden') ? 0 : bar.offsetHeight) + 'px');
+      clearTimeout(hintTimer); hintTimer = setTimeout(hideHint, 18000);
     }
-    function openHelp(){ helpBody.innerHTML = helpHtml(); help.classList.remove('hidden'); helpClose.focus(); }
-    function closeHelp(){ help.classList.add('hidden'); }
-    async function install(){
-      if (deferred){
-        const d = deferred; deferred = null; setBar(false);
-        try { await d.prompt(); const choice = await d.userChoice; if (choice && choice.outcome === 'dismissed') snooze(); } catch(e){}
-        return;
-      }
-      openHelp();
-    }
-    function maybeShowBar(){
-      if (!ready || standalone() || snoozed()) return;
-      if (deferred){ btn.textContent = 'Install'; setBar(true); }
-      else if (manualPlatform){ btn.textContent = 'How to install'; setBar(true); }
-      else { btn.textContent = 'Get the app'; setBar(true); }                // every other device: open the page that explains the options
-    }
-
-    window.__ckInstall = install;
-
-    // ----- "Get the app" page -----
-    const device = isIOS ? 'ios' : (isAndroid ? 'android' : (/Windows/.test(ua) ? 'windows' : (/Macintosh/.test(ua) ? 'mac' : (/CrOS|Linux|X11/.test(ua) ? 'linux' : 'other'))));
-    const PLATFORMS = [
-      { key: 'android', name: 'Android phones & tablets', text: 'Install from Chrome, Edge or Samsung Internet in one tap.' },
-      { key: 'ios',     name: 'iPhone & iPad',            text: 'Add CodeKasa to your Home Screen from Safari. Apple does not let any website install an app with one tap, so this takes three quick steps.' },
-      { key: 'windows', name: 'Windows',                  text: 'Install from Edge or Chrome in one click. It gets its own window and a Start menu entry.' },
-      { key: 'mac',     name: 'Mac',                      text: 'Chrome or Edge: one click. Safari 17 or newer: File → Add to Dock.' },
-      { key: 'linux',   name: 'Linux & Chromebook',       text: 'Install from Chrome or Edge in one click.' }
-    ];
-    let apps = {};
     // only plain relative paths or https links are accepted from apps.json
     function safeUrl(u){
       if (typeof u !== 'string' || !u.trim()) return '';
@@ -1467,47 +1623,229 @@
       if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return /^https:\/\//i.test(u) ? u : '';
       return (!u.startsWith('//') && /^[\w./%~+-]+$/.test(u)) ? u : '';
     }
+    const loadApps = () => fetch('apps.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : {}).then(j => { apps = j || {}; }).catch(() => {});
+    const isChromium = !isIOS && !isFirefox && !isSafariMac && !isInApp && /Chrome|Chromium|Edg|OPR|SamsungBrowser/i.test(ua);
+    // The browser announces "installable" a moment after the page loads, so a click that comes quickly waits for it.
+    function waitForPrompt(ms){
+      return new Promise(resolve => {
+        if (window.__ckPrompt) return resolve(window.__ckPrompt);
+        let t;
+        const onReady = () => { clearTimeout(t); window.removeEventListener('ck-prompt-ready', onReady); resolve(window.__ckPrompt); };
+        window.addEventListener('ck-prompt-ready', onReady);
+        t = setTimeout(() => { window.removeEventListener('ck-prompt-ready', onReady); resolve(null); }, ms);
+      });
+    }
+    // When a Chrome-type browser does not offer the install, find out the real reason and say it in one sentence.
+    async function diagnose(){
+      try { if (navigator.getInstalledRelatedApps){ const r = await navigator.getInstalledRelatedApps(); if (r && r.length) return 'CodeKasa is <strong>already installed</strong> on this device. Open it from your home screen, apps list or Start menu (or the “open in app” icon at the right end of the address bar). Your browser does not offer a second install.'; } } catch(e){}
+      if (!window.isSecureContext) return 'Installing needs a secure page. Please open <strong>https://codekasa.com</strong>.';
+      const link = document.querySelector('link[rel="manifest"]');
+      let manifest = null;
+      if (!link) return 'The app file (manifest.json) is not linked on this page. The site owner needs to upload the latest <strong>index.html</strong>.';
+      try {
+        const r = await fetch(link.href, { cache: 'no-store' });
+        if (!r.ok) return `The app file <strong>manifest.json</strong> could not be loaded from the website (error ${r.status}). The site owner needs to upload it.`;
+        manifest = await r.json();
+      } catch(e){ return 'The app file <strong>manifest.json</strong> could not be read. The site owner needs to upload a correct copy.'; }
+      const icons = (manifest.icons || []).filter(i => /(^|\s)(192x192|512x512)(\s|$)/.test(i.sizes || ''));
+      for (const want of ['192x192', '512x512']){
+        const icon = icons.find(i => (i.sizes || '').split(' ').includes(want) && (i.purpose || 'any').includes('any'));
+        if (!icon) return `The app is missing its ${want} icon in manifest.json. The site owner needs to upload the latest <strong>manifest.json</strong>.`;
+        try { const r = await fetch(new URL(icon.src, link.href), { cache: 'no-store' }); if (!r.ok) return `The icon <strong>${icon.src}</strong> is missing from the website (error ${r.status}). The site owner needs to upload it.`; }
+        catch(e){ return `The icon <strong>${icon.src}</strong> could not be loaded.`; }
+      }
+      if ('serviceWorker' in navigator){
+        let reg = null; try { reg = await navigator.serviceWorker.getRegistration(); } catch(e){}
+        if (!reg) return 'The website\'s offline helper (<strong>service-worker.js</strong>) is not running yet. Reload this page once and tap <em>Install app</em> again. If it still fails, the site owner needs to upload <strong>service-worker.js</strong>.';
+      }
+      return 'Your browser has not offered the install yet. Private / incognito windows cannot install apps. Otherwise, use the install icon at the right end of the address bar, or the menu <strong>⋮</strong> → <strong>Install CodeKasa</strong>. Still stuck? <a class="hint-link" href="install-check.html">Run the install check</a>.';
+    }
+    function chromeIntent(){ return `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.href)};end`; }
+
+    // ONE click: the browser's own install dialog. Only when a browser genuinely cannot do that do we say one short line.
+    async function install(){
+      if (standalone()){ showHint('CodeKasa is already installed on this device.'); return; }
+      if (!deferred && window.__ckPrompt) deferred = window.__ckPrompt;
+      if (!deferred && isChromium){ showHint('Checking whether your browser can install CodeKasa…'); deferred = await waitForPrompt(2500); if (deferred) hideHint(); }
+      if (deferred){
+        const d = deferred; deferred = null; window.__ckPrompt = null; hideHint();
+        try {
+          await d.prompt();
+          const choice = await d.userChoice;
+          if (choice && choice.outcome === 'dismissed'){ snooze(); showHint('No problem. You can install CodeKasa any time from the browser menu <strong>⋮</strong> → <strong>Install</strong>.'); }
+          else setBar(false);
+        } catch(e){}
+        renderAppPage();
+        return;
+      }
+      const a = apps[device] || {}, store = safeUrl(a.store), file = safeUrl(a.file);
+      if (store){ window.open(store, '_blank', 'noopener'); return; }                                  // a published store app: one click to it
+      if (file && !isIOS){                                                                             // a published installer file: one click downloads it
+        const link = document.createElement('a'); link.href = file; link.download = ''; document.body.appendChild(link); link.click(); link.remove();
+        showHint('Downloading the CodeKasa installer. Open the file when it finishes.'); return;
+      }
+      if (isInApp){
+        showHint(isAndroid ? `This page is open inside another app, which cannot install it. <a class="hint-act" href="${chromeIntent()}">Open in Chrome</a> to install.`
+                           : 'This page is open inside another app. Tap <strong>⋯</strong> → <strong>Open in Safari</strong>, then tap <em>Install app</em> again.'); return;
+      }
+      if (isIOS){ showHint('On iPhone and iPad tap <strong>Share</strong> <span aria-hidden="true">⎙</span>, then <strong>Add to Home Screen</strong>. Apple does not allow one-tap install.'); return; }
+      if (isSafariMac){ showHint('In Safari choose <strong>File → Add to Dock…</strong>'); return; }
+      if (isFirefox && isAndroid){ showHint('Open the Firefox menu <strong>⋮</strong> and tap <strong>Install</strong>.'); return; }
+      if (isFirefox){ showHint('Firefox on computers cannot install apps. Open <strong>codekasa.com</strong> in <strong>Chrome</strong> or <strong>Edge</strong>.'); return; }
+      showHint(await diagnose());
+    }
+    window.__ckInstall = install;
+
+    // ----- "Install on every device" page (the page the app QR code opens) -----
+    const PLATFORMS = [
+      { key: 'android', name: 'Android phones & tablets', text: 'One tap to install from Chrome, Edge or Samsung Internet.' },
+      { key: 'ios',     name: 'iPhone & iPad',            text: 'Apple does not allow websites to install apps with one tap, so use Share → Add to Home Screen in Safari.' },
+      { key: 'windows', name: 'Windows',                  text: 'One click to install from Edge or Chrome. It gets its own window and a Start menu entry.' },
+      { key: 'mac',     name: 'Mac',                      text: 'One click from Chrome or Edge. In Safari 17 or newer use File → Add to Dock.' },
+      { key: 'linux',   name: 'Linux & Chromebook',       text: 'One click to install from Chrome or Edge.' }
+    ];
     function appCardHtml(p){
       const mine = p.key === device, a = apps[p.key] || {};
       const file = safeUrl(a.file), store = safeUrl(a.store);
       const actions = [];
-      if (mine && !standalone()){
-        actions.push(deferred ? '<button type="button" class="btn btn-primary" data-act="install">Install now</button>'
-                              : '<button type="button" class="btn btn-primary" data-act="how">Show me how</button>');
-      }
+      if (mine && !standalone()) actions.push('<button type="button" class="btn btn-primary" data-act="install">Install app</button>');
       if (store) actions.push(`<a class="btn btn-outline" href="${store}" target="_blank" rel="noopener">Get it from the store</a>`);
       if (file) actions.push(`<a class="btn btn-outline" href="${file}" download>Download the installer</a>`);
-      const note = mine ? '' : (actions.length ? '' : '<p style="font-size:0.8rem;">Open <strong>codekasa.com</strong> on this kind of device to install.</p>');
+      const note = mine ? '' : (actions.length ? '' : '<p style="font-size:0.8rem;">Open <strong>codekasa.com</strong> on this kind of device and tap <strong>Install app</strong>.</p>');
       return `<div class="app-card${mine ? ' mine' : ''}" data-platform="${p.key}"><h3>${p.name}${mine ? '<span class="badge-mine">Your device</span>' : ''}</h3><p>${p.text}</p>${note}<div class="app-actions">${actions.join('')}</div></div>`;
     }
     function renderAppPage(){
       const list = PLATFORMS.slice().sort((x, y) => (y.key === device) - (x.key === device));
-      document.getElementById('appCards').innerHTML = list.map(appCardHtml).join('');
-      document.getElementById('appInstalledNote').classList.toggle('hidden-nav', !standalone());
+      $('appCards').innerHTML = list.map(appCardHtml).join('');
+      $('appInstalledNote').classList.toggle('hidden-nav', !standalone());
     }
-    window.__ckRenderApp = async function(){
-      renderAppPage();
-      try { const r = await fetch('apps.json', { cache: 'no-store' }); if (r.ok){ apps = await r.json(); renderAppPage(); } } catch(e){ /* no installers published yet */ }
-    };
-    document.getElementById('appCards').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-act]'); if (!b) return;
-      if (b.dataset.act === 'install') install(); else openHelp();
-    });
+    window.__ckRenderApp = async function(){ renderAppPage(); await loadApps(); renderAppPage(); };
+    $('appCards').addEventListener('click', e => { if (e.target.closest('[data-act="install"]')) install(); });
 
     if (standalone()) return;                                   // already running as an installed app: no banner
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault(); deferred = e; maybeShowBar();
-      if (document.getElementById('app').classList.contains('active')) renderAppPage();     // turn "Show me how" into a real "Install now" button
-    });
-    window.addEventListener('appinstalled', () => { deferred = null; setBar(false); renderAppPage(); });
-    btn.addEventListener('click', () => { if (deferred || manualPlatform) install(); else showPage('app'); });
+    window.addEventListener('ck-prompt-ready', () => { deferred = window.__ckPrompt; if ($('app').classList.contains('active')) renderAppPage(); });
+    window.addEventListener('ck-installed', () => { deferred = null; setBar(false); renderAppPage(); showHint('CodeKasa is installed. Open it from your home screen or desktop.'); });
+    btn.addEventListener('click', install);
     closeBtn.addEventListener('click', () => { snooze(); setBar(false); });
-    helpClose.addEventListener('click', closeHelp);
-    help.addEventListener('click', (e) => { if (e.target === help) closeHelp(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeHelp(); });
+    hintClose.addEventListener('click', hideHint);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') hideHint(); });
     window.addEventListener('resize', () => { if (!bar.classList.contains('hidden')) document.documentElement.style.setProperty('--install-h', bar.offsetHeight + 'px'); });
-    setTimeout(() => { ready = true; maybeShowBar(); }, window.__INSTALL_DELAY_MS != null ? window.__INSTALL_DELAY_MS : 2500);
+    loadApps();
+    setTimeout(() => { ready = true; if (!snoozed()) setBar(true); }, window.__INSTALL_DELAY_MS != null ? window.__INSTALL_DELAY_MS : 2500);
+  })();
+
+
+  // ---------- Home: search bar + featured stays (look and feel only: the room types, prices and booking steps are untouched) ----------
+  (function homeSearch(){
+    const $ = id => document.getElementById(id);
+    if (!$('searchForm')) return;
+    let stay = 'month', adults = 1, kids = 0;
+    const w = bookingWindow();
+    $('sCheckin').min = localISO(w.min);
+    $('sCheckin').max = localISO(w.max);
+
+    // label the existing room rows by kind so a search can show just the relevant ones
+    document.querySelectorAll('#rooms .room-row').forEach(r => {
+      const t = (r.querySelector('h3') || {}).textContent || '';
+      r.dataset.kind = /^Single/.test(t) ? 'single' : /^Twin/.test(t) ? 'twin' : /^Family/.test(t) ? 'family' : /^Day/.test(t) ? 'day' : '';
+    });
+    function setFilter(kinds, text){
+      document.querySelectorAll('#rooms .room-row').forEach(r => r.classList.toggle('filtered-out', !!kinds && !kinds.includes(r.dataset.kind)));
+      $('roomsFilter').classList.toggle('hidden-nav', !kinds);
+      $('dayHead').classList.toggle('filtered-out', !!kinds && !kinds.includes('day'));                       // the Day Stay heading goes with its rooms
+      $('monthlyTerms').classList.toggle('filtered-out', !!kinds && kinds.length === 1 && kinds[0] === 'day');   // monthly terms only matter for monthly stays
+      if (kinds) $('roomsFilterText').textContent = text;
+    }
+    window.__setRoomFilter = setFilter;
+    window.showAllRooms = () => setFilter(null);
+    function openRooms(kinds, text){ setFilter(kinds, text); window.__roomsFilterKeep = true; showPage('rooms'); }
+
+    // featured stay cards read their wording and "from" price from the existing room list, so they can never disagree with it
+    document.querySelectorAll('.stay-card').forEach(card => {
+      const kind = card.dataset.kind;
+      const rows = [...document.querySelectorAll('#rooms .room-row')].filter(r => r.dataset.kind === kind);
+      const prices = rows.map(r => parseInt(((r.querySelector('.room-price strong') || {}).textContent || '').replace(/[^\d]/g, ''), 10)).filter(Number.isFinite);
+      if (prices.length) card.querySelector('[data-from]').textContent = '₹' + Math.min(...prices).toLocaleString('en-IN') + (kind === 'day' ? ' / day' : ' / month');
+      const d = rows[0] && rows[0].querySelector('.desc');
+      if (d) card.querySelector('[data-desc]').textContent = d.textContent.trim();
+      card.querySelector('[data-view]').addEventListener('click', () => openRooms([kind], `Showing ${card.querySelector('h3').textContent} rooms.`));
+    });
+    // "what's included" is cloned from the Facilities page
+    const src = document.querySelectorAll('#facilities .facility'), grid = $('homeFacilities');
+    [0, 2, 3, 4, 5, 6].forEach(i => { if (src[i]) grid.appendChild(src[i].cloneNode(true)); });
+
+    // ----- the search bar -----
+    const maxKids = () => stay === 'day' ? 3 : 4;
+    function renderGuests(){
+      adults = Math.min(4, Math.max(1, adults));
+      kids = Math.min(maxKids(), Math.max(0, kids));
+      if (stay === 'day' && adults + kids > 4) kids = Math.max(0, 4 - adults);
+      $('sAdultsVal').textContent = adults; $('sKidsVal').textContent = kids;
+      $('sGuestsBtn').textContent = `${adults} adult${adults > 1 ? 's' : ''}` + (kids ? `, ${kids} kid${kids > 1 ? 's' : ''}` : '');
+      const full = stay === 'day' && adults + kids >= 4;
+      $('sAdultsMinus').disabled = adults <= 1; $('sAdultsPlus').disabled = adults >= 4 || full;
+      $('sKidsMinus').disabled = kids <= 0;     $('sKidsPlus').disabled = kids >= maxKids() || full;
+    }
+    function fillDurations(){
+      const sel = $('sDuration');
+      let html = '';
+      if (stay === 'day'){
+        for (let n = 1; n <= 30; n++) html += `<option value="${n}">${n} night${n > 1 ? 's' : ''}${n % 7 === 0 ? ' (' + (n / 7) + ' week' + (n > 7 ? 's' : '') + ')' : ''}</option>`;
+        $('sDurationLabel').textContent = 'Number of nights';
+      } else {
+        for (let n = CK.MIN_MONTHS; n <= 12; n++) html += `<option value="${n}">${n} months</option>`;
+        $('sDurationLabel').textContent = `Stay (minimum ${CK.MIN_MONTHS} months)`;
+      }
+      sel.innerHTML = html;
+    }
+    function checkoutOf(){
+      const d = parseISO($('sCheckin').value), n = Number($('sDuration').value);
+      if (!d || !n) return null;
+      return stay === 'day' ? addDays(d, n) : addMonths(d, n);
+    }
+    function renderMeta(){
+      const out = vCheckIn($('sCheckin').value, true) ? null : checkoutOf();
+      $('sMeta').textContent = out ? `Check-out: ${longDate(out)} by 10:00 AM` : '';
+    }
+    function setStay(next){
+      stay = next;
+      document.querySelectorAll('.s-tab').forEach(t => { const on = t.dataset.stay === stay; t.classList.toggle('active', on); t.setAttribute('aria-selected', on); });
+      fillDurations(); renderGuests(); renderMeta();
+    }
+    document.querySelectorAll('.s-tab').forEach(t => t.addEventListener('click', () => setStay(t.dataset.stay)));
+    $('sCheckin').addEventListener('input', () => { $('sError').textContent = ''; renderMeta(); });
+    $('sDuration').addEventListener('change', renderMeta);
+
+    const pop = $('sGuestsPop'), btn = $('sGuestsBtn');
+    const togglePop = open => { pop.classList.toggle('hidden-nav', !open); btn.setAttribute('aria-expanded', open); };
+    btn.addEventListener('click', () => togglePop(pop.classList.contains('hidden-nav')));
+    $('sGuestsDone').addEventListener('click', () => togglePop(false));
+    document.addEventListener('click', e => { if (!pop.classList.contains('hidden-nav') && !e.target.closest('.s-guests')) togglePop(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') togglePop(false); });
+    $('sAdultsMinus').addEventListener('click', () => { adults--; renderGuests(); });
+    $('sAdultsPlus').addEventListener('click', () => { adults++; renderGuests(); });
+    $('sKidsMinus').addEventListener('click', () => { kids--; renderGuests(); });
+    $('sKidsPlus').addEventListener('click', () => { kids++; renderGuests(); });
+
+    function kindsFor(){
+      if (stay === 'day') return ['day'];
+      if (kids > 0 || adults + kids >= 3) return ['family'];
+      return adults === 2 ? ['twin', 'family'] : ['single'];
+    }
+    $('searchForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const err = vCheckIn($('sCheckin').value, true);
+      $('sError').textContent = err;
+      if (err){ $('sCheckin').focus(); return; }
+      const inD = parseISO($('sCheckin').value), out = checkoutOf(), n = Number($('sDuration').value);
+      const who = `${adults} adult${adults > 1 ? 's' : ''}` + (kids ? ` and ${kids} kid${kids > 1 ? 's' : ''}` : '');
+      const text = `Showing stays for ${who}: ${stay === 'day' ? 'day / week stay' : 'monthly stay'} from ${longDate(inD)}${out ? ' to ' + longDate(out) : ''} (${stay === 'day' ? n + ' night' + (n > 1 ? 's' : '') : n + ' months'}). You choose your room and confirm availability in the next step.`;
+      const mi = document.getElementById('move-in');                 // carry the date into the enquiry form too
+      if (mi && !mi.value) mi.value = $('sCheckin').value;
+      openRooms(kindsFor(), text);
+    });
+    setStay('month');
   })();
 
   // Open the section named in the address (#rooms, #payment …). Used by the installed app's home-screen shortcuts,
