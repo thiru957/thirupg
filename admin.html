@@ -373,7 +373,7 @@
           <ul>
             <li>The ID proof (Aadhaar or passport number) must be of the person who is staying. If it does not match at check-in, the booking will be cancelled and <strong>no refund</strong> will be given.</li>
             <li>Your booking is <strong>confirmed only after payment</strong> is made and verified (next step).</li>
-            <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+            <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li>
             <li>You can edit your booking online up to <strong>one week before check-in</strong>. Within one week, please call CodeKasa on +91 81068 12341.</li>
           </ul>
         </div>
@@ -478,7 +478,7 @@
       <ul>
         <li>You can edit the check-in date and stay length online up to <strong>one week before check-in</strong>.</li>
         <li>Within one week of check-in, please call CodeKasa on <a href="tel:+918106812341">+91 81068 12341</a>.</li>
-        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given. For any cancellation request, please call CodeKasa.</li>
+        <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given. For any cancellation request, please call CodeKasa.</li>
       </ul>
     </div>
   </div>
@@ -1429,7 +1429,7 @@
     if (p.amount) L.push(`Payment received: ${rupee(p.amount)} via ${p.method} on ${fmtDate(p.paidOn)}`);
     if (b.stayType !== 'day') L.push('', MONTH_TERMS);
     L.push('', POLICY_LINE,
-      'You can edit your booking online up to one week before check-in; within one week please call +91 81068 12341. Cancellation is not possible within 24 hours of booking and no refund is given.',
+      'You can edit your booking online up to one week before check-in; within one week please call +91 81068 12341. Cancellation is not possible within 24 hours of check-in and no refund is given.',
       `Your bill (PDF): ${siteLink('manage=1')}`,
       '',
       'CodeKasa, Plot No. 2, Petra Pebbles, 34, Ambalipura – Sarjapur Rd, Carmelaram Post, Mullur, Karnataka 560035',
@@ -1476,7 +1476,7 @@
       <li>Your booking is <strong>confirmed only after CodeKasa verifies the payment</strong>. This page updates by itself.</li>
       <li>Cannot pay online? <strong>Call CodeKasa on +91 81068 12341</strong> and we will confirm your booking.</li>
       ${month ? `<li>The ${rupee(CK.NON_REFUNDABLE)} is non-refundable. The advance is returned <strong>one week after you vacate</strong>.</li>` : ''}
-      <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li></ul></div>`;
+      <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li></ul></div>`;
   }
 
   // ---------- Steps bar + booking summary (shared by the three booking screens) ----------
@@ -1598,7 +1598,7 @@
       <ul class="bill-terms">
         ${month ? `<li>Minimum 3 months booking. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable. The advance is returned one week after the room is vacated.</li>` : ''}
         <li>ID proof must belong to the person staying. If the number does not match at check-in, the booking is cancelled and no refund is given.</li>
-        <li>Within 24 hours of booking, cancellation is not possible and no refund will be given.</li>
+        <li>Within 24 hours of check-in, cancellation is not possible and no refund will be given.</li>
         <li>The booking can be edited online up to one week before check-in. Within one week, please call +91 81068 12341.</li>
         <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
       </ul>
@@ -1627,6 +1627,7 @@
 
   // ---------- Booking flow (from "Book Now" on the main site) ----------
   let pendingBookRoom = null;
+  let bookPrefill = null;           // check-in / length of stay / guests carried over from the home-page search (checked before use)
   let manageRequested = false;      // true when the page was opened to manage/pay a booking (so it must not jump to the admin dashboard)
   let bkSubmitting = false;
   let bkPersons = [];
@@ -1642,13 +1643,49 @@
     visMessage: () => val('visMessage').length > 500 ? 'Message is too long (500 characters max).' : ''
   };
 
+  // The home-page search passes ?in=&dur=&adults=&kids= on the "Book Now" link. Every value is checked against the same rules as the form; anything odd is ignored.
+  function sanitizePrefill(type, raw){
+    if (!raw) return null;
+    const kind = roomKind(type), isDay = kind === 'day', out = {};
+    if (raw.moveIn && !vCheckIn(raw.moveIn, true)) out.moveIn = raw.moveIn;
+    const dur = Number(raw.dur);
+    if (raw.dur != null && raw.dur !== '' && Number.isInteger(dur) && (isDay ? (dur >= 1 && dur <= 30) : (dur >= CK.MIN_MONTHS && dur <= 12))) out.dur = dur;
+    const adults = Number(raw.adults), kids = Number(raw.kids);
+    if (raw.adults != null && raw.adults !== '' && Number.isInteger(adults) && adults >= 1 && adults <= 4) out.adults = adults;
+    if (raw.kids != null && raw.kids !== '' && Number.isInteger(kids) && kids >= 0 && kids <= (isDay ? 3 : 4)) out.kids = kids;
+    if (isDay && out.adults != null && out.kids != null && out.adults + out.kids > 4) out.kids = Math.max(0, 4 - out.adults);     // a day-stay room holds 4 people in total
+    if (kind === 'twin' && out.adults != null) out.guests = (out.adults + (out.kids || 0)) >= 2 ? 2 : 1;                          // twin sharing: 1 or 2 people
+    return Object.keys(out).length ? out : null;
+  }
+  function prefillSummary(type){
+    const s = sanitizePrefill(type, bookPrefill);
+    if (!s) return '';
+    const kind = roomKind(type), parts = [];
+    if (s.moveIn) parts.push('check-in ' + fmtDate(s.moveIn));
+    if (s.dur) parts.push(kind === 'day' ? `${s.dur} night${s.dur > 1 ? 's' : ''}` : `${s.dur} months`);
+    if (kind === 'family' || kind === 'day'){ if (s.adults != null) parts.push(`${s.adults} adult${s.adults > 1 ? 's' : ''}` + (s.kids ? `, ${s.kids} kid${s.kids > 1 ? 's' : ''}` : '')); }
+    else if (kind === 'twin' && s.guests) parts.push(`${s.guests} ${s.guests > 1 ? 'people' : 'person'}`);
+    return parts.length ? ' Your search is kept: ' + parts.join(' · ') + '.' : '';
+  }
+  function applyPrefill(type){
+    const s = sanitizePrefill(type, bookPrefill);
+    if (!s) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = String(v); };
+    const kind = roomKind(type);
+    if (s.moveIn) set('bkMoveIn', s.moveIn);
+    if (s.dur) set('bkDuration', s.dur);
+    if (kind === 'family' || kind === 'day'){ if (s.adults != null) set('bkAdults', s.adults); if (s.kids != null) set('bkKids', s.kids); }
+    else if (kind === 'twin' && s.guests) set('bkGuests', s.guests);
+  }
+
   (function checkUrlParams(){
     const p = new URLSearchParams(window.location.search);
     const bookRoom = p.get('book');
     if (bookRoom && Object.prototype.hasOwnProperty.call(LISTED_PRICES, bookRoom)){
       pendingBookRoom = bookRoom;
+      bookPrefill = { moveIn: p.get('in'), dur: p.get('dur'), adults: p.get('adults'), kids: p.get('kids') };
       switchRoleTab('visitor');
-      document.getElementById('visitorFormNote').textContent = `You're booking: ${bookRoom}. Continue as a visitor to register your details.`;
+      document.getElementById('visitorFormNote').textContent = `You're booking: ${bookRoom}.${prefillSummary(bookRoom)} Continue as a visitor to register your details.`;
       document.getElementById('visitorContinueBtn').textContent = 'Continue to Booking';
     }
     if (p.get('manage')){
@@ -1815,6 +1852,7 @@
     d.max = localISO(w.max);
     bkFillDurations();
     bkSetupCounts();
+    applyPrefill(roomType);
     bkRenderPersons();
     loadAvailability().then(bkRefresh);
     ['bkName','bkPhone','bkEmail','bkMoveIn','bkDuration','bkGuests','bkAdults','bkKids'].forEach(id => setFieldError(id, ''));
@@ -1957,6 +1995,7 @@
       batch.set(doc(db, 'bookingLookup', v.phone), { refs: arrayUnion(ref), updatedAt: nowIso }, { merge: true });
       await batch.commit();
 
+      bookPrefill = null;                 // used up: the next booking starts from a clean form
       const full = { id: ref, ...booking };
       notifyAdminEmail(`New booking request ${ref} — payment pending`, {
         bookingNumber: ref, name: v.name, phone: v.phone, email: v.email,
@@ -2149,7 +2188,7 @@
       <div class="info-box warn"><strong>Please remember</strong><ul>
         <li>Carry the original ID proof of every adult staying. If it does not match the number you gave at check-in, the booking is cancelled and <strong>no refund</strong> is given.</li>
         <li>You can edit this booking online up to one week before check-in. Within one week, call +91 81068 12341.</li>
-        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li></ul></div>
+        <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li></ul></div>
       <button class="btn btn-rust btn-block" onclick="openBillGuest('${b.id}')">Download / print bill (PDF)</button>
       <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, 'CodeKasa booking ' + b.id + ' is confirmed.\nName: ' + b.name + '\nRoom: ' + b.roomType + '\nCheck-in: ' + fmtDate(b.moveIn))}">Send details to CodeKasa on WhatsApp</a>
       <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(b.phone, waGuestText(b))}">Send a confirmation copy to my WhatsApp</a>

@@ -64,6 +64,7 @@
   const isChromium = !isIOS && !isFirefox && !isSafariMac && !isInApp && /Chrome|Chromium|Edg|OPR|SamsungBrowser/i.test(ua);
   const standalone = () => (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const BUILD = '2026.10.07-e';
   let report = [];
 
   function browserName(){
@@ -96,6 +97,17 @@
     const sa = standalone();
     add(sa ? 'warn' : 'info', 'Running as an installed app?', sa ? 'Yes — you are already inside the installed CodeKasa app.' : 'No — this is a normal browser tab.');
 
+    // are the website files the latest ones? (a half-uploaded site is the most common reason an install never appears)
+    try {
+      const r = await fetch('index.html', { cache: 'no-store' });
+      const html = r.ok ? await r.text() : '';
+      const m = html.match(/name="ck-build" content="([^"]+)"/);
+      if (!r.ok) add('bad', 'Website files are up to date', 'index.html could not be loaded.');
+      else if (!m){ add('bad', 'Website files are up to date', 'The index.html on your website is an OLD version (it has no version label). The latest index.html has not been uploaded and deployed yet.'); problems.push('Upload the latest index.html, push it to GitHub, and wait for the deploy to finish.'); }
+      else if (m[1] !== BUILD){ add('bad', 'Website files are up to date', `index.html on your website is version ${esc(m[1])}, but this check page is version ${esc(BUILD)}. Some files are old.`); problems.push('Some website files are out of date: upload all the latest files, push, and wait for the deploy to finish.'); }
+      else add('ok', 'Website files are up to date', `Version ${esc(BUILD)}`);
+    } catch(e){ add('warn', 'Website files are up to date', 'Could not check.'); }
+
     // manifest
     const link = document.querySelector('link[rel="manifest"]');
     let manifest = null, mUrl = link ? link.href : '';
@@ -109,6 +121,7 @@
       }
     }
     if (manifest){
+      if (!manifest.related_applications){ add('warn', 'manifest.json is the latest', 'It is an older copy (missing the installed-app marker). Upload the latest manifest.json.'); problems.push('Upload the latest manifest.json.'); }
       const need = [['name', manifest.name || manifest.short_name], ['start_url', manifest.start_url], ['display', /standalone|fullscreen|minimal-ui/.test(manifest.display || '')], ['icons', Array.isArray(manifest.icons) && manifest.icons.length]];
       const missing = need.filter(n => !n[1]).map(n => n[0]);
       add(missing.length ? 'bad' : 'ok', 'Manifest has what Chrome needs', missing.length ? 'Missing: ' + missing.join(', ') : `name “${esc(manifest.name || manifest.short_name)}”, display “${esc(manifest.display)}”, start_url “${esc(manifest.start_url)}”`);

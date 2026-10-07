@@ -15,6 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CodeKasa">
 <meta name="application-name" content="CodeKasa">
+<meta name="ck-build" content="2026.10.07-e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1025,7 +1026,7 @@
         <li>A booking is <strong>confirmed only after payment</strong> is made and verified. Pay by UPI on the booking page, or call CodeKasa on +91 81068 12341 to confirm. You then get a downloadable <strong>bill (PDF)</strong>.</li>
         <li>Bookings can be made from today up to <strong>6 months ahead</strong>.</li>
         <li>You can retrieve your booking with your mobile number or booking number, and <strong>edit it up to one week before check-in</strong>. Within one week of check-in, please call CodeKasa on +91 81068 12341 to make changes.</li>
-        <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+        <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li>
         <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
       </ul>
       <p style="margin:14px 0 0;"><a href="admin.html?manage=1" class="btn btn-outline">Retrieve or edit my booking</a></p>
@@ -1150,7 +1151,7 @@
             <li>A booking is <strong>confirmed only after CodeKasa verifies the payment</strong>. Until then it shows as "Awaiting payment" or "Payment under verification".</li>
             <li>Once confirmed you can view and download your <strong>bill (PDF)</strong> with the booking and payment details.</li>
             <li>The ₹6,000 is non-refundable. For monthly stays the advance is returned <strong>one week after you vacate</strong> the room.</li>
-            <li><strong>Within 24 hours of booking, cancellation is not possible</strong> and no refund will be given.</li>
+            <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li>
           </ul>
         </div>
         <div class="policy-box">
@@ -1273,7 +1274,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 CodeKasa. All rights reserved.</span>
-      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a></span>
+      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a> · <span id="siteVersion" style="opacity:0.6;">Site version 2026.10.07-e</span></span>
     </div>
   </div>
 </footer>
@@ -1828,6 +1829,17 @@
     $('sKidsMinus').addEventListener('click', () => { kids--; renderGuests(); });
     $('sKidsPlus').addEventListener('click', () => { kids++; renderGuests(); });
 
+    // Put the search onto every "Book Now" link, so the booking page opens with the dates and guests already filled in.
+    function decorateBookLinks(s){
+      document.querySelectorAll('#rooms .room-row .room-actions a[href^="admin.html?book="]').forEach(a => {
+        const base = a.dataset.base || a.getAttribute('href'); a.dataset.base = base;
+        const row = a.closest('.room-row'), sameKind = (row.dataset.kind === 'day') === (s.stay === 'day');   // months only mean something for a monthly room, nights for a day room
+        const q = new URLSearchParams({ in: s.checkin });
+        if (sameKind) q.set('dur', s.dur);
+        q.set('adults', s.adults); q.set('kids', s.kids);
+        a.setAttribute('href', base + '&' + q.toString());
+      });
+    }
     function kindsFor(){
       if (stay === 'day') return ['day'];
       if (kids > 0 || adults + kids >= 3) return ['family'];
@@ -1840,9 +1852,10 @@
       if (err){ $('sCheckin').focus(); return; }
       const inD = parseISO($('sCheckin').value), out = checkoutOf(), n = Number($('sDuration').value);
       const who = `${adults} adult${adults > 1 ? 's' : ''}` + (kids ? ` and ${kids} kid${kids > 1 ? 's' : ''}` : '');
-      const text = `Showing stays for ${who}: ${stay === 'day' ? 'day / week stay' : 'monthly stay'} from ${longDate(inD)}${out ? ' to ' + longDate(out) : ''} (${stay === 'day' ? n + ' night' + (n > 1 ? 's' : '') : n + ' months'}). You choose your room and confirm availability in the next step.`;
+      const text = `Showing stays for ${who}: ${stay === 'day' ? 'day / week stay' : 'monthly stay'} from ${longDate(inD)}${out ? ' to ' + longDate(out) : ''} (${stay === 'day' ? n + ' night' + (n > 1 ? 's' : '') : n + ' months'}). Your dates and guests will be filled in on the booking page, where availability is checked.`;
       const mi = document.getElementById('move-in');                 // carry the date into the enquiry form too
       if (mi && !mi.value) mi.value = $('sCheckin').value;
+      decorateBookLinks({ stay, checkin: $('sCheckin').value, dur: n, adults, kids });
       openRooms(kindsFor(), text);
     });
     setStay('month');
