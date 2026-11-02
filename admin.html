@@ -256,6 +256,32 @@
   .bill-sign div{ border-top:1px solid #333; padding-top:4px; width:42%; text-align:center; }
   .bill-foot{ margin-top:18px; text-align:center; font-size:10.5px; color:#777; }
   @media (max-width:640px){ .bill{ padding:20px 16px; } .bill-head{ flex-direction:column; } .bill-meta{ text-align:left; } .bill-meta table{ margin-left:0; } .bill-cols{ grid-template-columns:1fr; } }
+  /* ---------- Rental agreement (same print overlay as the bill) ---------- */
+  .agr{ font-family:Cambria,'Times New Roman',Georgia,serif; font-size:13px; line-height:1.55; color:#1E1B18; text-align:justify; }
+  .agr-table{ width:100%; border-collapse:collapse; }
+  .agr-table thead{ display:table-header-group; } .agr-table tfoot{ display:table-footer-group; }
+  .agr-table td{ padding:0; vertical-align:top; background:transparent !important; border:0; }
+  .agr-sched td{ background:#fff !important; border:1px solid #BDB5A8 !important; }
+  .agr-logo{ display:flex; align-items:center; gap:10px; border-bottom:2px solid #B8935A; padding:0 0 8px; margin-bottom:14px; text-align:left; }
+  .agr-logo img{ width:38px; height:38px; border-radius:9px; display:block; }
+  .agr-logo .nm{ font-family:'Fraunces',Georgia,serif; font-size:21px; font-weight:600; line-height:1; }
+  .agr-logo .tg{ font-family:'Work Sans',Arial,sans-serif; font-size:8px; letter-spacing:0.22em; color:#B8935A; font-weight:700; margin-top:3px; }
+  .agr-logo .rt{ margin-left:auto; font-family:'Work Sans',Arial,sans-serif; font-size:10px; color:#7A7268; text-align:right; }
+  .agr-foot{ border-top:1px solid #B8935A; margin-top:10px; padding-top:5px; font-family:'Work Sans',Arial,sans-serif; font-size:9.5px; color:#7A7268; text-align:left; }
+  .agr h2{ font-family:'Work Sans',Arial,sans-serif; text-align:center; font-size:18px; letter-spacing:0.04em; margin:4px 0 2px; }
+  .agr .agr-sub{ text-align:center; color:#7A7268; font-family:'Work Sans',Arial,sans-serif; font-size:11px; margin-bottom:10px; }
+  .agr-box{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #B8935A; background:#FAF6EE; margin:10px 0 14px; font-family:'Work Sans',Arial,sans-serif; }
+  .agr-box div{ padding:6px 10px; border-right:1px solid #E3D7BE; border-bottom:1px solid #E3D7BE; font-size:12px; }
+  .agr-box small{ display:block; font-size:8.5px; letter-spacing:0.1em; color:#7A7268; font-weight:700; }
+  .agr-cl{ display:flex; gap:10px; margin:0 0 8px; break-inside:avoid; }
+  .agr-cl > b.n{ color:#B8935A; font-family:'Work Sans',Arial,sans-serif; min-width:22px; }
+  .agr-cl ol{ margin:5px 0 0; padding-left:20px; list-style:lower-alpha; }
+  .agr-h{ font-family:'Work Sans',Arial,sans-serif; color:#B8935A; font-size:11px; letter-spacing:0.12em; font-weight:700; margin:14px 0 8px; }
+  .agr-sched{ width:100%; border-collapse:collapse; font-family:'Work Sans',Arial,sans-serif; font-size:11.5px; margin:6px 0 10px; }
+  .agr-sched th{ background:#EFE6D6; text-align:left; } .agr-sched th, .agr-sched td{ border:1px solid #BDB5A8; padding:5px 8px; height:21px; }
+  .agr-sign{ display:grid; grid-template-columns:1fr 1fr; gap:10px 50px; margin-top:16px; break-inside:avoid; font-family:'Work Sans',Arial,sans-serif; font-size:11.5px; }
+  .agr-sign div{ min-height:78px; } .agr-sign b{ display:block; margin-bottom:34px; }
+  .idprev{ display:none; max-width:170px; max-height:120px; margin-top:8px; border:1px solid var(--line); border-radius:6px; }
   @page{ size:A4; margin:12mm; }
   @media print{
     body.bill-open > *:not(#billOverlay){ display:none !important; }
@@ -263,6 +289,7 @@
     body.bill-open #billOverlay{ position:static !important; overflow:visible !important; background:#fff !important; padding:0 !important; }
     .bill-toolbar{ display:none !important; }
     .bill{ border:none !important; padding:0 !important; max-width:none !important; font-size:12px; }
+    .bill.agr{ font-size:11.5px; }
   }
 </style>
 </head>
@@ -352,6 +379,18 @@
         <div class="field-row">
           <div class="field"><label for="bkPhone">Mobile number *</label><input type="tel" id="bkPhone" maxlength="17" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile number"></div>
           <div class="field"><label for="bkEmail">Email *</label><input type="email" id="bkEmail" maxlength="100" autocomplete="email" placeholder="you@example.com"></div>
+        </div>
+        <div id="bkTenantExtra" class="hidden">
+          <div class="info-box"><strong>Details for your rental agreement</strong><br><span class="hint">Needed for monthly stays — printed on your agreement.</span></div>
+          <div class="field-row">
+            <div class="field"><label for="bkRel">Relation *</label>
+              <select id="bkRel"><option value="S/o">Son of (S/o)</option><option value="D/o">Daughter of (D/o)</option><option value="W/o">Wife of (W/o)</option></select></div>
+            <div class="field"><label for="bkRelName">Father's / spouse's name *</label><input type="text" id="bkRelName" maxlength="60" placeholder="Full name"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="bkAge">Your age *</label><input type="number" id="bkAge" min="18" max="100" inputmode="numeric" placeholder="e.g. 28"></div>
+            <div class="field"><label for="bkAddress">Permanent address *</label><textarea id="bkAddress" rows="2" maxlength="250" placeholder="House no., street, city, state, PIN"></textarea></div>
+          </div>
         </div>
         <div class="field-row">
           <div class="field"><label for="bkMoveIn">Check-in date *</label><input type="date" id="bkMoveIn"></div>
@@ -883,7 +922,7 @@
 <!-- ================= BILL / RECEIPT (print → Save as PDF) ================= -->
 <div id="billOverlay" class="hidden">
   <div class="bill-toolbar">
-    <span><strong>Booking confirmation &amp; receipt</strong><br><span class="hint">Click “Download / Print PDF”, then choose <em>Save as PDF</em> as the printer.</span></span>
+    <span><span id="billTitle"><strong>Booking confirmation &amp; receipt</strong></span><br><span class="hint">Click “Download / Print PDF”, then choose <em>Save as PDF</em> as the printer.</span></span>
     <span>
       <button class="btn btn-rust btn-sm" onclick="printBill()">Download / Print PDF</button>
       <button class="btn btn-outline btn-sm" onclick="closeBill()">Close</button>
@@ -964,8 +1003,12 @@
   const CK = {
     ADMIN_PHONE: '8106812341',
     NON_REFUNDABLE: 6000,
-    MIN_MONTHS: 3,
+    MIN_MONTHS: 6,
     MAX_BOOK_MONTHS: 6,
+    AGREEMENT_MIN_MONTHS: 6,                  // monthly stays of this many months or more get a rental agreement at check-in
+    COMPANY_NAME: 'CodeKasa',                 // legal name of the owner company shown on the agreement
+    COMPANY_SIGNATORY: '',                    // authorised signatory (name & designation); left blank to be written by hand
+    ID_MAX_PX: 1400,
     EDIT_LOCK_DAYS: 7
   };
 
@@ -1410,7 +1453,7 @@
     return window.location.origin + window.location.pathname + (query ? '?' + query : '');
   }
   const POLICY_LINE = 'Please carry the original ID proof of every adult staying (the same Aadhaar/passport number given at booking). If it does not match at check-in, the booking is cancelled and no refund is given.';
-  const MONTH_TERMS = `Monthly stay terms: minimum 3 months. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} non-refundable. The advance is returned one week after you vacate.`;
+  const MONTH_TERMS = `Monthly stay terms: minimum 6 months. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} non-refundable. The advance is returned one week after you vacate.`;
 
   function waGuestText(b){
     const p = b.payment || {};
@@ -1596,7 +1639,7 @@
 
       <h4>Terms</h4>
       <ul class="bill-terms">
-        ${month ? `<li>Minimum 3 months booking. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable. The advance is returned one week after the room is vacated.</li>` : ''}
+        ${month ? `<li>Minimum 6 months booking. One month's rent as advance plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable. The advance is returned one week after the room is vacated.</li>` : ''}
         <li>ID proof must belong to the person staying. If the number does not match at check-in, the booking is cancelled and no refund is given.</li>
         <li>Within 24 hours of check-in, cancellation is not possible and no refund will be given.</li>
         <li>The booking can be edited online up to one week before check-in. Within one week, please call +91 81068 12341.</li>
@@ -1607,9 +1650,117 @@
       <div class="bill-foot">This is a computer-generated receipt. Thank you for choosing CodeKasa.</div>
     </div>`;
   }
+
+  // ---------- Rental agreement (print → Save as PDF; same screen as the bill) ----------
+  const ONES = ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const TENS = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  function numWords(n){
+    n = Math.round(Number(n) || 0);
+    if (n === 0) return 'zero';
+    const two = x => x < 20 ? ONES[x] : TENS[Math.floor(x / 10)] + (x % 10 ? ' ' + ONES[x % 10] : '');
+    const three = x => (x >= 100 ? ONES[Math.floor(x / 100)] + ' hundred' + (x % 100 ? ' ' : '') : '') + (x % 100 ? two(x % 100) : '');
+    const parts = [];
+    const cr = Math.floor(n / 10000000); n %= 10000000;
+    const lk = Math.floor(n / 100000); n %= 100000;
+    const th = Math.floor(n / 1000); n %= 1000;
+    if (cr) parts.push(three(cr) + ' crore'); if (lk) parts.push(two(lk) + ' lakh'); if (th) parts.push(two(th) + ' thousand'); if (n) parts.push(three(n));
+    return parts.join(' ');
+  }
+  const capWords = t => t.charAt(0).toUpperCase() + t.slice(1);
+  function ordinal(n){ const v = n % 100; return n + ((v >= 11 && v <= 13) ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th')); }
+  function agrDate(d){ return `${ordinal(d.getDate())} day of ${d.toLocaleDateString('en-IN', { month: 'long' })} ${d.getFullYear()}`; }
+  function agreementEligible(b){
+    return !!b && b.stayType !== 'day' && b.status === 'confirmed' && Number(b.months) >= CK.AGREEMENT_MIN_MONTHS;
+  }
+  function agreementHtml(b, full){
+    const t = b.tenant || {};
+    const start = parseISO(b.moveIn) || new Date();
+    const termEnd = addDays(addMonths(start, 11), -1);
+    const lock = Math.min(Number(b.months) || CK.MIN_MONTHS, 11);
+    const rate = Number(b.rate) || listedPrice(b.roomType);
+    const nonref = Number(b.nonRefundable) || CK.NON_REFUNDABLE;
+    const rec = full ? idsFor(b.id) : null;
+    const persons = (rec && rec.persons && rec.persons.length ? rec.persons : b.persons) || [];
+    const p0 = persons[0] || {};
+    const idNo = p0.idNumber ? (p0.idType === 'aadhaar' ? String(p0.idNumber).replace(/(\d{4})(?=\d)/g, '$1 ') : p0.idNumber) : (p0.idMasked || '');
+    const others = persons.slice(1).map(x => esc(x.name)).filter(Boolean);
+    const pay = b.payment || {};
+    const room = b.roomNumber ? `<b>${esc(b.roomNumber)}</b>` : '<b>__________</b> (as allotted at check-in)';
+    const blank = (v, w) => v ? `<b>${esc(v)}</b>` : `<b>${'_'.repeat(w || 14)}</b>`;
+    let n = 0;
+    const row = (title, body, subs) => { n++; return `<tr><td><div class="agr-cl"><b class="n">${n}.</b><div><b>${title}</b> ${body}${subs ? `<ol>${subs.map(x => `<li>${x}</li>`).join('')}</ol>` : ''}</div></div></td></tr>`; };
+    const company = esc(CK.COMPANY_NAME);
+    const rows = [
+      row('Premises.', `The LESSOR operates the serviced apartment building at Plot No. 2, Petra Pebbles, 34, Ambalipura–Sarjapur Road, Carmelaram Post, Mullur, Karnataka – 560035. The LESSOR agrees to let and the LESSEE agrees to take on lease <b>Room No.</b> ${room} (<b>${esc(b.roomType)}</b>) (the “Premises”), together with the fixtures, fittings and accessories listed in the Schedule, on the terms below.`),
+      row('Term and lock-in.', `The lease commences on the check-in date, <b>${esc(fmtDate(b.moveIn))}</b>, and runs for eleven (11) months, up to <b>${esc(fmtDate(localISO(termEnd)))}</b>, renewable by mutual written consent for a further eleven (11) months with an escalation of 10% or more depending on prevailing rates. The LESSEE has booked <b>${esc(b.months)} months</b>, and a lock-in of <b>${lock} months</b> applies. Check-in time is 2:00 PM and check-out time is 10:00 AM.`),
+      row('Monthly rent.', `The LESSEE shall pay a monthly rent of <b>Rs. ${rate.toLocaleString('en-IN')}/- (Rupees ${esc(numWords(rate))} only)</b>, payable in advance on or before the <b>5th day of every month</b> by UPI or bank transfer to the account notified by the LESSOR. Rent for the current month is payable in full <b>irrespective of the number of days occupied</b> in that month, as per this Agreement.`),
+      row('Advance (security deposit).', '', [
+        `The LESSEE has paid an advance of <b>Rs. ${rate.toLocaleString('en-IN')}/- (Rupees ${esc(numWords(rate))} only)</b>, equal to one month's rent, held free of interest as security for performance of this Agreement.`,
+        `A further sum of <b>Rs. ${nonref.toLocaleString('en-IN')}/-</b> paid at booking is a non-refundable charge and is not part of the advance.`,
+        `The advance <b>shall strictly not be adjusted against monthly rent</b> or any other recurring charge at any time during the stay.`,
+        `The advance shall be refunded, free of interest, <b>one (1) week after the LESSEE has vacated</b> and handed over the Premises and keys, after deducting rent and utility arrears, late charges, the cost of any loss, theft or damage, and any other amounts due under this Agreement.`]),
+      row('Utility charges.', `Water charges shall be payable by the LESSEE at <b>Rs. 0.18 (eighteen paise) per litre</b> as per the LESSOR's meter reading, and <b>electricity charges shall be charged separately</b> at actuals as per the sub-meter reading / prevailing tariff. Both are payable with the next month's rent or within three (3) days of the bill being sent.`),
+      row('Late payment.', `If the monthly rent is not paid by the 5th of any month, a late charge of <b>Rs. 50/- per day</b> shall be payable from the 6th until payment. If the rent remains unpaid for <b>two (2) weeks</b> after the due date, this Agreement shall stand terminated at the LESSOR's option and Clause 16 shall apply.`),
+      row('Termination for breach – immediate.', `If any illegal activity is carried out by the LESSEE or his/her guests, or any disturbance to neighbours, residents or the environment is reported, the LESSOR may <b>cancel this Agreement immediately</b> and the LESSEE shall <b>vacate forthwith</b>. The LESSOR may likewise terminate with immediate effect for any other material breach, including use of the Premises other than for residence.`),
+      row('Notice for vacating.', `A written notice of <b>one (1) month</b> is mandatory from <b>either party</b> to end this Agreement, <b>irrespective of any situation</b>. Rent for the notice period remains payable. Notice shall be given in writing, by e-mail or by WhatsApp to the contact details in this Agreement, and takes effect on the date it is received.`),
+      row('Dues before notice.', `All dues (rent, utility charges, late charges and any other amounts) must be paid in full <b>before</b> notice is given. Otherwise the notice period <b>will not be considered</b> and shall begin only from the date all dues are cleared.`),
+      row('Condition of the Premises.', `The LESSEE shall keep the Premises, fixtures, fittings, locks and keys neat, clean and in good order throughout the stay and shall not damage them, subject to normal wear and tear. No structural addition, alteration, nail-drilling or repainting shall be made without the LESSOR's prior written consent.`),
+      row('Inspection, damage and theft.', '', [
+        `The Premises shall be inspected by the LESSOR at vacating (and at other reasonable times with prior notice).`,
+        `If any item or belonging of the LESSOR is stolen, lost or damaged, the <b>same price (cost of a new item) shall be deducted from the advance</b>. Damaged items shall be charged <b>as a new item</b> and deducted from the advance. If the advance is insufficient, the LESSEE shall pay the balance on demand.`,
+        `The LESSOR is not responsible for loss of, or damage to, the LESSEE's own belongings.`]),
+      row('Guests and disturbance.', `<b>No guest is permitted without prior notice</b> to and approval of the LESSOR/management. Overnight guests are not permitted unless approved in writing. The LESSEE and guests shall maintain silence at night and shall cause <b>no disturbance</b> to other residents or neighbours.`),
+      row('Prohibited activities.', `Consumption, possession or sale of illegal substances (including ganja and narcotics), drinking of alcohol in the Premises or common areas, and bringing outside persons for immoral or illegal purposes (including prostitution) are <b>strictly prohibited</b>. If reported, the matter shall be <b>immediately handed over to the police</b> with all supporting evidence, and the Agreement shall stand terminated under Clause 7.`),
+      row('Misbehaviour.', `Any misbehaviour, abuse, threat or harassment towards the LESSOR, its owners or staff is a <b>serious violation</b>. This Agreement shall be terminated <b>with immediate effect, without any notice, and no refund shall be given</b>.`),
+      row('Sub-letting and occupants.', `The LESSEE shall not sub-let, share or part with possession of the Premises. ${others.length ? `Besides the LESSEE, the following person(s) are permitted to stay: <b>${others.join(', ')}</b>.` : 'No person other than the LESSEE may reside in the Premises without prior written consent.'}`),
+      row('Locked / abandoned Premises.', `If this Agreement is terminated or expires, or the rent remains unpaid as per Clause 6, and the Premises are found locked and the LESSEE has not reported to open them after written notice (by WhatsApp, e-mail or phone) from the LESSOR, the <b>LESSOR shall have the right to open the Premises, take possession of the room and dispose of the items/belongings</b> left therein, in the presence of two witnesses with an inventory recorded. Resulting costs and dues may be adjusted against the advance.`),
+      row('Identification and verification.', `The LESSEE has furnished a government photo ID (uploaded at check-in), shall co-operate with police / local verification, and shall inform the LESSOR of any change in contact details or address.`),
+      row('Repairs.', `Major repairs will be done by the LESSOR. Minor day-to-day repairs of fittings and fixtures arising from use are the responsibility of the LESSEE. All accessories provided must be returned in working and undamaged condition; otherwise recovery will be made to the extent of restoration or replacement.`),
+      row('Handing back.', `On termination or expiry, the LESSEE shall hand over vacant possession with all fixtures, fittings, accessories and keys in the same good condition as at check-in, subject to normal wear and tear, and shall remove all personal belongings. Painting / cleaning charges, if any, shall be deducted from the advance.`),
+      row('Peaceful possession.', `The LESSOR covenants that the LESSEE, on paying the rent and observing the terms of this Agreement, shall enjoy peaceful possession of the Premises during the term.`),
+      row('Notices, jurisdiction and general.', `This Agreement is the entire understanding between the parties and may be amended only in writing. Notices by WhatsApp, e-mail or post to the contact details above are valid. This Agreement is governed by the laws of India and the courts at Bengaluru shall have exclusive jurisdiction.`)
+    ].join('');
+    const items = ['Bed with mattress','Wardrobe / cupboard','Fan','Light fittings / LED lights','AC (if AC room)','Study table / chair','Curtains / curtain rods','Bathroom fittings, mirror and geyser','Keys / access cards issued','',''];
+    const sched = `<table class="agr-sched"><thead><tr><th>Item</th><th style="width:60px;">Qty</th><th style="width:34%;">Condition at check-in</th></tr></thead><tbody>${items.map(x => `<tr><td>${x}</td><td></td><td></td></tr>`).join('')}</tbody></table>`;
+    const payLine = `Monthly rent Rs. ${rate.toLocaleString('en-IN')}; Advance Rs. ${rate.toLocaleString('en-IN')}; Non-refundable charge Rs. ${nonref.toLocaleString('en-IN')}; Total received Rs. ${(pay.amount ? Number(pay.amount) : (Number(b.amountDue) || rate + nonref)).toLocaleString('en-IN')}${pay.method ? ' via ' + esc(pay.method) : ''}${pay.paidOn ? ' on ' + esc(fmtDate(pay.paidOn)) : ''}.`;
+    return `<div class="bill agr" id="billSheet"><table class="agr-table">
+      <thead><tr><td><div class="agr-logo"><img src="icon-192.png" alt=""><div><div class="nm">Code<span style="color:#E5342E;">K</span>asa</div><div class="tg">A LUXURY LIVING</div></div><div class="rt">Serviced Apartments<br>Mullur, Bengaluru</div></div></td></tr></thead>
+      <tfoot><tr><td><div class="agr-foot">CodeKasa — A Luxury Living · Rental / Lease Agreement · Booking ${esc(b.id)} · Room ${esc(b.roomNumber || '—')} · +91 81068 12341 · info@codekasa.com</div></td></tr></tfoot>
+      <tbody>
+      <tr><td><h2>RENTAL / LEASE AGREEMENT</h2><div class="agr-sub">Booking ${esc(b.id)}</div>
+        <div class="agr-box"><div><small>ROOM NO. / TYPE</small>${b.roomNumber ? esc(b.roomNumber) : '—'} · ${esc(b.roomType)}</div><div><small>CHECK-IN DATE</small>${esc(fmtDate(b.moveIn))}</div><div><small>BOOKED STAY</small>${esc(b.months)} months</div>
+          <div><small>MONTHLY RENT</small>Rs. ${rate.toLocaleString('en-IN')}</div><div><small>ADVANCE (REFUNDABLE)</small>Rs. ${rate.toLocaleString('en-IN')}</div><div><small>NON-REFUNDABLE CHARGE</small>Rs. ${nonref.toLocaleString('en-IN')}</div></div>
+        <p>THIS AGREEMENT OF LEASE is made and executed at Bengaluru on this <b>${esc(agrDate(start))}</b> between:</p>
+        <p><b>${company}</b>, having its office at Plot No. 2, Petra Pebbles, 34, Ambalipura–Sarjapur Road, Carmelaram Post, Mullur, Karnataka – 560035${CK.COMPANY_SIGNATORY ? ', represented by its authorised signatory <b>' + esc(CK.COMPANY_SIGNATORY) + '</b>' : ', represented by its authorised signatory'}, hereinafter called the <b>LESSOR</b> (which expression shall, wherever the context so requires or admits, mean and include its successors, administrators and permitted assigns) of the ONE PART;</p>
+        <p style="text-align:center;"><b>AND</b></p>
+        <p><b>${esc(b.name)}</b>, ${t.rel ? esc(t.rel) + ' <b>' + esc(t.relName) + '</b>, ' : ''}aged about ${blank(t.age, 4)} years, ${esc(idLabel(p0.idType))} No. <b>${esc(idNo)}</b>, Mobile No. <b>${esc(b.phone)}</b>, E-mail <b>${esc(b.email)}</b>, permanent address ${blank(t.address, 40)}, hereinafter called the <b>LESSEE</b> (which expression shall, wherever the context so requires or admits, mean and include his/her heirs, executors, administrators and permitted assigns) of the OTHER PART.</p>
+        <div class="agr-h">TERMS AND CONDITIONS</div></td></tr>
+      ${rows}
+      <tr><td><div class="agr-h" style="break-before:page;">SCHEDULE — FIXTURES AND FITTINGS (Room No. ${esc(b.roomNumber || '________')})</div>${sched}
+        <p><b>Payment summary at check-in:</b> ${payLine}</p>
+        <p>IN WITNESS WHEREOF the parties have signed this Agreement on the day, month and year first above written, in the presence of the witnesses at BENGALURU.</p>
+        <div class="agr-sign">
+          <div><b>LESSOR — for ${company}</b>Signature: ______________________<br>Name: ${esc(CK.COMPANY_SIGNATORY || '______________________')}<br>Date: ______________</div>
+          <div><b>LESSEE</b>Signature: ______________________<br>Name: ${esc(b.name)}<br>Date: ______________</div>
+          <div><b>WITNESS 1</b>Signature: ______________________<br>Name: ______________________</div>
+          <div><b>WITNESS 2</b>Signature: ______________________<br>Name: ______________________</div>
+        </div></td></tr>
+      </tbody></table></div>`;
+  }
+  function openAgreement(b, full){
+    if (!agreementEligible(b)){ alert(`The rental agreement is available once a monthly booking of ${CK.AGREEMENT_MIN_MONTHS} months or more is confirmed.`); return; }
+    billCtx = { ref: b.id, audience: full ? 'office' : 'guest', kind: 'agreement' };
+    document.getElementById('billTitle').innerHTML = '<strong>Rental agreement</strong>';
+    document.getElementById('billBody').innerHTML = agreementHtml(b, full);
+    document.getElementById('billOverlay').classList.remove('hidden');
+    document.body.classList.add('bill-open');
+  }
+  function openAgreementGuest(ref){ openAgreement(known[ref], false); }
+  function adminAgreement(id){ openAgreement(getBookings().find(x => x.id === id), true); }
   function openBill(b, audience, utrFull){
     if (!b || b.status !== 'confirmed' || !b.payment){ alert('The bill is available once the booking is confirmed.'); return; }
-    billCtx = { ref: b.id, audience };
+    billCtx = { ref: b.id, audience, kind: 'bill' };
+    document.getElementById('billTitle').innerHTML = '<strong>Booking confirmation &amp; receipt</strong>';
     document.getElementById('billBody').innerHTML = billHtml(b, audience, utrFull);
     document.getElementById('billOverlay').classList.remove('hidden');
     document.body.classList.add('bill-open');
@@ -1620,7 +1771,7 @@
   }
   function printBill(){
     const old = document.title;
-    document.title = `CodeKasa-Receipt-${billCtx ? billCtx.ref : ''}`;       // becomes the saved PDF's file name
+    document.title = `CodeKasa-${billCtx && billCtx.kind === 'agreement' ? 'Agreement' : 'Receipt'}-${billCtx ? billCtx.ref : ''}`;       // becomes the saved PDF's file name
     window.print();
     setTimeout(() => { document.title = old; }, 500);
   }
@@ -1706,7 +1857,7 @@
     }
     return `<strong>Monthly stay</strong>${price ? ` · ${rupee(price)} per month` : ''}
       <ul>
-        <li><strong>Minimum 3 months</strong> booking is required.</li>
+        <li><strong>Minimum 6 months</strong> booking is required.</li>
         <li><strong>One month's rent as advance${price ? ' (' + rupee(price) + ')' : ''}, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</strong></li>
         <li>The advance is returned <strong>one week after you vacate</strong> the room.</li>
         <li>Check-in from 2:00 PM · Check-out by 10:00 AM.</li>
@@ -1719,7 +1870,7 @@
   }
   function bkFillDurations(){
     const isDay = stayTypeOf(pendingBookRoom) === 'day';
-    document.getElementById('bkDurationLabel').textContent = isDay ? 'Number of nights *' : 'Stay duration (minimum 3 months) *';
+    document.getElementById('bkDurationLabel').textContent = isDay ? 'Number of nights *' : 'Stay duration (minimum 6 months) *';
     if (isDay) fillSelect('bkDuration', 1, 30, n => `${n} night${n > 1 ? 's' : ''}`);
     else fillSelect('bkDuration', CK.MIN_MONTHS, 12, n => `${n} months`);
   }
@@ -1766,9 +1917,44 @@
             </select></div>
           <div class="field"><label for="bkPIdNo${i}">ID number *</label>
             <input type="text" id="bkPIdNo${i}" maxlength="16" autocomplete="off" value="${esc(p.idNo)}" placeholder="${p.idType === 'passport' ? 'e.g. A1234567' : '12-digit Aadhaar number'}"></div>
-        </div></div>`;
+        </div>
+        <div class="field"><label for="bkPFile${i}">Upload ID proof photo *</label>
+          <input type="file" id="bkPFile${i}" accept="image/*" onchange="bkIdFileChosen(${i})">
+          <div class="hint">Clear photo of the ID card (front side). JPG / PNG. It is shared only with CodeKasa.</div>
+          <img id="bkPPrev${i}" class="idprev" alt="ID proof preview"></div></div>`;
     }
     document.getElementById('bkPersons').innerHTML = html;
+    const ex = document.getElementById('bkTenantExtra');
+    if (ex) ex.classList.toggle('hidden', stayTypeOf(pendingBookRoom) === 'day');
+    for (let i = 0; i < count; i++) if (bkIdImages[i]) bkShowIdPreview(i);
+  }
+  // ID proof photos: shrunk in the browser, then uploaded with the booking
+  let bkIdImages = {};
+  function bkShowIdPreview(i){
+    const im = bkIdImages[i], img = document.getElementById('bkPPrev' + i);
+    if (!img || !im) return;
+    img.src = im.url; img.style.display = 'block';
+  }
+  async function bkIdFileChosen(i){
+    const inp = document.getElementById('bkPFile' + i), f = inp && inp.files && inp.files[0];
+    if (!f) return;
+    if (!/^image\//.test(f.type)){ delete bkIdImages[i]; setFieldError('bkPFile' + i, 'Please choose a photo (JPG or PNG) of the ID proof.'); inp.value = ''; return; }
+    try{
+      const bmp = await new Promise((res, rej) => { const u = URL.createObjectURL(f), im = new Image(); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('decode')); }; im.src = u; });
+      const scale = Math.min(1, CK.ID_MAX_PX / Math.max(bmp.naturalWidth, bmp.naturalHeight));
+      const cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(bmp.naturalWidth * scale)); cv.height = Math.max(1, Math.round(bmp.naturalHeight * scale));
+      cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+      const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.8));
+      if (!blob) throw new Error('encode');
+      if (bkIdImages[i] && bkIdImages[i].url) URL.revokeObjectURL(bkIdImages[i].url);
+      bkIdImages[i] = { blob, url: URL.createObjectURL(blob) };
+      setFieldError('bkPFile' + i, '');
+      bkShowIdPreview(i);
+    } catch(e){
+      delete bkIdImages[i]; inp.value = '';
+      setFieldError('bkPFile' + i, 'We could not read that image. Please choose a JPG or PNG photo.');
+    }
   }
   function bkIdTypeChanged(i){
     const t = val('bkPIdType' + i);
@@ -1894,6 +2080,14 @@
     mark('bkPhone', vPhone(val('bkPhone')));
     mark('bkEmail', vEmail(val('bkEmail'), true));
     mark('bkMoveIn', vCheckIn(val('bkMoveIn'), true));
+    let tenant = null;
+    if (!isDay){
+      const rn = val('bkRelName').trim().replace(/\s+/g, ' '), age = Number(val('bkAge')), addr = val('bkAddress').trim().replace(/\s+/g, ' ');
+      mark('bkRelName', vName(rn));
+      mark('bkAge', (Number.isInteger(age) && age >= 18 && age <= 100) ? '' : 'Enter your age (18 to 100).');
+      mark('bkAddress', addr.length >= 10 ? '' : 'Please enter your full permanent address.');
+      tenant = { rel: val('bkRel'), relName: rn, age, address: addr };
+    }
 
     let durErr = '';
     const dur = Number(val('bkDuration'));
@@ -1923,6 +2117,7 @@
       const norm = normId(idType, raw);
       if (!idErr && seen.has(norm)) idErr = 'This ID number is already entered for another guest.';
       mark('bkPIdNo' + i, idErr);
+      mark('bkPFile' + i, bkIdImages[i] ? '' : 'Please upload a photo of the ID proof.');
       if (!idErr) seen.add(norm);
       persons.push({ name, idType, idNumber: norm });
     }
@@ -1944,7 +2139,8 @@
       phone: normPhone(val('bkPhone')),
       email: val('bkEmail').trim(),
       moveIn: val('bkMoveIn'),
-      checkOut: localISO(checkOut)
+      checkOut: localISO(checkOut),
+      tenant
     };
   }
 
@@ -1977,13 +2173,21 @@
     try{
       const ref = makeRef();
       const nowIso = new Date().toISOString();
+      btn.textContent = 'Uploading your ID proof…';
+      const idUrls = [];
+      for (let i = 0; i < v.persons.length; i++){
+        const r = storageRef(storage, `booking-ids/${ref}/person${i + 1}.jpg`);
+        await uploadBytes(r, bkIdImages[i].blob, { contentType: 'image/jpeg' });
+        idUrls.push(await getDownloadURL(r));
+      }
+      btn.textContent = 'Creating your booking…';
       const rate = listedPrice(pendingBookRoom);
       const amt = amountsFor(pendingBookRoom, rate, v.dur);
       const booking = {
         name: v.name, phone: v.phone, email: v.email,
         roomType: pendingBookRoom, stayType: v.isDay ? 'day' : 'month',
         moveIn: v.moveIn, checkOut: v.checkOut,
-        ...(v.isDay ? { nights: v.dur } : { months: v.dur }),
+        ...(v.isDay ? { nights: v.dur } : { months: v.dur, tenant: v.tenant }),
         adults: v.adults, kids: v.kids, guests: v.guests,
         persons: v.persons.map(p => ({ name: p.name, idType: p.idType, idMasked: maskId(p.idType, p.idNumber) })),   // masked only: full ID numbers never go in the public record
         rate, nonRefundable: amt.nonRefundable, amountDue: amt.total,
@@ -1991,10 +2195,11 @@
       };
       const batch = writeBatch(db);
       batch.set(doc(db, 'bookings', ref), booking);
-      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons });   // full ID numbers: admin-only
+      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons.map((p, i) => ({ ...p, idCardUrl: idUrls[i] })) });   // full ID numbers: admin-only
       batch.set(doc(db, 'bookingLookup', v.phone), { refs: arrayUnion(ref), updatedAt: nowIso }, { merge: true });
       await batch.commit();
 
+      bkIdImages = {};
       bookPrefill = null;                 // used up: the next booking starts from a clean form
       const full = { id: ref, ...booking };
       notifyAdminEmail(`New booking request ${ref} — payment pending`, {
@@ -2182,7 +2387,7 @@
       <div class="ref-badge">${esc(b.id)}</div>
       <table class="kv">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>
       ${month ? `<div class="info-box"><strong>Monthly stay terms</strong><ul>
-           <li>Minimum 3 months booking.</li>
+           <li>Minimum 6 months booking.</li>
            <li>One month's rent as advance, plus ${rupee(CK.NON_REFUNDABLE)} which is non-refundable.</li>
            <li>The advance is returned one week after you vacate the room.</li></ul></div>` : ''}
       <div class="info-box warn"><strong>Please remember</strong><ul>
@@ -2190,6 +2395,8 @@
         <li>You can edit this booking online up to one week before check-in. Within one week, call +91 81068 12341.</li>
         <li><strong>Within 24 hours of check-in, cancellation is not possible</strong> and no refund will be given.</li></ul></div>
       <button class="btn btn-rust btn-block" onclick="openBillGuest('${b.id}')">Download / print bill (PDF)</button>
+      ${agreementEligible(b) ? `<button class="btn btn-rust btn-block" style="margin-top:10px;" onclick="openAgreementGuest('${b.id}')">Download / print rental agreement (PDF)</button>
+      <p class="hint" style="margin:6px 0 0;">Your agreement is filled in from your check-in details. Print it, sign it and hand it to CodeKasa at check-in.</p>` : ''}
       <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(CK.ADMIN_PHONE, 'CodeKasa booking ' + b.id + ' is confirmed.\nName: ' + b.name + '\nRoom: ' + b.roomType + '\nCheck-in: ' + fmtDate(b.moveIn))}">Send details to CodeKasa on WhatsApp</a>
       <a class="btn btn-wa btn-block" style="margin-top:10px;" target="_blank" rel="noopener" href="${waLink(b.phone, waGuestText(b))}">Send a confirmation copy to my WhatsApp</a>
       <p class="hint" style="margin:8px 0 16px;">WhatsApp opens with the message ready — just tap Send.</p>
@@ -2255,7 +2462,7 @@
       let action;
       if (b.status === 'pending_payment') action = `<button class="btn btn-rust btn-sm" onclick="openPayment('${b.id}')">Complete payment (${rupee(b.amountDue)})</button><div class="hint" style="margin-top:8px;">This booking is confirmed only after payment is made and verified.</div>`;
       else if (b.status === 'payment_submitted') action = `<button class="btn btn-rust btn-sm" onclick="openPayment('${b.id}')">View payment status</button><div class="hint" style="margin-top:8px;">CodeKasa is verifying your payment.</div>`;
-      else if (b.status === 'confirmed') action = `<button class="btn btn-teal btn-sm" onclick="openBillGuest('${b.id}')">Bill (PDF)</button> ` +
+      else if (b.status === 'confirmed') action = `<button class="btn btn-teal btn-sm" onclick="openBillGuest('${b.id}')">Bill (PDF)</button> ` + (agreementEligible(b) ? `<button class="btn btn-teal btn-sm" onclick="openAgreementGuest('${b.id}')">Agreement (PDF)</button> ` : '') +
         (es.ok ? `<button class="btn btn-outline btn-sm" onclick="startEditBooking('${b.id}')">Edit dates</button><div id="mgEdit_${b.id}"></div>` : `<div class="hint" style="margin-top:10px;">${es.why}</div>`);
       else action = `<div class="hint">${es.why}</div>`;
       return `<div class="booking-result">
@@ -2365,7 +2572,7 @@
     const rec = idsFor(b.id);
     const list = (rec && rec.persons) || b.persons || [];
     let html = esc(guestsLabel(b));
-    html += list.map(p => `<br>${esc(p.name)} — ${idLabel(p.idType)}${(p.idNumber || p.idMasked) ? ' <strong>' + esc(p.idNumber || p.idMasked) + '</strong>' : ''}`).join('');
+    html += list.map((p, i) => `<br>${esc(p.name)} — ${idLabel(p.idType)}${(p.idNumber || p.idMasked) ? ' <strong>' + esc(p.idNumber || p.idMasked) + '</strong>' : ''}${p.idCardUrl ? ` <button class="btn btn-outline btn-sm" onclick="viewPersonId('${b.id}', ${i})">View ID photo</button>` : ''}`).join('');
     if (b.idCardUrl) html += `<br><button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View ID file</button>`;
     return html;
   }
@@ -2399,6 +2606,7 @@
           ${open ? `<button class="btn btn-rust btn-sm" onclick="openPayModal('${b.id}')">Review &amp; confirm</button>` : ''}
           ${b.status === 'confirmed' && ready ? `<button class="btn btn-outline btn-sm" onclick="openRoomModal('${b.id}')">${b.roomNumber ? 'Change room' : 'Allot room'}</button>` : ''}
           ${b.status === 'confirmed' && b.payment ? `<button class="btn btn-blue btn-sm" onclick="adminBill('${b.id}')">Bill (PDF)</button>` : ''}
+          ${agreementEligible(b) ? `<button class="btn btn-blue btn-sm" onclick="adminAgreement('${b.id}')">Agreement (PDF)</button>` : ''}
           <button class="btn btn-teal btn-sm" onclick="whatsappGuest('${b.id}')">WhatsApp guest</button>
           <button class="btn btn-outline btn-sm" onclick="bookFromRecord('booking', '${b.id}')">Book room</button>
           <button class="btn btn-danger btn-sm" onclick="deleteBooking('${b.id}')">Delete</button>
@@ -2434,6 +2642,10 @@
         try{ await deleteDoc(doc(db, col, id)); } catch(e){ /* may not exist for older bookings */ }
       }
     } catch(e){ console.error(e); alert('Could not delete this booking.'); }
+  }
+  function viewPersonId(id, i){
+    const rec = idsFor(id), p = rec && rec.persons && rec.persons[i];
+    if (p && p.idCardUrl) window.open(p.idCardUrl, '_blank', 'noopener');
   }
   function viewBookingId(id){
     const b = getBookings().find(x => x.id === id);
@@ -3503,7 +3715,7 @@
       return `<div class="visitor-room-card">
         <h3>${esc(t)}</h3>
         <div class="price">${rupee(listedPrice(t))} / ${day ? 'day' : 'month'}</div>
-        <div class="facilities">${day ? 'Day or week stays' : 'Minimum 3 months'}</div>
+        <div class="facilities">${day ? 'Day or week stays' : 'Minimum 6 months'}</div>
         <a class="btn btn-rust btn-sm" style="margin-top:10px;" href="admin.html?book=${encodeURIComponent(t)}">Book now</a>
       </div>`;
     }).join('');
@@ -3544,7 +3756,7 @@
     submitBooking, submitEnquiry, submitExpense, submitRoom, submitStaff, submitTenant, switchRoleTab,
     switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
-    bkIdTypeChanged, whatsappGuest,
+    bkIdTypeChanged, bkIdFileChosen, whatsappGuest, openAgreementGuest, adminAgreement, viewPersonId,
     submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
     adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged,
     rejectFromModal, openRoomModal, closeRoomModal, saveRoomChange,

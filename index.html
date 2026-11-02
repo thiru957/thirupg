@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CodeKasa">
 <meta name="application-name" content="CodeKasa">
-<meta name="ck-build" content="2026.10.07-e">
+<meta name="ck-build" content="2026.11.02-a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -729,7 +729,7 @@
       </div>
       <div class="s-fields">
         <div class="s-field"><label for="sCheckin">Check-in</label><input type="date" class="s-input" id="sCheckin"></div>
-        <div class="s-field"><label for="sDuration" id="sDurationLabel">Stay (minimum 3 months)</label><select class="s-input" id="sDuration"></select></div>
+        <div class="s-field"><label for="sDuration" id="sDurationLabel">Stay (minimum 6 months)</label><select class="s-input" id="sDuration"></select></div>
         <div class="s-field s-guests"><label for="sGuestsBtn">Guests</label>
           <button type="button" class="s-input s-guests-btn" id="sGuestsBtn" aria-haspopup="true" aria-expanded="false">1 adult</button>
           <div class="s-pop hidden-nav" id="sGuestsPop" role="group" aria-label="Guests">
@@ -988,7 +988,7 @@
     <div class="policy-box" id="monthlyTerms">
       <h3>Monthly stay terms</h3>
       <ul>
-        <li><strong>Minimum 3 months</strong> booking is required for monthly stays.</li>
+        <li><strong>Minimum 6 months</strong> booking is required for monthly stays.</li>
         <li><strong>One month's rent as advance, plus ₹6,000 which is non-refundable.</strong></li>
         <li>The advance is returned <strong>one week after you vacate</strong> the room.</li>
       </ul>
@@ -1056,7 +1056,7 @@
     <div style="margin-top:48px;">
       <div class="section-eyebrow">Take a look around</div>
       <h2 style="margin-bottom:16px;">Room Tour</h2>
-      <video controls playsinline preload="metadata" poster="building.jpg" style="width:100%; max-width:520px; border-radius:6px; display:block; background:#000;">
+      <video controls playsinline preload="metadata" poster="building.jpg" style="width:auto; max-width:100%; max-height:78vh; aspect-ratio:9/16; margin:0 auto; border-radius:6px; display:block; background:#000;">
         <source src="room-tour.mp4" type="video/mp4">
         Your browser doesn't support embedded video. <a href="room-tour.mp4">Download the room tour video</a> instead.
       </video>
@@ -1274,7 +1274,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 CodeKasa. All rights reserved.</span>
-      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a> · <span id="siteVersion" style="opacity:0.6;">Site version 2026.10.07-e</span></span>
+      <span><a href="admin.html" style="color:#B9C7C2; text-decoration:underline;">Staff Login</a> · <span id="siteVersion" style="opacity:0.6;">Site version 2026.11.02-a</span></span>
     </div>
   </div>
 </footer>
@@ -1304,7 +1304,7 @@
   const CK = {
     ADMIN_PHONE: '8106812341',
     NON_REFUNDABLE: 6000,
-    MIN_MONTHS: 3,
+    MIN_MONTHS: 6,
     MAX_BOOK_MONTHS: 6,
     EDIT_LOCK_DAYS: 7
   };

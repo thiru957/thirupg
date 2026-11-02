@@ -64,7 +64,7 @@
   const isChromium = !isIOS && !isFirefox && !isSafariMac && !isInApp && /Chrome|Chromium|Edg|OPR|SamsungBrowser/i.test(ua);
   const standalone = () => (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const BUILD = '2026.10.07-e';
+  const BUILD = '2026.11.02-a';
   let report = [];
 
   function browserName(){

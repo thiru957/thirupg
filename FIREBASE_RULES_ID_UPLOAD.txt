@@ -1,0 +1,28 @@
+CODEKASA — RULES TO PUBLISH FOR THE ID-PROOF UPLOAD
+====================================================
+
+1) FIREBASE CONSOLE -> Storage -> Rules  (paste, then Publish)
+---------------------------------------------------------------
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Guests upload their own ID photo while booking. They cannot read or change it afterwards.
+    match /booking-ids/{ref}/{file} {
+      allow create: if request.resource.size < 3 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+      allow read, delete: if request.auth != null;      // admin only
+    }
+
+    // Everything else (tenant ID files uploaded by admin, etc.): signed-in admin only
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+2) FIRESTORE rules  (Firestore -> Rules)
+-----------------------------------------
+- 'bookingIds' must still allow guests to CREATE (no read) and admin to read. The new field inside persons is 'idCardUrl'.
+- 'bookings' create must allow the new field 'tenant' (father/spouse name, age, address) for monthly stays.
+  If your rules list the allowed fields with hasOnly([...]), add 'tenant'.  If they do not, nothing to change.
