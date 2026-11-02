@@ -957,6 +957,23 @@
   </div>
 </div>
 
+<!-- ================= ADMIN: SHARE THE RENTAL AGREEMENT AFTER CONFIRMING ================= -->
+<div id="agrShareModal" class="hidden modal-backdrop">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="agrShareTitle">
+    <h3 id="agrShareTitle" style="margin-bottom:10px;">Booking confirmed — share the rental agreement</h3>
+    <div class="info-box" id="agrShareInfo"></div>
+    <div class="info-box warn"><strong>Please share the rental agreement with the tenant.</strong><ul>
+      <li>The tenant has been added to the room for the check-in date.</li>
+      <li>Send the agreement now; the tenant prints it, signs it, and hands the signed copy to CodeKasa at check-in.</li></ul></div>
+    <div class="btn-row">
+      <button class="btn btn-wa" id="agrShareWaBtn" onclick="agrShareWhatsApp()">Send PDF on WhatsApp</button>
+      <button class="btn btn-blue" onclick="agrShareView()">View / print agreement (PDF)</button>
+      <button class="btn btn-outline" onclick="closeAgrShare()">Later</button>
+    </div>
+    <div class="hint" id="agrShareMsg" style="margin-top:10px;" role="status"></div>
+  </div>
+</div>
+
 <!-- ================= ADMIN: CHANGE A BOOKING'S ROOM ================= -->
 <div id="roomModal" class="hidden modal-backdrop">
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
@@ -1008,7 +1025,8 @@
     AGREEMENT_MIN_MONTHS: 6,                  // monthly stays of this many months or more get a rental agreement at check-in
     COMPANY_NAME: 'CodeKasa',                 // legal name of the owner company shown on the agreement
     COMPANY_SIGNATORY: '',                    // authorised signatory (name & designation); left blank to be written by hand
-    ID_MAX_PX: 1400,
+    ID_MAX_PX: 1100,
+    ID_MAX_BYTES: 200000,                     // each ID photo is kept under ~200 KB (stored in the admin-only booking record)
     EDIT_LOCK_DAYS: 7
   };
 
@@ -1161,7 +1179,12 @@
   let expensesCache = [];
 
   function getRooms(){ return roomsCache; }
-  function getTenants(){ return tenantsCache; }
+  function getTenants(){
+    // a tenant created from a booking always follows that booking's room and dates (and disappears if the booking is cancelled / rejected)
+    return tenantsCache.filter(t => { const b = t.bookingId && bookingsCache.find(x => x.id === t.bookingId); return !(b && (b.status === 'cancelled' || b.status === 'rejected')); })
+      .map(t => { const b = t.bookingId && bookingsCache.find(x => x.id === t.bookingId);
+        return (b && b.status === 'confirmed') ? { ...t, roomNumber: String(b.roomNumber || t.roomNumber), checkin: b.moveIn, checkout: b.checkOut, guests: b.guests || t.guests } : t; });
+  }
   function getEnquiries(){ return enquiriesCache; }
   function getBookings(){ return bookingsCache; }
   function getStaff(){ return staffCache; }
@@ -1672,7 +1695,7 @@
   function agreementEligible(b){
     return !!b && b.stayType !== 'day' && b.status === 'confirmed' && Number(b.months) >= CK.AGREEMENT_MIN_MONTHS;
   }
-  function agreementHtml(b, full){
+  function agreementHtml(b, full, pdfMode){
     const t = b.tenant || {};
     const start = parseISO(b.moveIn) || new Date();
     const termEnd = addDays(addMonths(start, 11), -1);
@@ -1723,9 +1746,10 @@
     const items = ['Bed with mattress','Wardrobe / cupboard','Fan','Light fittings / LED lights','AC (if AC room)','Study table / chair','Curtains / curtain rods','Bathroom fittings, mirror and geyser','Keys / access cards issued','',''];
     const sched = `<table class="agr-sched"><thead><tr><th>Item</th><th style="width:60px;">Qty</th><th style="width:34%;">Condition at check-in</th></tr></thead><tbody>${items.map(x => `<tr><td>${x}</td><td></td><td></td></tr>`).join('')}</tbody></table>`;
     const payLine = `Monthly rent Rs. ${rate.toLocaleString('en-IN')}; Advance Rs. ${rate.toLocaleString('en-IN')}; Non-refundable charge Rs. ${nonref.toLocaleString('en-IN')}; Total received Rs. ${(pay.amount ? Number(pay.amount) : (Number(b.amountDue) || rate + nonref)).toLocaleString('en-IN')}${pay.method ? ' via ' + esc(pay.method) : ''}${pay.paidOn ? ' on ' + esc(fmtDate(pay.paidOn)) : ''}.`;
-    return `<div class="bill agr" id="billSheet"><table class="agr-table">
-      <thead><tr><td><div class="agr-logo"><img src="icon-192.png" alt=""><div><div class="nm">Code<span style="color:#E5342E;">K</span>asa</div><div class="tg">A LUXURY LIVING</div></div><div class="rt">Serviced Apartments<br>Mullur, Bengaluru</div></div></td></tr></thead>
-      <tfoot><tr><td><div class="agr-foot">CodeKasa — A Luxury Living · Rental / Lease Agreement · Booking ${esc(b.id)} · Room ${esc(b.roomNumber || '—')} · +91 81068 12341 · info@codekasa.com</div></td></tr></tfoot>
+    const wrapOpen = pdfMode ? '<div class="agr" style="width:712px;padding:0 4px;background:#fff;"><table class="agr-table">' : '<div class="bill agr" id="billSheet"><table class="agr-table">';
+    return `${wrapOpen}
+      ${pdfMode ? '<!--' : ''}<thead><tr><td><div class="agr-logo"><img src="icon-192.png" alt=""><div><div class="nm">Code<span style="color:#E5342E;">K</span>asa</div><div class="tg">A LUXURY LIVING</div></div><div class="rt">Serviced Apartments<br>Mullur, Bengaluru</div></div></td></tr></thead>
+      <tfoot><tr><td><div class="agr-foot">CodeKasa — A Luxury Living · Rental / Lease Agreement · Booking ${esc(b.id)} · Room ${esc(b.roomNumber || '—')} · +91 81068 12341 · info@codekasa.com</div></td></tr></tfoot>${pdfMode ? '-->' : ''}
       <tbody>
       <tr><td><h2>RENTAL / LEASE AGREEMENT</h2><div class="agr-sub">Booking ${esc(b.id)}</div>
         <div class="agr-box"><div><small>ROOM NO. / TYPE</small>${b.roomNumber ? esc(b.roomNumber) : '—'} · ${esc(b.roomType)}</div><div><small>CHECK-IN DATE</small>${esc(fmtDate(b.moveIn))}</div><div><small>BOOKED STAY</small>${esc(b.months)} months</div>
@@ -1941,14 +1965,21 @@
     if (!/^image\//.test(f.type)){ delete bkIdImages[i]; setFieldError('bkPFile' + i, 'Please choose a photo (JPG or PNG) of the ID proof.'); inp.value = ''; return; }
     try{
       const bmp = await new Promise((res, rej) => { const u = URL.createObjectURL(f), im = new Image(); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('decode')); }; im.src = u; });
-      const scale = Math.min(1, CK.ID_MAX_PX / Math.max(bmp.naturalWidth, bmp.naturalHeight));
-      const cv = document.createElement('canvas');
-      cv.width = Math.max(1, Math.round(bmp.naturalWidth * scale)); cv.height = Math.max(1, Math.round(bmp.naturalHeight * scale));
-      cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
-      const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.8));
-      if (!blob) throw new Error('encode');
+      let px = CK.ID_MAX_PX, q = 0.75, blob = null;
+      for (let tries = 0; tries < 8; tries++){                      // shrink until it is small enough (a booking record must stay under 1 MB)
+        const scale = Math.min(1, px / Math.max(bmp.naturalWidth, bmp.naturalHeight));
+        const cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(bmp.naturalWidth * scale)); cv.height = Math.max(1, Math.round(bmp.naturalHeight * scale));
+        cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+        blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', q));
+        if (!blob) throw new Error('encode');
+        if (blob.size <= CK.ID_MAX_BYTES) break;
+        px = Math.round(px * 0.8); q = Math.max(0.5, q - 0.05);
+      }
+      if (blob.size > CK.ID_MAX_BYTES) throw new Error('toolarge');
+      const dataUrl = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
       if (bkIdImages[i] && bkIdImages[i].url) URL.revokeObjectURL(bkIdImages[i].url);
-      bkIdImages[i] = { blob, url: URL.createObjectURL(blob) };
+      bkIdImages[i] = { blob, dataUrl, url: URL.createObjectURL(blob) };
       setFieldError('bkPFile' + i, '');
       bkShowIdPreview(i);
     } catch(e){
@@ -2173,14 +2204,7 @@
     try{
       const ref = makeRef();
       const nowIso = new Date().toISOString();
-      btn.textContent = 'Uploading your ID proof…';
-      const idUrls = [];
-      for (let i = 0; i < v.persons.length; i++){
-        const r = storageRef(storage, `booking-ids/${ref}/person${i + 1}.jpg`);
-        await uploadBytes(r, bkIdImages[i].blob, { contentType: 'image/jpeg' });
-        idUrls.push(await getDownloadURL(r));
-      }
-      btn.textContent = 'Creating your booking…';
+
       const rate = listedPrice(pendingBookRoom);
       const amt = amountsFor(pendingBookRoom, rate, v.dur);
       const booking = {
@@ -2195,7 +2219,7 @@
       };
       const batch = writeBatch(db);
       batch.set(doc(db, 'bookings', ref), booking);
-      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons.map((p, i) => ({ ...p, idCardUrl: idUrls[i] })) });   // full ID numbers: admin-only
+      batch.set(doc(db, 'bookingIds', ref), { phone: v.phone, name: v.name, persons: v.persons.map((p, i) => ({ ...p, idImage: bkIdImages[i].dataUrl })) });   // ID photos: admin-only   // full ID numbers: admin-only
       batch.set(doc(db, 'bookingLookup', v.phone), { refs: arrayUnion(ref), updatedAt: nowIso }, { merge: true });
       await batch.commit();
 
@@ -2572,7 +2596,7 @@
     const rec = idsFor(b.id);
     const list = (rec && rec.persons) || b.persons || [];
     let html = esc(guestsLabel(b));
-    html += list.map((p, i) => `<br>${esc(p.name)} — ${idLabel(p.idType)}${(p.idNumber || p.idMasked) ? ' <strong>' + esc(p.idNumber || p.idMasked) + '</strong>' : ''}${p.idCardUrl ? ` <button class="btn btn-outline btn-sm" onclick="viewPersonId('${b.id}', ${i})">View ID photo</button>` : ''}`).join('');
+    html += list.map((p, i) => `<br>${esc(p.name)} — ${idLabel(p.idType)}${(p.idNumber || p.idMasked) ? ' <strong>' + esc(p.idNumber || p.idMasked) + '</strong>' : ''}${(p.idImage || p.idCardUrl) ? ` <button class="btn btn-outline btn-sm" onclick="viewPersonId('${b.id}', ${i})">View ID photo</button>` : ''}`).join('');
     if (b.idCardUrl) html += `<br><button class="btn btn-outline btn-sm" onclick="viewBookingId('${b.id}')">View ID file</button>`;
     return html;
   }
@@ -2638,6 +2662,7 @@
     if (!confirm('Delete this booking record? This cannot be undone.')) return;
     try{
       await deleteDoc(doc(db, 'bookings', id));
+      try{ await deleteDoc(doc(db, 'tenants', 'bk_' + id)); } catch(e){ /* none for this booking */ }
       for (const col of ['bookingIds', 'bookingPayments']){
         try{ await deleteDoc(doc(db, col, id)); } catch(e){ /* may not exist for older bookings */ }
       }
@@ -2645,7 +2670,15 @@
   }
   function viewPersonId(id, i){
     const rec = idsFor(id), p = rec && rec.persons && rec.persons[i];
-    if (p && p.idCardUrl) window.open(p.idCardUrl, '_blank', 'noopener');
+    const src = p && (p.idImage || p.idCardUrl);
+    if (!src) return;
+    if (!/^data:image\//.test(src)){ window.open(src, '_blank', 'noopener'); return; }
+    const ov = document.createElement('div');                     // data: addresses cannot be opened in a new tab, so show it on top of the page
+    ov.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(14,12,10,.88);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out;';
+    ov.innerHTML = `<div style="max-width:96vw;max-height:94vh;text-align:center;"><div style="color:#fff;margin-bottom:8px;">${esc(p.name || '')} — ${idLabel(p.idType)} ${esc(p.idNumber || '')} <span style="opacity:.7">(click anywhere to close)</span></div><img alt="ID proof" style="max-width:96vw;max-height:86vh;background:#fff;border-radius:6px;"></div>`;
+    ov.querySelector('img').src = src;
+    ov.onclick = () => ov.remove();
+    document.body.appendChild(ov);
   }
   function viewBookingId(id){
     const b = getBookings().find(x => x.id === id);
@@ -2745,6 +2778,89 @@
     document.getElementById('adminNotice').innerHTML = `<div class="confirm-msg" style="display:block;">${html}</div>`;
     document.getElementById('adminNotice').scrollIntoView({ block: 'nearest' });
   }
+  // A confirmed monthly booking puts the tenant on the room list for the check-in date (one record per booking, so it is never duplicated).
+  function tenantFromBooking(b, room, payment){
+    return { name: b.name, phone: b.phone, roomNumber: String(room), stayType: 'month', guests: b.guests || 1,
+      checkin: b.moveIn, checkout: b.checkOut, rent: Number(b.rate) || listedPrice(b.roomType), paid: 0, extend: false,
+      meterStart: null, meterEnd: null, meterRate: 8, idCardUrl: null,
+      bookingId: b.id, advance: Number(b.rate) || listedPrice(b.roomType), nonRefundable: Number(b.nonRefundable) || 0, source: 'booking' };
+  }
+  function agrShareText(b){
+    return [`Hello ${b.name},`, 'Welcome to CodeKasa — A Luxury Living.', '',
+      `Your rental agreement for Room ${b.roomNumber || ''} (booking ${b.id}) is attached.`,
+      'Please read it, sign it, and hand the signed copy to CodeKasa at check-in on ' + fmtDate(b.moveIn) + '.',
+      '', `You can also open it online: https://codekasa.com/admin.html?pay=${b.id}`, 'Questions? Call +91 81068 12341.'].join('\n');
+  }
+  let agrShareId = null;
+  function openAgrShare(b){
+    agrShareId = b.id;
+    document.getElementById('agrShareInfo').innerHTML = `<strong>${esc(b.name)}</strong> · Room <strong>${esc(b.roomNumber || '—')}</strong> · ${esc(stayLabel(b))}<br>Check-in ${esc(fmtDate(b.moveIn))} → ${esc(fmtDate(b.checkOut))}`;
+    document.getElementById('agrShareMsg').textContent = '';
+    document.getElementById('agrShareModal').classList.remove('hidden');
+  }
+  function closeAgrShare(){ document.getElementById('agrShareModal').classList.add('hidden'); }
+  function agrShareView(){ const b = getBookings().find(x => x.id === agrShareId); if (b) openAgreement(b, true); }
+  function loadScriptOnce(src){
+    return new Promise((res, rej) => { if (document.querySelector(`script[data-src="${src}"]`)) return res(); const el = document.createElement('script'); el.src = src; el.dataset.src = src; el.onload = res; el.onerror = () => rej(new Error('script')); document.head.appendChild(el); });
+  }
+  async function logoDataUrl(){
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = 'icon-192.png'; });
+    const c = document.createElement('canvas'); c.width = c.height = 192; c.getContext('2d').drawImage(img, 0, 0, 192, 192); return c.toDataURL('image/png');
+  }
+  async function agreementPdfBlob(b){
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-12000px;top:0;width:740px;background:#fff;';
+    holder.innerHTML = agreementHtml(b, true, true);
+    document.body.appendChild(holder);
+    try{
+      const logo = await logoDataUrl();
+      const pdf = await window.html2pdf().set({
+        margin: [30, 14, 18, 14], image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.agr-cl', '.agr-sign', 'tr'] }
+      }).from(holder.firstElementChild).toPdf().get('pdf');
+      const n = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= n; i++){                        // logo header + footer on every page
+        pdf.setPage(i);
+        pdf.addImage(logo, 'PNG', 14, 9, 12, 12);
+        pdf.setFont('times', 'bold'); pdf.setFontSize(16);
+        let x = 29; [['Code', [30,27,24]], ['K', [229,52,46]], ['asa', [30,27,24]]].forEach(([t, c]) => { pdf.setTextColor(...c); pdf.text(t, x, 16); x += pdf.getTextWidth(t); });
+        pdf.setFont('helvetica', 'bold'); pdf.setFontSize(6.5); pdf.setTextColor(184,147,90); pdf.text('A LUXURY LIVING', 29, 20, { charSpace: 0.9 });
+        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8); pdf.setTextColor(122,114,104); pdf.text('Serviced Apartments · Mullur, Bengaluru', 196, 16, { align: 'right' });
+        pdf.setDrawColor(184,147,90); pdf.setLineWidth(0.4); pdf.line(14, 24, 196, 24);
+        pdf.line(14, 285, 196, 285);
+        pdf.setFontSize(7.5); pdf.text(`CodeKasa — A Luxury Living · Rental Agreement · Booking ${b.id} · Room ${b.roomNumber || '—'} · Page ${i} of ${n}`, 14, 289.5);
+      }
+      return pdf.output('blob');
+    } finally { holder.remove(); }
+  }
+  async function agrShareWhatsApp(){
+    const b = getBookings().find(x => x.id === agrShareId), msg = document.getElementById('agrShareMsg'), btn = document.getElementById('agrShareWaBtn');
+    if (!b) return;
+    const phone = normPhone(b.phone);
+    if (vPhone(phone)){ msg.textContent = 'This booking has no valid mobile number.'; return; }
+    btn.disabled = true; msg.textContent = 'Preparing the PDF…';
+    try{
+      const blob = await agreementPdfBlob(b);
+      const file = new File([blob], `CodeKasa-Agreement-${b.id}.pdf`, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })){
+        msg.textContent = 'Choose WhatsApp, then the tenant.';
+        try{ await navigator.share({ files: [file], text: agrShareText(b) }); msg.textContent = 'Shared.'; return; }
+        catch(e){ if (e && e.name === 'AbortError'){ msg.textContent = ''; return; } }
+      }
+      // browsers that cannot attach files: save the PDF, then open the tenant's WhatsApp chat with the message ready
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      window.open(waLink(phone, agrShareText(b)), '_blank');
+      msg.textContent = 'The PDF was saved to your Downloads. In the WhatsApp chat that opened, tap the attach (📎) button, choose Document, and pick “' + file.name + '”, then send.';
+    } catch(e){
+      console.error(e);
+      msg.textContent = 'Could not prepare the PDF here. Use “View / print agreement” and Save as PDF, then attach it in WhatsApp.';
+      window.open(waLink(phone, agrShareText(b)), '_blank');
+    } finally { btn.disabled = false; }
+  }
   async function savePayConfirm(){
     const b = getBookings().find(x => x.id === payModalId);
     if (!b) return;
@@ -2771,13 +2887,17 @@
       const batch = writeBatch(db);
       batch.update(doc(db, 'bookings', b.id), { status: 'confirmed', payment, confirmedAt: nowIso, updatedAt: nowIso, ...(room ? { roomNumber: String(room) } : {}) });
       batch.set(doc(db, 'bookingPayments', b.id), { utr: v.ref, method: v.method, amount: v.amount, paidOn: v.paidOn, verified: true, confirmedAt: nowIso, name: b.name, phone: b.phone, amountDue: b.amountDue || 0 }, { merge: true });
+      if (room && b.stayType !== 'day') batch.set(doc(db, 'tenants', 'bk_' + b.id), tenantFromBooking(b, room, payment), { merge: true });   // tenant joins the room for the check-in date
       await batch.commit();
       const done = { ...b, status: 'confirmed', payment, ...(room ? { roomNumber: String(room) } : {}) };
       closePayModal();
+      if (agreementEligible(done)) openAgrShare(done);
       const phone = normPhone(b.phone);
       showAdminNotice(`Booking <strong>${esc(b.id)}</strong> is now confirmed${room ? ' — <strong>room ' + esc(room) + '</strong>' : ''}.
         ${vPhone(phone) ? '' : `<a class="btn btn-wa btn-sm" style="margin-left:10px;" target="_blank" rel="noopener" href="${waLink(phone, waGuestText(done))}">Send confirmation to ${esc(b.name)} on WhatsApp</a>`}
-        <button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminBill('${b.id}')">Open bill (PDF)</button>`);
+        <button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminBill('${b.id}')">Open bill (PDF)</button>
+        ${agreementEligible(done) ? `<button class="btn btn-blue btn-sm" style="margin-left:6px;" onclick="adminAgreement('${b.id}')">Agreement (PDF)</button>` : ''}
+        ${room && b.stayType !== 'day' ? `<div class="hint" style="margin-top:6px;">Tenant added to room ${esc(room)} from ${esc(fmtDate(b.moveIn))} (see the Tenants tab).</div>` : ''}`);
     } catch(e){
       console.error(e);
       errEl.textContent = 'Could not save. Please check your connection and try again.';
@@ -2822,6 +2942,7 @@
     if (!eligibleRooms(getRooms(), q).some(r => String(r.number) === String(room)) && !confirm(`Room ${room} is not the usual kind of room for this guest. Use it anyway?`)) return;
     try{
       await updateDoc(doc(db, 'bookings', b.id), { roomNumber: String(room), updatedAt: new Date().toISOString() });
+      if (b.status === 'confirmed' && b.stayType !== 'day') await setDoc(doc(db, 'tenants', 'bk_' + b.id), tenantFromBooking(b, room), { merge: true });
       closeRoomModal();
       showAdminNotice(`Booking <strong>${esc(b.id)}</strong> is now in <strong>room ${esc(room)}</strong>. Tell the guest: they can see it under “Retrieve my booking”.`);
     } catch(e){ console.error(e); errEl.textContent = 'Could not save. Please try again.'; }
@@ -3757,6 +3878,7 @@
     switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
     bkIdTypeChanged, bkIdFileChosen, whatsappGuest, openAgreementGuest, adminAgreement, viewPersonId,
+    closeAgrShare, agrShareView, agrShareWhatsApp,
     submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
     adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged,
     rejectFromModal, openRoomModal, closeRoomModal, saveRoomChange,
