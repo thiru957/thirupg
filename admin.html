@@ -550,6 +550,7 @@
       <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">Expenses</button>
       <button class="tab-btn" data-tab="reports" onclick="switchTab('reports')">Reports</button>
       <button class="tab-btn" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries &amp; Bookings</button>
+      <button class="tab-btn" data-tab="accounts" onclick="switchTab('accounts')">Accounts</button>
     </div>
 
     <!-- ROOMS TAB -->
@@ -758,6 +759,30 @@
     </div>
 
     <!-- EXPENSES TAB -->
+    <div class="tab-panel" id="tab-accounts">
+      <div class="card">
+        <h3>Payment account (UPI)</h3>
+        <p class="hint" style="margin-bottom:12px;">The QR code and UPI ID saved here are shown on the guest payment screen, replacing the current ones straight away.</p>
+        <div class="form-grid">
+          <div class="field"><label for="acUpi">UPI ID *</label><input type="text" id="acUpi" maxlength="60" autocomplete="off" placeholder="name@bank"></div>
+          <div class="field"><label for="acPayee">Payee name *</label><input type="text" id="acPayee" maxlength="60" placeholder="Name shown to the guest"></div>
+        </div>
+        <div class="field"><label for="acQrFile">QR code image</label>
+          <input type="file" id="acQrFile" accept="image/*" onchange="acQrChosen()">
+          <div class="hint">Upload a clear screenshot or photo of the UPI QR code (PNG or JPG). Leave empty to keep the current QR.</div></div>
+        <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; margin:8px 0 14px;">
+          <div><div class="hint" style="margin-bottom:4px;">Currently shown to guests</div><img id="acQrCurrent" alt="Current QR" style="width:200px; max-width:100%; border:1px solid var(--line); border-radius:8px; background:#fff;"></div>
+          <div id="acNewWrap" class="hidden"><div class="hint" style="margin-bottom:4px;">New QR (not saved yet)</div><img id="acQrNew" alt="New QR" style="width:200px; max-width:100%; border:1px solid var(--line); border-radius:8px; background:#fff;"></div>
+        </div>
+        <div class="field-err" id="acErr"></div>
+        <div class="btn-row">
+          <button class="btn btn-rust" id="acSaveBtn" onclick="saveAccounts()">Save payment account</button>
+          <button class="btn btn-outline" onclick="resetAccounts()">Go back to the original QR</button>
+        </div>
+        <div class="hint" id="acMsg" style="margin-top:10px;" role="status"></div>
+      </div>
+    </div>
+
     <div class="tab-panel" id="tab-expenses">
       <div class="card">
         <h3>Add expense</h3>
@@ -1333,7 +1358,23 @@
   }
 
   // PAYMENT HELPERS START
-  const PAY = { UPI_ID: '8019316795@ybl', PAYEE: 'ALAMPURI REVATHI' };
+  const PAY = { UPI_ID: '8019316795@ybl', PAYEE: 'ALAMPURI REVATHI', QR: 'upi-qr.png' };
+  const PAY_DEFAULT = { ...PAY };
+  // Admin-set payment account lives in availability/payment (publicly readable, admin-only write). Falls back to the built-in QR.
+  async function loadPayConfig(){
+    try{
+      const d = await getDoc(doc(db, 'availability', 'payment'));
+      const c = d.exists() ? d.data() : null;
+      if (c){
+        if (/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(c.upiId || '')) PAY.UPI_ID = c.upiId;
+        if (c.payee) PAY.PAYEE = String(c.payee).slice(0, 60);
+        if (/^data:image\/(png|jpeg|webp);base64,/.test(c.qrImage || '')) PAY.QR = c.qrImage;
+      }
+    } catch(e){ console.warn('payment config not loaded', e); }
+    const pb = document.getElementById('payBody');
+    if (pb && cur && document.getElementById('paymentScreen') && !document.getElementById('paymentScreen').classList.contains('hidden') && !(document.getElementById('payUtr') && document.getElementById('payUtr').value)) { try{ pb.innerHTML = payBodyHtml(cur); }catch(e){} }
+  }
+  const payConfigReady = loadPayConfig();
   // What a guest must pay to confirm: monthly = one month's rent (advance) + the non-refundable charge; day stay = the full stay.
   function amountsFor(type, rate, count){
     if (stayTypeOf(type) === 'day'){
@@ -2254,6 +2295,7 @@
     cur = remember(b);
     if (b.status === 'confirmed'){ showBookingConfirmation(b); return; }
     renderChrome(2, modelOf(b));
+    payConfigReady.finally(() => { const u = document.getElementById('payUtr'); if (cur && cur.id === b.id && document.getElementById('payBody') && !(u && u.value)) document.getElementById('payBody').innerHTML = payBodyHtml(cur); });
     document.getElementById('payBody').innerHTML = payBodyHtml(b);
     showScreen('paymentScreen');
     if (b.status === 'pending_payment' || b.status === 'payment_submitted') startPayPoll();
@@ -2336,7 +2378,7 @@
 
       <div class="pay-method">
         <div class="pay-qr">
-          <img src="upi-qr.png" alt="UPI QR code. Payee: ${esc(PAY.PAYEE)}" width="240">
+          <img src="${esc(PAY.QR)}" alt="UPI QR code. Payee: ${esc(PAY.PAYEE)}" width="240" style="max-width:100%;height:auto;">
           <div class="hint" style="text-align:center;">Scan with PhonePe, Google Pay, Paytm or any UPI app</div>
         </div>
         <div class="pay-how">
@@ -3006,6 +3048,62 @@
     if (tab==='tenants') renderTenantRoomOptions();
     if (tab==='staff') renderStaffTab();
     if (tab==='expenses') renderExpensesTab();
+    if (tab==='accounts') renderAccountsTab();
+  }
+  // ---------- Accounts (payment QR / UPI) ----------
+  let acNewQr = '';
+  function renderAccountsTab(){
+    document.getElementById('acUpi').value = PAY.UPI_ID;
+    document.getElementById('acPayee').value = PAY.PAYEE;
+    document.getElementById('acQrCurrent').src = PAY.QR;
+    document.getElementById('acNewWrap').classList.add('hidden');
+    document.getElementById('acQrFile').value = ''; acNewQr = '';
+    document.getElementById('acErr').textContent = ''; document.getElementById('acMsg').textContent = '';
+  }
+  async function acQrChosen(){
+    const inp = document.getElementById('acQrFile'), f = inp.files && inp.files[0], err = document.getElementById('acErr');
+    err.textContent = ''; acNewQr = '';
+    document.getElementById('acNewWrap').classList.add('hidden');
+    if (!f) return;
+    if (!/^image\//.test(f.type)){ err.textContent = 'Please choose an image (PNG or JPG).'; inp.value = ''; return; }
+    try{
+      const img = await new Promise((res, rej) => { const u = URL.createObjectURL(f), i = new Image(); i.onload = () => { URL.revokeObjectURL(u); res(i); }; i.onerror = () => { URL.revokeObjectURL(u); rej(new Error('decode')); }; i.src = u; });
+      let px = 700, out = '';
+      for (let t = 0; t < 6; t++){
+        const sc = Math.min(1, px / Math.max(img.naturalWidth, img.naturalHeight));
+        const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(img.naturalWidth * sc)); cv.height = Math.max(1, Math.round(img.naturalHeight * sc));
+        const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+        out = cv.toDataURL('image/png');
+        if (out.length > 400000) out = cv.toDataURL('image/jpeg', 0.92);
+        if (out.length <= 450000) break;
+        px = Math.round(px * 0.8);
+      }
+      if (out.length > 450000) throw new Error('large');
+      acNewQr = out;
+      document.getElementById('acQrNew').src = out;
+      document.getElementById('acNewWrap').classList.remove('hidden');
+    } catch(e){ err.textContent = 'We could not read that image. Please choose a clear PNG or JPG of the QR code.'; inp.value = ''; }
+  }
+  async function saveAccounts(){
+    const upi = val('acUpi').trim(), payee = val('acPayee').trim().replace(/\s+/g, ' '), err = document.getElementById('acErr'), msg = document.getElementById('acMsg'), btn = document.getElementById('acSaveBtn');
+    err.textContent = ''; msg.textContent = '';
+    if (!/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(upi)){ err.textContent = 'Enter a valid UPI ID, like name@bank.'; return; }
+    if (payee.length < 2){ err.textContent = 'Enter the payee name.'; return; }
+    btn.disabled = true;
+    try{
+      const data = { upiId: upi, payee, qrImage: acNewQr || (PAY.QR !== PAY_DEFAULT.QR ? PAY.QR : ''), updatedAt: new Date().toISOString() };
+      await setDoc(doc(db, 'availability', 'payment'), data);
+      PAY.UPI_ID = upi; PAY.PAYEE = payee; PAY.QR = data.qrImage || PAY_DEFAULT.QR;
+      renderAccountsTab(); msg.textContent = 'Saved. Guests now see this QR and UPI ID on the payment screen.';
+    } catch(e){ console.error(e); err.textContent = 'Could not save. Please check your connection and that you are logged in as admin.'; }
+    finally { btn.disabled = false; }
+  }
+  async function resetAccounts(){
+    if (!confirm('Go back to the original QR code and UPI ID?')) return;
+    try{
+      await setDoc(doc(db, 'availability', 'payment'), { upiId: PAY_DEFAULT.UPI_ID, payee: PAY_DEFAULT.PAYEE, qrImage: '', updatedAt: new Date().toISOString() });
+      Object.assign(PAY, PAY_DEFAULT); renderAccountsTab(); document.getElementById('acMsg').textContent = 'Restored the original QR and UPI ID.';
+    } catch(e){ console.error(e); document.getElementById('acErr').textContent = 'Could not reset. Please try again.'; }
   }
 
   // ---------- Rooms ----------
@@ -3878,7 +3976,7 @@
     switchTab, toggleExtend, vacateTenant, viewBookingId, viewId, updateRentFromRoom, bookFromRecord,
     openManage, findBookings, startEditBooking, saveEditBooking, cancelEditBooking, mgEditPreview,
     bkIdTypeChanged, bkIdFileChosen, whatsappGuest, openAgreementGuest, adminAgreement, viewPersonId,
-    closeAgrShare, agrShareView, agrShareWhatsApp,
+    closeAgrShare, agrShareView, agrShareWhatsApp, acQrChosen, saveAccounts, resetAccounts,
     submitUtr, showUtrForm, copyUpi, refreshCurrent, openPayment, openBillGuest, closeBill, printBill,
     adminBill, openPayModal, closePayModal, savePayConfirm, pmMethodChanged,
     rejectFromModal, openRoomModal, closeRoomModal, saveRoomChange,
