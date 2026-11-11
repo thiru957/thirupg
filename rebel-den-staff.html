@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="robots" content="noindex, nofollow">
+<title>Rebel Den — Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0d;--card:#151518;--card2:#1c1c21;--line:#2b2b32;--text:#f2f0ea;--muted:#9a968c;--amber:#ffb020;--red:#e63946;--green:#3ecf8e;--blue:#5aa9ff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;font-size:15px;line-height:1.45}
+h1,h2,h3{font-family:Oswald,Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:0 0 10px}
+h3{font-size:18px}
+.hidden{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{width:100%;background:#0f0f12;border:1px solid var(--line);border-radius:8px;padding:9px 11px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--amber)}
+label{display:block;font-size:12px;color:var(--muted);margin:0 0 4px;letter-spacing:.04em;text-transform:uppercase}
+.field{margin-bottom:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.btn{background:var(--amber);color:#111;border:0;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer;letter-spacing:.03em}
+.btn:hover{filter:brightness(1.08)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.red{background:var(--red);color:#fff}.btn.sm{padding:5px 10px;font-size:13px}.btn.block{width:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.muted{color:var(--muted)}.small{font-size:12.5px}.err{color:#ff8a93;font-size:13px;min-height:18px;margin-top:6px}.ok{color:var(--green)}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#2a2a30}
+.b-admin{background:#4a1d22;color:#ff9aa3}.b-accountant{background:#1d3550;color:#8cc4ff}.b-billing{background:#2a3f1f;color:#a8e68c}
+.b-ok{background:#16362a;color:var(--green)}.b-bad{background:#4a1d22;color:#ff9aa3}.b-warn{background:#4a3a14;color:var(--amber)}
+/* login */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(900px 500px at 50% -10%,#3b1217 0,transparent 60%),var(--bg)}
+.login-box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+.brand{font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.14em;font-size:28px;text-transform:uppercase}
+.brand b{color:var(--red)}
+/* app shell */
+header.top{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#101013;position:sticky;top:0;z-index:20}
+header.top .who{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;border-bottom:1px solid var(--line);background:#101013;position:sticky;top:53px;z-index:19}
+nav.tabs button{background:none;border:0;color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-family:Oswald,sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
+nav.tabs button.on{background:var(--amber);color:#111}
+main{padding:16px;max-width:1300px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat small{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:11.5px}
+.stat strong{display:block;font-family:Oswald,sans-serif;font-size:26px;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid #202026;vertical-align:middle}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}.toolbar .field{margin:0;min-width:140px}
+/* POS */
+.pos{display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:5px 13px;cursor:pointer;font-size:13px;font-weight:600}
+.chip.on{background:var(--amber);color:#111;border-color:var(--amber)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer;text-align:left;min-height:84px;display:flex;flex-direction:column;justify-content:space-between}
+.prod:hover{border-color:var(--amber)}.prod.out{opacity:.4;cursor:not-allowed}
+.prod b{font-size:14px}.prod span{font-size:12px;color:var(--muted)}
+.cart{position:sticky;top:112px}
+.cl{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #202026}
+.qty{display:inline-flex;align-items:center;gap:6px}.qty button{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);background:var(--card2);cursor:pointer}
+.tot{display:flex;justify-content:space-between;padding:3px 0}.tot.g{font-family:Oswald,sans-serif;font-size:24px;border-top:1px solid var(--line);margin-top:6px;padding-top:8px;color:var(--amber)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;z-index:100;overflow:auto}
+.modal .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;width:100%;max-width:560px}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.opts button{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card2);cursor:pointer;text-align:center}.opts button:hover{border-color:var(--amber)}
+/* receipt */
+.receipt{background:#fff;color:#111;font-family:'Courier New',monospace;font-size:12.5px;width:320px;max-width:100%;margin:0 auto;padding:14px}
+.receipt h4{margin:0;text-align:center;font-size:18px;letter-spacing:.12em}.receipt .c{text-align:center}.receipt hr{border:0;border-top:1px dashed #555;margin:7px 0}
+.receipt table{font-size:12px}.receipt td,.receipt th{border:0;padding:2px 0;color:#111}.receipt th{font-size:11px}
+.receipt .r{display:flex;justify-content:space-between}
+@media(max-width:860px){.pos{grid-template-columns:1fr}.cart{position:static}nav.tabs{top:53px}}
+@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%}.receipt{width:80mm;padding:0}@page{margin:6mm}}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <form class="login-box" onsubmit="return RD.login(event)">
+    <div class="brand" style="margin-bottom:4px;">Rebel <b>Den</b></div>
+    <div class="muted small" style="margin-bottom:22px;">Staff portal · Lulu Mall, Kukatpally</div>
+    <div class="field"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="lgPass">Password</label><input id="lgPass" type="password" autocomplete="current-password" required></div>
+    <button class="btn block" id="lgBtn" type="submit">Sign in</button>
+    <div class="err" id="lgErr" role="alert"></div>
+    <div class="muted small" style="margin-top:10px;">Access is given by the admin. Roles: Admin · Accountant · Billing.</div>
+  </form>
+</section>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="brand" style="font-size:20px;">Rebel <b>Den</b></div>
+    <div class="who"><span id="whoName"></span><span class="badge" id="whoRole"></span><button class="btn sec sm" onclick="RD.logout()">Sign out</button></div>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main>
+    <section id="v-dash"></section>
+    <section id="v-pos" class="hidden"></section>
+    <section id="v-bills" class="hidden"></section>
+    <section id="v-inv" class="hidden"></section>
+    <section id="v-purch" class="hidden"></section>
+    <section id="v-exp" class="hidden"></section>
+    <section id="v-rep" class="hidden"></section>
+    <section id="v-users" class="hidden"></section>
+    <section id="v-set" class="hidden"></section>
+  </main>
+</div>
+
+<div id="modalHost"></div>
+<div id="printArea" class="hidden"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, runTransaction }
+  from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU", authDomain: "codekasa.firebaseapp.com", projectId: "codekasa",
+  storageBucket: "codekasa.firebasestorage.app", messagingSenderId: "725605223433", appId: "1:725605223433:web:fd9a635676e810eba57cd8"
+};
+const OWNER_EMAIL = 'thirupathi.by@gmail.com';      // first sign-in of this account becomes the Rebel Den admin
+const fbApp = initializeApp(firebaseConfig), db = getFirestore(fbApp), auth = getAuth(fbApp);
+
+// ---------- constants ----------
+const CATS = ['Beer','Whisky','Vodka','Rum','Tequila','Gin','Brandy','Wine','Cocktails','Soft Drinks & Mixers','Food'];
+const UNIT_CATS = ['Beer','Wine','Cocktails','Soft Drinks & Mixers','Food'];
+const TABS = { admin:['dash','pos','bills','inv','purch','exp','rep','users','set'], accountant:['dash','bills','inv','purch','exp','rep'], billing:['pos','bills','inv'] };
+const TAB_NAME = { dash:'Dashboard', pos:'Billing', bills:'Bills', inv:'Inventory', purch:'Stock in', exp:'Expenses', rep:'Reports', users:'Users', set:'Settings' };
+const EXP_CATS = ['Rent','Salaries','Electricity','Music / DJ','Marketing','Licence & excise','Maintenance','Glassware & supplies','Other'];
+const PAY = ['Cash','UPI','Card'];
+
+// ---------- state ----------
+let me = null, items = [], users = [], settings = { name: 'Rebel Den', address: 'Lulu Mall, Kukatpally, Hyderabad', gstin: '', phone: '', minAge: 21 };
+let recentBills = [], cart = [], posCat = 'All', posQ = '', unsubs = [], curTab = null, lastBill = null;
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const r2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+const inr = n => '₹' + r2(n).toLocaleString('en-IN', { minimumFractionDigits: (r2(n) % 1 ? 2 : 0), maximumFractionDigits: 2 });
+const pad = n => String(n).padStart(2, '0');
+const isoDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => isoDate(new Date());
+const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return isoDate(d); };
+const fmtD = iso => iso ? new Date(iso + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+const fmtT = iso => iso ? new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
+const role = () => me && me.role;
+const isAdmin = () => role() === 'admin';
+const canMoney = () => role() === 'admin' || role() === 'accountant';
+const byId = id => items.find(i => i.id === id);
+const isSpirit = it => it.kind === 'spirit';
+function stockText(it){
+  if (!it.track) return '—';
+  if (isSpirit(it)) return `${(it.stock / it.volumeMl).toFixed(1)} btl · ${Math.round(it.stock)} ml`;
+  return `${it.stock}`;
+}
+const lowOf = it => it.track && it.lowAt > 0 && it.stock <= (isSpirit(it) ? it.lowAt * it.volumeMl : it.lowAt);
+function openModal(html){ $('modalHost').innerHTML = `<div class="modal" onclick="if(event.target===this)RD.closeModal()"><div class="box">${html}</div></div>`; }
+function closeModal(){ $('modalHost').innerHTML = ''; }
+function csv(rows, name){
+  const t = rows.map(r => r.map(c => { const v = String(c == null ? '' : c); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---------- auth ----------
+async function login(e){
+  e.preventDefault();
+  const btn = $('lgBtn'), err = $('lgErr'); err.textContent = ''; btn.disabled = true;
+  try{ await signInWithEmailAndPassword(auth, $('lgEmail').value.trim(), $('lgPass').value); }
+  catch(x){ err.textContent = 'Wrong email or password.'; }
+  finally { btn.disabled = false; }
+  return false;
+}
+async function logout(){ unsubs.forEach(u => u()); unsubs = []; await signOut(auth); }
+onAuthStateChanged(auth, async u => {
+  if (!u){ me = null; $('app').classList.add('hidden'); $('login').classList.remove('hidden'); return; }
+  try{
+    let snap = await getDoc(doc(db, 'pubUsers', u.uid)), data = snap.exists() ? snap.data() : null;
+    if (!data && (u.email || '').toLowerCase() === OWNER_EMAIL){
+      data = { name: 'Owner', email: u.email, role: 'admin', active: true, createdAt: new Date().toISOString() };
+      await setDoc(doc(db, 'pubUsers', u.uid), data);
+    }
+    if (!data || !data.active || !TABS[data.role]){
+      $('lgErr').textContent = data && !data.active ? 'This account has been switched off. Please ask the admin.' : 'This account has no access to Rebel Den. Please ask the admin.';
+      await signOut(auth); return;
+    }
+    me = { uid: u.uid, ...data };
+    start();
+  } catch(x){ console.error(x); $('lgErr').textContent = 'Could not sign in. Check your connection and try again.'; await signOut(auth); }
+});
+
+function start(){
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+  $('whoName').textContent = me.name; const wr = $('whoRole'); wr.textContent = me.role; wr.className = 'badge b-' + me.role;
+  $('tabs').innerHTML = TABS[me.role].map(t => `<button data-t="${t}" onclick="RD.tab('${t}')">${TAB_NAME[t]}</button>`).join('');
+  unsubs.forEach(u => u()); unsubs = [];
+  unsubs.push(onSnapshot(collection(db, 'pubItems'), s => { items = s.docs.map(d => ({ id: d.id, ...normItem(d.data()) })).sort((a, b) => a.name.localeCompare(b.name)); refresh(['pos', 'inv', 'dash']); }));
+  unsubs.push(onSnapshot(doc(db, 'pubSettings', 'main'), s => { if (s.exists && (typeof s.exists === 'function' ? s.exists() : s.exists)) settings = { ...settings, ...s.data() }; refresh(['set']); }));
+  const since = addDays(today(), -45);
+  unsubs.push(onSnapshot(query(collection(db, 'pubBills'), where('date', '>=', since)), s => { recentBills = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')); refresh(['dash', 'bills']); }));
+  if (isAdmin()) unsubs.push(onSnapshot(collection(db, 'pubUsers'), s => { users = s.docs.map(d => ({ uid: d.id, ...d.data() })); refresh(['users']); }));
+  tab(TABS[me.role][0]);
+}
+function normItem(d){
+  return { name: '', brand: '', category: 'Beer', kind: UNIT_CATS.includes(d.category) ? 'unit' : 'spirit', volumeMl: 750, pegs: [], bottlePrice: 0, price: 0, cost: 0, stock: 0, lowAt: 0, taxPct: 0, track: true, active: true, ...d };
+}
+function tab(t){
+  curTab = t;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  document.querySelectorAll('main > section').forEach(s => s.classList.toggle('hidden', s.id !== 'v-' + t));
+  render(t);
+}
+function refresh(list){ if (me && list.includes(curTab)) render(curTab); }
+function render(t){ ({ dash: rDash, pos: rPos, bills: rBills, inv: rInv, purch: rPurch, exp: rExp, rep: rRep, users: rUsers, set: rSet })[t](); }
+
+// ================= DASHBOARD =================
+function sumBills(list){
+  const paid = list.filter(b => b.status === 'paid');
+  const by = {}; PAY.forEach(p => by[p] = 0); paid.forEach(b => by[b.payMode] = (by[b.payMode] || 0) + b.total);
+  return { n: paid.length, total: r2(paid.reduce((s, b) => s + b.total, 0)), tax: r2(paid.reduce((s, b) => s + (b.tax || 0), 0)), disc: r2(paid.reduce((s, b) => s + (b.discount || 0), 0)), by };
+}
+function rDash(){
+  const tb = recentBills.filter(b => b.date === today()), s = sumBills(tb), low = items.filter(i => i.active && lowOf(i));
+  $('v-dash').innerHTML = `
+  <h2>Today · ${fmtD(today())}</h2>
+  <div class="stats">
+    <div class="stat"><small>Sales</small><strong>${inr(s.total)}</strong></div>
+    <div class="stat"><small>Bills</small><strong>${s.n}</strong></div>
+    <div class="stat"><small>Average bill</small><strong>${s.n ? inr(s.total / s.n) : '—'}</strong></div>
+    ${PAY.map(p => `<div class="stat"><small>${p}</small><strong>${inr(s.by[p] || 0)}</strong></div>`).join('')}
+  </div>
+  <div class="row" style="align-items:start;">
+    <div class="card"><h3>Low stock ${low.length ? `<span class="badge b-warn">${low.length}</span>` : ''}</h3>
+      ${low.length ? `<table><tbody>${low.map(i => `<tr><td>${esc(i.name)}</td><td class="num">${stockText(i)}</td></tr>`).join('')}</tbody></table>` : '<div class="muted">Nothing is running low.</div>'}</div>
+    <div class="card"><h3>Latest bills</h3>
+      ${tb.length ? `<table><tbody>${tb.slice(0, 6).map(b => `<tr><td>${esc(b.billNo)}</td><td>${esc(b.table || '')}</td><td class="num">${inr(b.total)}</td><td>${b.status === 'void' ? '<span class="badge b-bad">Void</span>' : esc(b.payMode)}</td></tr>`).join('')}</tbody></table>` : '<div class="muted">No bills yet today.</div>'}</div>
+  </div>`;
+}
+
+// ================= BILLING / POS =================
+function cartMlFor(id){ return cart.filter(l => l.itemId === id).reduce((s, l) => s + l.qty * l.deduct, 0); }
+function availOf(it){ return it.track ? it.stock - cartMlFor(it.id) : Infinity; }
+function priceRange(it){
+  const p = isSpirit(it) ? [...(it.pegs || []).map(x => x.price), it.bottlePrice].filter(x => x > 0) : [it.price];
+  if (!p.length) return '—'; const a = Math.min(...p), b = Math.max(...p); return a === b ? inr(a) : `${inr(a)} – ${inr(b)}`;
+}
+function rPos(){
+  const cats = ['All', ...CATS.filter(c => items.some(i => i.active && i.category === c))];
+  const list = items.filter(i => i.active && (posCat === 'All' || i.category === posCat) && (!posQ || (i.name + ' ' + i.brand).toLowerCase().includes(posQ.toLowerCase())));
+  const host = $('v-pos');
+  if (!host.dataset.built){
+    host.dataset.built = '1';
+    host.innerHTML = `<div class="pos"><div><div class="field"><input id="posSearch" placeholder="Search drinks or food…" oninput="RD.posSearch(this.value)"></div><div class="chips" id="posChips"></div><div class="grid" id="posGrid"></div></div>
+      <div class="cart card" id="posCart"></div></div>`;
+  }
+  $('posChips').innerHTML = cats.map(c => `<span class="chip ${c === posCat ? 'on' : ''}" onclick="RD.posCat('${esc(c)}')">${esc(c)}</span>`).join('');
+  $('posGrid').innerHTML = list.length ? list.map(i => { const out = i.track && availOf(i) <= 0;
+    return `<button class="prod ${out ? 'out' : ''}" ${out ? 'disabled' : ''} onclick="RD.pick('${i.id}')"><b>${esc(i.name)}</b><span>${esc(i.category)}${i.track ? ' · ' + (out ? 'out of stock' : stockText(i)) : ''}</span><span style="color:var(--amber);font-weight:700;">${priceRange(i)}</span></button>`; }).join('') : '<div class="muted">No items. Ask the admin to add items in Inventory.</div>';
+  drawCart();
+}
+function posSearch(v){ posQ = v; rPos(); }
+function posCatSet(c){ posCat = c; rPos(); }
+function pick(id){
+  const it = byId(id); if (!it) return;
+  if (!isSpirit(it)){ addLine(it, 'Each', it.price, 1, 1); return; }
+  const opts = [...(it.pegs || []).filter(p => p.price > 0).map(p => ({ label: p.label, price: p.price, ml: p.ml })), ...(it.bottlePrice > 0 ? [{ label: `Bottle ${it.volumeMl} ml`, price: it.bottlePrice, ml: it.volumeMl }] : [])];
+  openModal(`<h3>${esc(it.name)}</h3><div class="muted small" style="margin-bottom:10px;">Choose the serve</div><div class="opts">${opts.map((o, k) => `<button onclick="RD.addOpt('${id}',${k})" ${availOf(it) < o.ml ? 'disabled style="opacity:.35"' : ''}><b>${esc(o.label)}</b><br><span style="color:var(--amber)">${inr(o.price)}</span></button>`).join('')}</div><div style="margin-top:14px;"><button class="btn sec" onclick="RD.closeModal()">Cancel</button></div>`);
+  window.__opts = opts;
+}
+function addOpt(id, k){ const it = byId(id), o = window.__opts[k]; closeModal(); addLine(it, o.label, o.price, 1, o.ml); }
+function addLine(it, label, price, qty, deduct){
+  if (it.track && availOf(it) < deduct * qty){ alert('Not enough stock for ' + it.name); return; }
+  const ex = cart.find(l => l.itemId === it.id && l.label === label);
+  if (ex) ex.qty += qty; else cart.push({ itemId: it.id, name: it.name, label, price, qty, deduct, taxPct: it.taxPct || 0, track: it.track, category: it.category });
+  rPos();
+}
+function qtyChg(k, d){
+  const l = cart[k], it = byId(l.itemId);
+  if (d > 0 && it && it.track && availOf(it) < l.deduct){ alert('No more stock for ' + l.name); return; }
+  l.qty += d; if (l.qty <= 0) cart.splice(k, 1); rPos();
+}
+function totals(){
+  const sub = r2(cart.reduce((s, l) => s + l.price * l.qty, 0));
+  const dv = Number(($('cDisc') || {}).value) || 0, dt = ($('cDiscT') || {}).value || 'amt';
+  const disc = r2(Math.min(sub, dt === 'pct' ? sub * Math.min(dv, 100) / 100 : dv));
+  const f = sub ? (sub - disc) / sub : 1;
+  const taxMap = {}; cart.forEach(l => { if (l.taxPct) taxMap[l.taxPct] = (taxMap[l.taxPct] || 0) + l.price * l.qty * f * l.taxPct / 100; });
+  const tax = r2(Object.values(taxMap).reduce((a, b) => a + b, 0));
+  const raw = sub - disc + tax, total = Math.round(raw), roundOff = r2(total - raw);
+  return { sub, disc, tax, taxMap, roundOff, total };
+}
+function drawCart(){
+  const keep = { t: ($('cTable') || {}).value, c: ($('cCust') || {}).value, d: ($('cDisc') || {}).value, dt: ($('cDiscT') || {}).value, p: ($('cPay') || {}).value };
+  const T = totals();
+  $('posCart').innerHTML = `<h3>Current bill</h3>
+    <div class="row"><div class="field"><label>Table / seat</label><input id="cTable" placeholder="e.g. T5 / Bar" value="${esc(keep.t || '')}"></div><div class="field"><label>Customer (optional)</label><input id="cCust" value="${esc(keep.c || '')}"></div></div>
+    ${cart.length ? cart.map((l, k) => `<div class="cl"><div><b>${esc(l.name)}</b><div class="small muted">${esc(l.label)} · ${inr(l.price)}</div></div><div class="qty"><button onclick="RD.qty(${k},-1)">−</button><b>${l.qty}</b><button onclick="RD.qty(${k},1)">+</button></div><div class="num"><b>${inr(l.price * l.qty)}</b></div></div>`).join('') : '<div class="muted" style="padding:14px 0;">Tap an item to add it.</div>'}
+    <div class="row" style="margin-top:12px;"><div class="field"><label>Discount</label><input id="cDisc" type="number" min="0" step="any" value="${esc(keep.d || '')}" oninput="RD.drawCart()"></div>
+      <div class="field"><label>Type</label><select id="cDiscT" onchange="RD.drawCart()"><option value="amt" ${keep.dt !== 'pct' ? 'selected' : ''}>₹ amount</option><option value="pct" ${keep.dt === 'pct' ? 'selected' : ''}>% percent</option></select></div></div>
+    <div class="tot"><span>Subtotal</span><span>${inr(T.sub)}</span></div>
+    ${T.disc ? `<div class="tot"><span>Discount</span><span>− ${inr(T.disc)}</span></div>` : ''}
+    ${Object.entries(T.taxMap).map(([p, v]) => `<div class="tot"><span>GST ${p}%</span><span>${inr(v)}</span></div>`).join('')}
+    ${T.roundOff ? `<div class="tot muted"><span>Round off</span><span>${T.roundOff > 0 ? '+' : '−'}${Math.abs(T.roundOff).toFixed(2)}</span></div>` : ''}
+    <div class="tot g"><span>Total</span><span>${inr(T.total)}</span></div>
+    <div class="field" style="margin-top:10px;"><label>Payment</label><select id="cPay">${PAY.map(p => `<option ${keep.p === p ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
+    <button class="btn block" id="cBill" ${cart.length ? '' : 'disabled'} onclick="RD.makeBill()">Generate bill</button>
+    <button class="btn sec block" style="margin-top:8px;" ${cart.length ? '' : 'disabled'} onclick="RD.clearCart()">Clear</button>
+    <div class="err" id="cErr" role="alert"></div>`;
+}
+function clearCart(){ cart = []; rPos(); }
+async function makeBill(){
+  if (!cart.length) return;
+  const btn = $('cBill'), err = $('cErr'); btn.disabled = true; err.textContent = '';
+  const T = totals(), lines = cart.map(l => ({ ...l, amount: r2(l.price * l.qty) }));
+  const meta = { table: $('cTable').value.trim().slice(0, 20), customer: $('cCust').value.trim().slice(0, 50), payMode: $('cPay').value };
+  const d = new Date(), dateKey = today();
+  try{
+    const bill = await runTransaction(db, async tx => {
+      const cRef = doc(db, 'pubSettings', 'counter'), cs = await tx.get(cRef);
+      let seq = 0; if (cs.exists() && cs.data().date === dateKey) seq = cs.data().seq || 0;
+      const need = {}; lines.forEach(l => { if (l.track) need[l.itemId] = (need[l.itemId] || 0) + l.qty * l.deduct; });
+      const ids = Object.keys(need), snaps = await Promise.all(ids.map(id => tx.get(doc(db, 'pubItems', id))));
+      snaps.forEach(s => { if (!s.exists() || (s.data().stock || 0) < need[s.id]) throw new Error('STOCK:' + (s.exists() ? s.data().name : 'item')); });
+      seq++;
+      const billNo = `RD-${dateKey.slice(2).replace(/-/g, '')}-${String(seq).padStart(4, '0')}`;
+      const b = { billNo, date: dateKey, createdAt: d.toISOString(), ...meta, lines, subtotal: T.sub, discount: T.disc, tax: T.tax, roundOff: T.roundOff, total: T.total, status: 'paid', by: me.uid, byName: me.name };
+      tx.set(cRef, { date: dateKey, seq });
+      tx.set(doc(db, 'pubBills', billNo), b);
+      snaps.forEach(s => { tx.update(doc(db, 'pubItems', s.id), { stock: r2((s.data().stock || 0) - need[s.id]) });
+        tx.set(doc(collection(db, 'pubStockLog')), { itemId: s.id, name: s.data().name, delta: -need[s.id], reason: 'sale', ref: billNo, by: me.name, at: d.toISOString() }); });
+      return b;
+    });
+    cart = []; ['cTable', 'cCust', 'cDisc'].forEach(k => { $(k).value = ''; }); $('cDiscT').value = 'amt';   // fresh bill for the next guest
+    rPos(); showBill(bill);
+  } catch(e){
+    console.error(e);
+    err.textContent = String(e.message || '').startsWith('STOCK:') ? `Not enough stock for ${e.message.slice(6)}. Refresh and adjust the bill.` : 'Could not save the bill. Check the connection and try again.';
+    btn.disabled = false;
+  }
+}
+function receiptHtml(b){
+  const taxBy = {}; (b.lines || []).forEach(l => { if (l.taxPct) taxBy[l.taxPct] = (taxBy[l.taxPct] || 0) + l.amount * (b.subtotal ? (b.subtotal - b.discount) / b.subtotal : 1) * l.taxPct / 100; });
+  return `<div class="receipt"><h4>${esc(settings.name)}</h4><div class="c">${esc(settings.address)}</div>${settings.gstin ? `<div class="c">GSTIN: ${esc(settings.gstin)}</div>` : ''}${settings.phone ? `<div class="c">Ph: ${esc(settings.phone)}</div>` : ''}<hr>
+  <div class="r"><span>Bill: ${esc(b.billNo)}</span><span>${fmtD(b.date)}</span></div><div class="r"><span>Time: ${fmtT(b.createdAt)}</span><span>Table: ${esc(b.table || '-')}</span></div>
+  ${b.customer ? `<div>Guest: ${esc(b.customer)}</div>` : ''}<div>Cashier: ${esc(b.byName || '')}</div>${b.status === 'void' ? '<div class="c"><b>*** VOID ***</b></div>' : ''}<hr>
+  <table><thead><tr><th style="text-align:left">Item</th><th>Qty</th><th style="text-align:right">Amt</th></tr></thead><tbody>
+  ${(b.lines || []).map(l => `<tr><td>${esc(l.name)}${l.label !== 'Each' ? '<br><small>' + esc(l.label) + '</small>' : ''}</td><td style="text-align:center">${l.qty}</td><td style="text-align:right">${r2(l.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><hr>
+  <div class="r"><span>Subtotal</span><span>${r2(b.subtotal).toFixed(2)}</span></div>
+  ${b.discount ? `<div class="r"><span>Discount</span><span>-${r2(b.discount).toFixed(2)}</span></div>` : ''}
+  ${Object.entries(taxBy).map(([p, v]) => `<div class="r"><span>GST ${p}%</span><span>${r2(v).toFixed(2)}</span></div>`).join('')}
+  ${b.roundOff ? `<div class="r"><span>Round off</span><span>${b.roundOff.toFixed(2)}</span></div>` : ''}
+  <div class="r" style="font-size:16px;"><b>TOTAL</b><b>₹${b.total.toFixed(2)}</b></div><div class="r"><span>Paid by</span><span>${esc(b.payMode)}</span></div><hr>
+  <div class="c">Thank you! Please drink responsibly.<br>Do not drink and drive.</div></div>`;
+}
+function showBill(b){
+  lastBill = b;
+  openModal(`<div class="ok" style="margin-bottom:8px;"><b>Bill ${esc(b.billNo)} saved.</b></div>${receiptHtml(b)}<div style="display:flex;gap:8px;margin-top:14px;justify-content:center;"><button class="btn" onclick="RD.printBill()">Print</button><button class="btn sec" onclick="RD.closeModal()">Close</button></div>`);
+}
+function printBill(){ $('printArea').innerHTML = receiptHtml(lastBill); $('printArea').classList.remove('hidden'); window.print(); setTimeout(() => $('printArea').classList.add('hidden'), 400); }
+
+// ================= BILLS =================
+let billDay = null;
+function rBills(){
+  billDay = billDay || today();
+  const list = recentBills.filter(b => b.date === billDay), s = sumBills(list);
+  $('v-bills').innerHTML = `<div class="toolbar"><div class="field"><label>Date</label><input type="date" id="bDay" value="${billDay}" max="${today()}" onchange="RD.billDay(this.value)"></div>
+    <div class="muted small">Showing the last 45 days. Use Reports for older bills.</div></div>
+    <div class="stats"><div class="stat"><small>Sales</small><strong>${inr(s.total)}</strong></div><div class="stat"><small>Bills</small><strong>${s.n}</strong></div>${canMoney() ? `<div class="stat"><small>GST collected</small><strong>${inr(s.tax)}</strong></div><div class="stat"><small>Discounts</small><strong>${inr(s.disc)}</strong></div>` : ''}</div>
+    <div class="card scroll"><table><thead><tr><th>Bill</th><th>Time</th><th>Table</th><th>By</th><th>Pay</th><th class="num">Total</th><th></th></tr></thead><tbody>
+    ${list.length ? list.map(b => `<tr><td>${esc(b.billNo)} ${b.status === 'void' ? '<span class="badge b-bad">Void</span>' : ''}</td><td>${fmtT(b.createdAt)}</td><td>${esc(b.table || '')}</td><td>${esc(b.byName || '')}</td><td>${esc(b.payMode)}</td><td class="num">${inr(b.total)}</td>
+      <td><button class="btn sec sm" onclick="RD.viewBill('${b.id}')">View</button> ${isAdmin() && b.status === 'paid' ? `<button class="btn red sm" onclick="RD.voidBill('${b.id}')">Void</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="7" class="muted">No bills on this day.</td></tr>'}</tbody></table></div>`;
+}
+function viewBill(id){ const b = recentBills.find(x => x.id === id); if (b) showBillView(b); }
+function showBillView(b){ lastBill = b; openModal(`${receiptHtml(b)}${b.voidReason ? `<div class="err">Void reason: ${esc(b.voidReason)}</div>` : ''}<div style="display:flex;gap:8px;margin-top:14px;justify-content:center;"><button class="btn" onclick="RD.printBill()">Print</button><button class="btn sec" onclick="RD.closeModal()">Close</button></div>`); }
+async function voidBill(id){
+  const reason = prompt('Why is this bill being voided? (required)'); if (!reason || reason.trim().length < 3) return;
+  try{
+    await runTransaction(db, async tx => {
+      const bRef = doc(db, 'pubBills', id), bs = await tx.get(bRef); if (!bs.exists() || bs.data().status !== 'paid') throw new Error('state');
+      const b = bs.data(), back = {}; b.lines.forEach(l => { if (l.track) back[l.itemId] = (back[l.itemId] || 0) + l.qty * l.deduct; });
+      const ids = Object.keys(back), snaps = await Promise.all(ids.map(i => tx.get(doc(db, 'pubItems', i))));
+      snaps.forEach(s => { if (s.exists()){ tx.update(doc(db, 'pubItems', s.id), { stock: r2((s.data().stock || 0) + back[s.id]) });
+        tx.set(doc(collection(db, 'pubStockLog')), { itemId: s.id, name: s.data().name, delta: back[s.id], reason: 'void', ref: id, by: me.name, at: new Date().toISOString() }); } });
+      tx.update(bRef, { status: 'void', voidReason: reason.trim().slice(0, 120), voidedBy: me.name, voidedAt: new Date().toISOString() });
+    });
+  } catch(e){ console.error(e); alert('Could not void this bill.'); }
+}
+
+// ================= INVENTORY =================
+let invCat = 'All';
+function rInv(){
+  const list = items.filter(i => invCat === 'All' || i.category === invCat);
+  const value = r2(items.reduce((s, i) => s + (i.track && i.cost ? (isSpirit(i) ? i.stock / i.volumeMl : i.stock) * i.cost : 0), 0));
+  $('v-inv').innerHTML = `<div class="toolbar"><div class="field"><label>Category</label><select onchange="RD.invCat(this.value)"><option>All</option>${CATS.map(c => `<option ${c === invCat ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></div>
+    <div style="margin-left:auto;display:flex;gap:8px;">${canMoney() ? `<button class="btn sec" onclick="RD.exportStock()">Export CSV</button>` : ''}${isAdmin() ? `<button class="btn" onclick="RD.itemForm()">+ Add item</button>` : ''}</div></div>
+    ${canMoney() ? `<div class="stats"><div class="stat"><small>Stock value (at cost)</small><strong>${inr(value)}</strong></div><div class="stat"><small>Items</small><strong>${items.length}</strong></div><div class="stat"><small>Low stock</small><strong>${items.filter(i => i.active && lowOf(i)).length}</strong></div></div>` : ''}
+    <div class="card scroll"><table><thead><tr><th>Item</th><th>Category</th><th>Prices</th><th class="num">Stock</th><th></th></tr></thead><tbody>
+    ${list.length ? list.map(i => `<tr style="${i.active ? '' : 'opacity:.45'}"><td><b>${esc(i.name)}</b>${i.brand ? `<div class="small muted">${esc(i.brand)}</div>` : ''}</td><td>${esc(i.category)}</td><td>${priceRange(i)}${isSpirit(i) ? `<div class="small muted">${i.volumeMl} ml bottle</div>` : ''}</td>
+      <td class="num">${stockText(i)} ${lowOf(i) ? '<span class="badge b-warn">Low</span>' : ''}</td>
+      <td style="white-space:nowrap;">${canMoney() && i.track ? `<button class="btn sec sm" onclick="RD.adjForm('${i.id}')">Adjust</button> ` : ''}${isAdmin() ? `<button class="btn sec sm" onclick="RD.itemForm('${i.id}')">Edit</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="5" class="muted">No items yet.</td></tr>'}</tbody></table></div>`;
+}
+function exportStock(){ csv([['Item', 'Category', 'Stock (bottles/units)', 'Stock (ml)', 'Cost', 'Low at'], ...items.map(i => [i.name, i.category, isSpirit(i) ? (i.stock / i.volumeMl).toFixed(2) : i.stock, isSpirit(i) ? i.stock : '', i.cost, i.lowAt])], `rebel-den-stock-${today()}.csv`); }
+function itemForm(id){
+  const it = id ? byId(id) : normItem({ category: 'Whisky' }), pg = {}; (it.pegs || []).forEach(p => pg[p.ml] = p.price);
+  openModal(`<h3>${id ? 'Edit item' : 'Add item'}</h3>
+    <div class="row"><div class="field"><label>Name *</label><input id="fName" value="${esc(it.name)}" placeholder="e.g. Royal Stag"></div><div class="field"><label>Brand / note</label><input id="fBrand" value="${esc(it.brand)}"></div></div>
+    <div class="row"><div class="field"><label>Category *</label><select id="fCat" onchange="RD.itemKind(true)">${CATS.map(c => `<option ${c === it.category ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>GST %</label><input id="fTax" type="number" min="0" step="any" value="${it.taxPct}"><div class="small muted">Liquor 0 (state taxes are in the price). Food usually 5.</div></div></div>
+    <div id="fSpirit"><div class="row"><div class="field"><label>Bottle size (ml)</label><input id="fVol" type="number" min="1" value="${it.volumeMl}"></div><div class="field"><label>Bottle price ₹</label><input id="fBtl" type="number" min="0" step="any" value="${it.bottlePrice || ''}"></div></div>
+      <div class="row"><div class="field"><label>30 ml peg ₹</label><input id="fP30" type="number" min="0" step="any" value="${pg[30] || ''}"></div><div class="field"><label>60 ml peg ₹</label><input id="fP60" type="number" min="0" step="any" value="${pg[60] || ''}"></div><div class="field"><label>90 ml peg ₹</label><input id="fP90" type="number" min="0" step="any" value="${pg[90] || ''}"></div></div></div>
+    <div id="fUnit"><div class="field"><label>Selling price ₹</label><input id="fPrice" type="number" min="0" step="any" value="${it.price || ''}"></div></div>
+    <div class="row"><div class="field"><label>Cost per bottle / unit ₹</label><input id="fCost" type="number" min="0" step="any" value="${it.cost || ''}"></div>
+      <div class="field"><label>Low-stock alert at</label><input id="fLow" type="number" min="0" step="any" value="${it.lowAt || ''}"><div class="small muted" id="fLowU"></div></div></div>
+    ${id ? '' : `<div class="field"><label>Opening stock</label><input id="fStock" type="number" min="0" step="any" value="0"><div class="small muted" id="fStockU"></div></div>`}
+    <div class="field"><label><input type="checkbox" id="fTrack" style="width:auto;" ${it.track ? 'checked' : ''}> Track stock for this item</label></div>
+    <div class="field"><label><input type="checkbox" id="fActive" style="width:auto;" ${it.active ? 'checked' : ''}> Available for sale</label></div>
+    <div class="err" id="fErr" role="alert"></div>
+    <div style="display:flex;gap:8px;"><button class="btn" onclick="RD.saveItem(${id ? `'${id}'` : 'null'})">Save</button><button class="btn sec" onclick="RD.closeModal()">Cancel</button></div>`);
+  itemKind(!id);
+}
+function itemKind(setTrack){
+  const sp = !UNIT_CATS.includes($('fCat').value);
+  $('fSpirit').classList.toggle('hidden', !sp); $('fUnit').classList.toggle('hidden', sp);
+  if (setTrack) $('fTrack').checked = !['Food', 'Cocktails'].includes($('fCat').value);   // food and cocktails are not stock-counted by default
+  const u = sp ? 'bottles' : 'units'; if ($('fLowU')) $('fLowU').textContent = 'In ' + u; if ($('fStockU')) $('fStockU').textContent = 'In ' + u;
+}
+async function saveItem(id){
+  const err = $('fErr'); err.textContent = '';
+  const name = $('fName').value.trim().replace(/\s+/g, ' '); if (name.length < 2){ err.textContent = 'Enter the item name.'; return; }
+  const category = $('fCat').value, kind = UNIT_CATS.includes(category) ? 'unit' : 'spirit';
+  const n = k => Math.max(0, Number($(k).value) || 0);
+  const data = { name, brand: $('fBrand').value.trim(), category, kind, taxPct: n('fTax'), cost: n('fCost'), lowAt: n('fLow'), track: $('fTrack').checked, active: $('fActive').checked };
+  if (kind === 'spirit'){
+    data.volumeMl = Math.max(1, n('fVol')); data.bottlePrice = n('fBtl');
+    data.pegs = [30, 60, 90].map(ml => ({ ml, label: ml + ' ml', price: n('fP' + ml) })).filter(p => p.price > 0); data.price = 0;
+    if (!data.pegs.length && !data.bottlePrice){ err.textContent = 'Enter at least one price (a peg or the bottle).'; return; }
+  } else { data.price = n('fPrice'); if (!data.price){ err.textContent = 'Enter the selling price.'; return; } data.pegs = []; data.bottlePrice = 0; data.volumeMl = 1; }
+  try{
+    if (id){
+      const old = byId(id); if (old.kind !== kind){ err.textContent = 'Changing between spirit and unit items is not allowed. Add a new item instead.'; return; }
+      if (kind === 'spirit' && old.volumeMl !== data.volumeMl && old.stock > 0){ err.textContent = 'Bottle size cannot change while stock exists. Adjust stock to zero first.'; return; }
+      await updateDoc(doc(db, 'pubItems', id), data);
+    } else {
+      const open = n('fStock'); data.stock = kind === 'spirit' ? r2(open * data.volumeMl) : open;
+      const ref = doc(collection(db, 'pubItems')); await setDoc(ref, data);
+      if (data.stock) await setDoc(doc(collection(db, 'pubStockLog')), { itemId: ref.id, name, delta: data.stock, reason: 'opening', by: me.name, at: new Date().toISOString() });
+    }
+    closeModal();
+  } catch(e){ console.error(e); err.textContent = 'Could not save. Please try again.'; }
+}
+function adjForm(id){
+  const it = byId(id), u = isSpirit(it) ? 'bottles' : 'units';
+  openModal(`<h3>Adjust stock</h3><div style="margin-bottom:10px;"><b>${esc(it.name)}</b><div class="muted small">Now: ${stockText(it)}</div></div>
+    <div class="field"><label>What happened</label><select id="aWhy"><option value="count">Stock count correction (set to counted)</option><option value="wastage">Wastage / spillage / breakage (−)</option><option value="comp">Complimentary / staff (−)</option><option value="add">Found / returned stock (+)</option></select></div>
+    <div class="field"><label>Quantity in ${u}</label><input id="aQty" type="number" min="0" step="any"></div>
+    <div class="field"><label>Note</label><input id="aNote" maxlength="80"></div><div class="err" id="aErr" role="alert"></div>
+    <div style="display:flex;gap:8px;"><button class="btn" onclick="RD.saveAdj('${id}')">Save</button><button class="btn sec" onclick="RD.closeModal()">Cancel</button></div>`);
+}
+async function saveAdj(id){
+  const it = byId(id), why = $('aWhy').value, q = Number($('aQty').value), err = $('aErr');
+  if (!(q >= 0) || $('aQty').value === ''){ err.textContent = 'Enter the quantity.'; return; }
+  const per = isSpirit(it) ? it.volumeMl : 1;
+  try{
+    await runTransaction(db, async tx => {
+      const ref = doc(db, 'pubItems', id), s = await tx.get(ref), cur = s.data().stock || 0;
+      const next = why === 'count' ? q * per : why === 'add' ? cur + q * per : cur - q * per;
+      if (next < 0) throw new Error('neg');
+      tx.update(ref, { stock: r2(next) });
+      tx.set(doc(collection(db, 'pubStockLog')), { itemId: id, name: it.name, delta: r2(next - cur), reason: why, note: $('aNote').value.trim(), by: me.name, at: new Date().toISOString() });
+    });
+    closeModal();
+  } catch(e){ err.textContent = e.message === 'neg' ? 'That would take the stock below zero.' : 'Could not save. Please try again.'; }
+}
+
+// ================= STOCK IN (purchases) =================
+let purchFrom = null, purchTo = null, purchList = [];
+async function rPurch(){
+  purchFrom = purchFrom || addDays(today(), -30); purchTo = purchTo || today();
+  $('v-purch').innerHTML = `<div class="card"><h3>Receive stock</h3>
+    <div class="row"><div class="field"><label>Date</label><input type="date" id="pDate" value="${today()}" max="${today()}"></div>
+      <div class="field"><label>Item *</label><select id="pItem" onchange="RD.purchUnit()">${items.filter(i => i.track).map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('')}</select></div>
+      <div class="field"><label>Quantity <span id="pU"></span></label><input id="pQty" type="number" min="0" step="any"></div>
+      <div class="field"><label>Total cost ₹</label><input id="pCost" type="number" min="0" step="any"></div></div>
+    <div class="row"><div class="field"><label>Supplier / depot</label><input id="pSup" maxlength="60"></div><div class="field"><label>Invoice no.</label><input id="pInv" maxlength="30"></div></div>
+    <div class="err" id="pErr" role="alert"></div><button class="btn" onclick="RD.savePurch()">Add to stock</button></div>
+    <div class="card"><div class="toolbar"><div class="field"><label>From</label><input type="date" id="pf" value="${purchFrom}" onchange="RD.purchRange()"></div><div class="field"><label>To</label><input type="date" id="pt" value="${purchTo}" onchange="RD.purchRange()"></div></div>
+    <div class="scroll"><table><thead><tr><th>Date</th><th>Item</th><th class="num">Qty</th><th class="num">Cost</th><th>Supplier</th><th>Invoice</th></tr></thead><tbody id="pBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody></table></div></div>`;
+  purchUnit(); loadPurch();
+}
+function purchUnit(){ const it = byId(($('pItem') || {}).value); if (it && $('pU')) $('pU').textContent = isSpirit(it) ? '(bottles)' : '(units)'; }
+function purchRange(){ purchFrom = $('pf').value; purchTo = $('pt').value; loadPurch(); }
+async function loadPurch(){
+  try{
+    const s = await getDocs(query(collection(db, 'pubPurchases'), where('date', '>=', purchFrom), where('date', '<=', purchTo)));
+    purchList = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.date.localeCompare(a.date));
+    if ($('pBody')) $('pBody').innerHTML = purchList.length ? purchList.map(p => `<tr><td>${fmtD(p.date)}</td><td>${esc(p.name)}</td><td class="num">${p.qty}</td><td class="num">${inr(p.cost)}</td><td>${esc(p.supplier || '')}</td><td>${esc(p.invoice || '')}</td></tr>`).join('') : '<tr><td colspan="6" class="muted">No stock received in this period.</td></tr>';
+  } catch(e){ console.error(e); if ($('pBody')) $('pBody').innerHTML = '<tr><td colspan="6" class="err">Could not load.</td></tr>'; }
+}
+async function savePurch(){
+  const err = $('pErr'); err.textContent = '';
+  const id = $('pItem').value, it = byId(id), qty = Number($('pQty').value), cost = Number($('pCost').value) || 0, date = $('pDate').value;
+  if (!it){ err.textContent = 'Choose an item.'; return; } if (!(qty > 0)){ err.textContent = 'Enter the quantity received.'; return; } if (!date){ err.textContent = 'Choose the date.'; return; }
+  const add = qty * (isSpirit(it) ? it.volumeMl : 1);
+  try{
+    await runTransaction(db, async tx => {
+      const ref = doc(db, 'pubItems', id), s = await tx.get(ref);
+      tx.update(ref, { stock: r2((s.data().stock || 0) + add), ...(cost && qty ? { cost: r2(cost / qty) } : {}) });
+      tx.set(doc(collection(db, 'pubPurchases')), { date, itemId: id, name: it.name, qty, cost, supplier: $('pSup').value.trim(), invoice: $('pInv').value.trim(), by: me.name, at: new Date().toISOString() });
+      tx.set(doc(collection(db, 'pubStockLog')), { itemId: id, name: it.name, delta: add, reason: 'purchase', by: me.name, at: new Date().toISOString() });
+    });
+    $('pQty').value = ''; $('pCost').value = ''; $('pInv').value = ''; loadPurch();
+  } catch(e){ console.error(e); err.textContent = 'Could not save. Please try again.'; }
+}
+
+// ================= EXPENSES =================
+let expFrom = null, expTo = null, expList = [];
+function rExp(){
+  expFrom = expFrom || today().slice(0, 8) + '01'; expTo = expTo || today();
+  $('v-exp').innerHTML = `<div class="card"><h3>Add expense</h3><div class="row">
+    <div class="field"><label>Date</label><input type="date" id="eDate" value="${today()}" max="${today()}"></div>
+    <div class="field"><label>Category</label><select id="eCat">${EXP_CATS.map(c => `<option>${c}</option>`).join('')}</select></div>
+    <div class="field"><label>Amount ₹</label><input type="number" id="eAmt" min="0" step="any"></div>
+    <div class="field"><label>Note</label><input id="eNote" maxlength="80"></div></div><div class="err" id="eErr" role="alert"></div><button class="btn" onclick="RD.saveExp()">Add expense</button></div>
+    <div class="card"><div class="toolbar"><div class="field"><label>From</label><input type="date" id="ef" value="${expFrom}" onchange="RD.expRange()"></div><div class="field"><label>To</label><input type="date" id="et" value="${expTo}" onchange="RD.expRange()"></div><div id="eTotal" style="margin-left:auto;font-family:Oswald;font-size:20px;"></div></div>
+    <div class="scroll"><table><thead><tr><th>Date</th><th>Category</th><th>Note</th><th class="num">Amount</th><th>By</th><th></th></tr></thead><tbody id="eBody"></tbody></table></div></div>`;
+  loadExp();
+}
+function expRange(){ expFrom = $('ef').value; expTo = $('et').value; loadExp(); }
+async function loadExp(){
+  try{
+    const s = await getDocs(query(collection(db, 'pubExpenses'), where('date', '>=', expFrom), where('date', '<=', expTo)));
+    expList = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.date.localeCompare(a.date));
+    if (!$('eBody')) return;
+    $('eTotal').textContent = inr(expList.reduce((t, e) => t + e.amount, 0));
+    $('eBody').innerHTML = expList.length ? expList.map(e => `<tr><td>${fmtD(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.note || '')}</td><td class="num">${inr(e.amount)}</td><td>${esc(e.by || '')}</td><td><button class="btn sec sm" onclick="RD.delExp('${e.id}')">Delete</button></td></tr>`).join('') : '<tr><td colspan="6" class="muted">No expenses in this period.</td></tr>';
+  } catch(e){ console.error(e); }
+}
+async function saveExp(){
+  const err = $('eErr'), amt = Number($('eAmt').value), date = $('eDate').value; err.textContent = '';
+  if (!(amt > 0)){ err.textContent = 'Enter the amount.'; return; } if (!date){ err.textContent = 'Choose the date.'; return; }
+  try{ await setDoc(doc(collection(db, 'pubExpenses')), { date, category: $('eCat').value, amount: r2(amt), note: $('eNote').value.trim(), by: me.name, at: new Date().toISOString() }); $('eAmt').value = ''; $('eNote').value = ''; loadExp(); }
+  catch(e){ err.textContent = 'Could not save. Please try again.'; }
+}
+async function delExp(id){ if (!confirm('Delete this expense?')) return; try{ await deleteDoc(doc(db, 'pubExpenses', id)); loadExp(); } catch(e){ alert('Could not delete.'); } }
+
+// ================= REPORTS =================
+let repFrom = null, repTo = null, repData = null;
+function rRep(){
+  repFrom = repFrom || today().slice(0, 8) + '01'; repTo = repTo || today();
+  $('v-rep').innerHTML = `<div class="toolbar"><div class="field"><label>From</label><input type="date" id="rf" value="${repFrom}"></div><div class="field"><label>To</label><input type="date" id="rt" value="${repTo}"></div>
+    <button class="btn" onclick="RD.runRep()">Show report</button><button class="btn sec" onclick="RD.repCsv()">Export bills CSV</button></div><div id="repOut" class="muted">Choose dates and press Show report.</div>`;
+  runRep();
+}
+async function runRep(){
+  repFrom = $('rf').value; repTo = $('rt').value; if (!repFrom || !repTo || repFrom > repTo){ $('repOut').textContent = 'Check the dates.'; return; }
+  $('repOut').textContent = 'Loading…';
+  const q = c => getDocs(query(collection(db, c), where('date', '>=', repFrom), where('date', '<=', repTo)));
+  try{
+    const [bs, ex, pu] = await Promise.all([q('pubBills'), q('pubExpenses'), q('pubPurchases')]);
+    const bills = bs.docs.map(d => ({ id: d.id, ...d.data() })), paid = bills.filter(b => b.status === 'paid'), voids = bills.filter(b => b.status === 'void');
+    const exps = ex.docs.map(d => d.data()), purs = pu.docs.map(d => d.data()), S = sumBills(bills);
+    const catSales = {}, itemSales = {}, byDay = {};
+    paid.forEach(b => { byDay[b.date] = (byDay[b.date] || 0) + b.total; (b.lines || []).forEach(l => { catSales[l.category || 'Other'] = (catSales[l.category || 'Other'] || 0) + l.amount; const k = l.name; itemSales[k] = itemSales[k] || { q: 0, a: 0 }; itemSales[k].q += l.qty; itemSales[k].a += l.amount; }); });
+    const expT = r2(exps.reduce((t, e) => t + e.amount, 0)), purT = r2(purs.reduce((t, p) => t + p.cost, 0));
+    repData = bills;
+    const top = Object.entries(itemSales).sort((a, b) => b[1].a - a[1].a).slice(0, 10);
+    const expBy = {}; exps.forEach(e => expBy[e.category] = (expBy[e.category] || 0) + e.amount);
+    $('repOut').innerHTML = `<div class="stats"><div class="stat"><small>Sales</small><strong>${inr(S.total)}</strong></div><div class="stat"><small>Bills</small><strong>${S.n}</strong></div><div class="stat"><small>GST collected</small><strong>${inr(S.tax)}</strong></div><div class="stat"><small>Discounts</small><strong>${inr(S.disc)}</strong></div><div class="stat"><small>Voided bills</small><strong>${voids.length}</strong></div>
+      <div class="stat"><small>Expenses</small><strong>${inr(expT)}</strong></div><div class="stat"><small>Stock purchased</small><strong>${inr(purT)}</strong></div><div class="stat"><small>Sales − expenses − purchases</small><strong style="color:${S.total - expT - purT >= 0 ? 'var(--green)' : 'var(--red)'}">${inr(S.total - expT - purT)}</strong></div></div>
+      <div class="row" style="align-items:start;"><div class="card"><h3>Payment mode</h3><table><tbody>${PAY.map(p => `<tr><td>${p}</td><td class="num">${inr(S.by[p] || 0)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h3>Sales by category</h3><table><tbody>${Object.entries(catSales).sort((a, b) => b[1] - a[1]).map(([c, v]) => `<tr><td>${esc(c)}</td><td class="num">${inr(v)}</td></tr>`).join('') || '<tr><td class="muted">No sales.</td></tr>'}</tbody></table></div>
+      <div class="card"><h3>Expenses by type</h3><table><tbody>${Object.entries(expBy).sort((a, b) => b[1] - a[1]).map(([c, v]) => `<tr><td>${esc(c)}</td><td class="num">${inr(v)}</td></tr>`).join('') || '<tr><td class="muted">None.</td></tr>'}</tbody></table></div></div>
+      <div class="card"><h3>Top 10 items</h3><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Sales</th></tr></thead><tbody>${top.map(([n, v]) => `<tr><td>${esc(n)}</td><td class="num">${v.q}</td><td class="num">${inr(v.a)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">No sales.</td></tr>'}</tbody></table></div>
+      <div class="card"><h3>Sales by day</h3><table><tbody>${Object.entries(byDay).sort().map(([d, v]) => `<tr><td>${fmtD(d)}</td><td class="num">${inr(v)}</td></tr>`).join('') || '<tr><td class="muted">No sales.</td></tr>'}</tbody></table></div>`;
+  } catch(e){ console.error(e); $('repOut').innerHTML = '<span class="err">Could not load the report. Please try again.</span>'; }
+}
+function repCsv(){
+  if (!repData){ alert('Show a report first.'); return; }
+  csv([['Bill', 'Date', 'Time', 'Table', 'Customer', 'Cashier', 'Pay mode', 'Subtotal', 'Discount', 'GST', 'Total', 'Status'],
+    ...repData.sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map(b => [b.billNo, b.date, fmtT(b.createdAt), b.table, b.customer, b.byName, b.payMode, b.subtotal, b.discount, b.tax, b.total, b.status])], `rebel-den-bills-${repFrom}-to-${repTo}.csv`);
+}
+
+// ================= USERS =================
+let userMsg = '';
+function rUsers(){
+  $('v-users').innerHTML = `<div class="card"><h3>Add staff login</h3><div class="row">
+    <div class="field"><label>Name *</label><input id="uName" maxlength="40"></div><div class="field"><label>Email *</label><input id="uEmail" type="email"></div>
+    <div class="field"><label>Password * (min 8)</label><input id="uPass" type="text" autocomplete="new-password"></div>
+    <div class="field"><label>Role *</label><select id="uRole"><option value="billing">Billing (bills, view stock)</option><option value="accountant">Accountant (stock in, expenses, reports)</option><option value="admin">Admin (everything)</option></select></div></div>
+    <div class="err" id="uErr" role="alert">${userMsg}</div><button class="btn" id="uBtn" onclick="RD.addUser()">Create login</button></div>
+    <div class="card scroll"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+    ${users.map(u => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td><select onchange="RD.userRole('${u.uid}',this.value)" ${u.uid === me.uid ? 'disabled' : ''}>${['admin', 'accountant', 'billing'].map(r => `<option ${u.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select></td>
+      <td>${u.active ? '<span class="badge b-ok">Active</span>' : '<span class="badge b-bad">Off</span>'}</td><td>${u.uid === me.uid ? '' : `<button class="btn sec sm" onclick="RD.userActive('${u.uid}',${!u.active})">${u.active ? 'Switch off' : 'Switch on'}</button>`}</td></tr>`).join('')}</tbody></table></div>`;
+}
+async function addUser(){
+  const name = $('uName').value.trim(), email = $('uEmail').value.trim().toLowerCase(), pass = $('uPass').value, r = $('uRole').value, err = $('uErr'), btn = $('uBtn'); err.textContent = ''; userMsg = '';
+  if (name.length < 2){ err.textContent = 'Enter the name.'; return; } if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Enter a valid email.'; return; } if (pass.length < 8){ err.textContent = 'Password must be at least 8 characters.'; return; }
+  btn.disabled = true;
+  let app2 = null;
+  try{
+    app2 = initializeApp(firebaseConfig, 'second-' + Date.now());           // a second session, so the admin stays signed in
+    const a2 = getAuth(app2), cred = await createUserWithEmailAndPassword(a2, email, pass);
+    await setDoc(doc(db, 'pubUsers', cred.user.uid), { name, email, role: r, active: true, createdAt: new Date().toISOString(), createdBy: me.name });
+    await signOut(a2);
+    ['uName', 'uEmail', 'uPass'].forEach(k => $(k).value = '');
+    userMsg = `<span class="ok">Login created for ${esc(name)}. Share the email and password with them privately.</span>`; err.innerHTML = userMsg;
+  } catch(e){
+    console.error(e); err.textContent = (e.code || '').includes('email-already-in-use') ? 'That email already has a login. Switch the account on in the list below, or use another email.' : (e.code || '').includes('weak-password') ? 'Choose a stronger password.' : 'Could not create the login. Please try again.';
+  } finally { btn.disabled = false; }
+}
+async function userRole(uid, r){ try{ await updateDoc(doc(db, 'pubUsers', uid), { role: r }); } catch(e){ alert('Could not change the role.'); } }
+async function userActive(uid, on){ try{ await updateDoc(doc(db, 'pubUsers', uid), { active: on }); } catch(e){ alert('Could not change the status.'); } }
+
+// ================= SETTINGS =================
+function rSet(){
+  const h = $('v-set'); if (h.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  h.innerHTML = `<div class="card"><h3>Pub details (printed on bills)</h3><div class="row">
+    <div class="field"><label>Pub name</label><input id="sName" value="${esc(settings.name)}"></div><div class="field"><label>Phone (also shown on website)</label><input id="sPhone" value="${esc(settings.phone || '')}"></div>
+    <div class="field"><label>GSTIN</label><input id="sGst" value="${esc(settings.gstin || '')}"></div><div class="field"><label>Minimum age for entry</label><input id="sAge" type="number" min="18" max="30" value="${settings.minAge}"></div></div>
+    <div class="field"><label>Address</label><input id="sAddr" value="${esc(settings.address)}"></div><div class="err" id="sErr"></div><button class="btn" onclick="RD.saveSet()">Save</button></div>
+    <div class="card"><h3>Website menu</h3><p class="muted">Publishes your active items and prices to the public Rebel Den page (no stock or cost is shown).</p><button class="btn" onclick="RD.publishMenu()">Publish menu to website</button><div class="small" id="sPub" style="margin-top:8px;"></div></div>`;
+}
+async function saveSet(){
+  const s = { name: $('sName').value.trim() || 'Rebel Den', phone: $('sPhone').value.trim(), gstin: $('sGst').value.trim(), address: $('sAddr').value.trim(), minAge: Math.min(30, Math.max(18, Number($('sAge').value) || 21)) };
+  try{ await setDoc(doc(db, 'pubSettings', 'main'), s); settings = { ...settings, ...s }; $('sErr').innerHTML = '<span class="ok">Saved.</span>'; } catch(e){ $('sErr').textContent = 'Could not save.'; }
+}
+async function publishMenu(){
+  const cats = {};
+  items.filter(i => i.active).forEach(i => {
+    const opts = isSpirit(i) ? [...(i.pegs || []).map(p => [p.label, p.price]), ...(i.bottlePrice ? [['Bottle', i.bottlePrice]] : [])] : [['', i.price]];
+    (cats[i.category] = cats[i.category] || []).push({ n: i.name, b: i.brand || '', p: opts });
+  });
+  try{ await setDoc(doc(db, 'pubMenu', 'current'), { updatedAt: new Date().toISOString(), minAge: settings.minAge, phone: settings.phone || '', address: settings.address, cats }); $('sPub').innerHTML = '<span class="ok">Menu published.</span>'; }
+  catch(e){ $('sPub').innerHTML = '<span class="err">Could not publish.</span>'; }
+}
+
+Object.assign(window, { RD: { login, logout, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
+  invCat: v => { invCat = v; rInv(); }, exportStock, itemForm, itemKind, saveItem, adjForm, saveAdj, purchUnit, purchRange, savePurch, expRange, saveExp, delExp, runRep, repCsv, addUser, userRole, userActive, saveSet, publishMenu } });
+</script>
+</body>
+</html>

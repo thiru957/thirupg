@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0b0d">
+<title>Rebel Den — Pub at Lulu Mall, Kukatpally, Hyderabad</title>
+<meta name="description" content="Rebel Den: craft beers, whisky, tequila and cocktails at Lulu Mall, Kukatpally, Hyderabad. For guests of legal drinking age only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0d;--card:#151518;--line:#2b2b32;--text:#f2f0ea;--muted:#a09c92;--amber:#ffb020;--red:#e63946}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+h1,h2,h3{font-family:Oswald,Impact,sans-serif;text-transform:uppercase;letter-spacing:.06em;margin:0}
+a{color:inherit}.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.hidden{display:none!important}
+.brand{font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase}.brand b{color:var(--red)}
+/* age gate */
+#gate{position:fixed;inset:0;z-index:100;background:radial-gradient(800px 500px at 50% 0,#3b1217 0,#0b0b0d 70%);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+#gate .box{max-width:440px}
+#gate .brand{font-size:40px}
+.btn{display:inline-block;background:var(--amber);color:#111;border:0;border-radius:6px;padding:13px 28px;font-family:Oswald,sans-serif;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;font-size:15px}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+/* nav */
+header{position:sticky;top:0;z-index:30;background:rgba(11,11,13,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:20px;height:60px}
+header nav{margin-left:auto;display:flex;gap:22px;font-family:Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:14px}
+header nav a{text-decoration:none;color:var(--muted)}header nav a:hover{color:var(--amber)}
+/* hero */
+.hero{min-height:78vh;display:flex;align-items:center;text-align:center;background:radial-gradient(900px 520px at 50% 15%,#4a1519 0,transparent 65%),linear-gradient(#0b0b0d,#0b0b0d);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(255,176,32,.035) 46px 48px)}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(54px,11vw,128px);line-height:.95;letter-spacing:.1em}.hero h1 b{color:var(--red)}
+.hero p{max-width:560px;margin:18px auto 28px;color:var(--muted);font-size:18px}
+.tag{font-family:Oswald;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;font-size:14px;margin-bottom:14px}
+section{padding:72px 0}section h2{font-size:clamp(30px,5vw,44px);margin-bottom:8px}
+.sub{color:var(--muted);margin:0 0 30px;max-width:620px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+.card h3{font-size:20px;color:var(--amber);margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+/* menu */
+.mtabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:22px}
+.mtabs button{background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:8px 18px;cursor:pointer;font-family:Oswald;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.mtabs button.on{background:var(--amber);color:#111;border-color:var(--amber)}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:4px 44px}
+.mi{display:flex;gap:14px;justify-content:space-between;align-items:baseline;padding:13px 0;border-bottom:1px dashed var(--line)}
+.mi b{font-weight:600}.mi small{display:block;color:var(--muted)}
+.mi .pr{white-space:nowrap;text-align:right;color:var(--amber);font-weight:600;font-size:14px}.mi .pr span{display:block}.mi .pr em{font-style:normal;color:var(--muted);font-weight:400;font-size:12px}
+.empty{color:var(--muted);padding:24px;border:1px dashed var(--line);border-radius:12px}
+.visit{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;align-items:start}
+footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13.5px}
+.resp{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-top:14px}
+@media(max-width:700px){header nav{display:none}}
+</style>
+</head>
+<body>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateT">
+  <div class="box">
+    <div class="brand">Rebel <b>Den</b></div>
+    <h2 id="gateT" style="margin:26px 0 8px;font-size:26px;">Are you of legal drinking age?</h2>
+    <p style="color:var(--muted);margin:0 0 24px;">This website is about alcoholic drinks. You must be at least <b id="gateAge">21</b> years old to enter.</p>
+    <button class="btn" onclick="enter()">Yes, I am <span id="gateAge2">21</span>+</button>
+    <a class="btn ghost" href="https://www.google.com" style="margin-left:6px;">No, leave</a>
+  </div>
+</div>
+
+<header><div class="wrap"><a class="brand" href="#top" style="text-decoration:none;font-size:20px;">Rebel <b>Den</b></a>
+  <nav><a href="#about">The Den</a><a href="#menu">Menu</a><a href="#visit">Find us</a></nav></div></header>
+
+<div class="hero" id="top"><div class="wrap">
+  <div class="tag">Lulu Mall · Kukatpally · Hyderabad</div>
+  <h1>Rebel <b>Den</b></h1>
+  <p>Cold beer, serious whisky, tequila nights and cocktails made loud. Your corner of the mall after dark.</p>
+  <a class="btn" href="#menu">See the menu</a> <a class="btn ghost" href="#visit">Find us</a>
+</div></div>
+
+<section id="about"><div class="wrap">
+  <h2>The Den</h2><p class="sub">A pub for friends, after-work crowds and anyone who likes their drinks with some attitude.</p>
+  <div class="cards">
+    <div class="card"><h3>Beers</h3><p>Lagers, wheat beers and more, served properly cold.</p></div>
+    <div class="card"><h3>Whisky &amp; spirits</h3><p>Whisky, vodka, rum, gin and brandy, by the peg or by the bottle.</p></div>
+    <div class="card"><h3>Tequila</h3><p>Shots, slammers and sippers for the bold.</p></div>
+    <div class="card"><h3>Cocktails &amp; bites</h3><p>House cocktails, mixers and food to go with every round.</p></div>
+  </div>
+</div></section>
+
+<section id="menu" style="background:#0f0f12;border-top:1px solid var(--line);border-bottom:1px solid var(--line);"><div class="wrap">
+  <h2>Menu</h2><p class="sub" id="menuSub">Prices in rupees.</p>
+  <div class="mtabs" id="mtabs"></div><div class="menu" id="menuBody"></div>
+  <div class="resp small">Please drink responsibly. Do not drink and drive. Alcohol is served only to guests of legal drinking age and may require valid photo ID.</div>
+</div></section>
+
+<section id="visit"><div class="wrap"><div class="visit">
+  <div><h2>Find us</h2><p class="sub">Rebel Den, Lulu Mall, Kukatpally, Hyderabad.</p>
+    <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Lulu+Mall+Kukatpally+Hyderabad">Open in Maps</a>
+    <span id="callWrap"></span></div>
+  <div class="card"><h3>Good to know</h3><p>Opening hours and offers can change. Please call before you visit.<br>Entry is for guests of legal drinking age only.</p></div>
+</div></div></section>
+
+<footer><div class="wrap">© <span id="yr"></span> Rebel Den. Drink responsibly.</div></footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+const app = initializeApp({ apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU", authDomain: "codekasa.firebaseapp.com", projectId: "codekasa", appId: "1:725605223433:web:fd9a635676e810eba57cd8" });
+const db = getFirestore(app);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ORDER = ['Beer','Whisky','Vodka','Rum','Tequila','Gin','Brandy','Wine','Cocktails','Soft Drinks & Mixers','Food'];
+document.getElementById('yr').textContent = new Date().getFullYear();
+let minAge = 21, store = null; try{ store = window.localStorage; }catch(e){}
+function enter(){ try{ store && store.setItem('rd_age_ok', '1'); }catch(e){} document.getElementById('gate').classList.add('hidden'); document.body.style.overflow = ''; }
+window.enter = enter;
+try{ if (store && store.getItem('rd_age_ok') === '1') document.getElementById('gate').classList.add('hidden'); else document.body.style.overflow = 'hidden'; }catch(e){}
+let menu = null, cur = null;
+function draw(){
+  const tabs = document.getElementById('mtabs'), body = document.getElementById('menuBody');
+  const cats = menu && menu.cats ? ORDER.filter(c => (menu.cats[c] || []).length) : [];
+  if (!cats.length){ tabs.innerHTML = ''; body.innerHTML = '<div class="empty">Our menu is being updated. Please call us for today\'s drinks and prices.</div>'; return; }
+  if (!cur || !cats.includes(cur)) cur = cats[0];
+  tabs.innerHTML = cats.map(c => `<button class="${c === cur ? 'on' : ''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  tabs.querySelectorAll('button').forEach(b => b.onclick = () => { cur = b.dataset.c; draw(); });
+  body.innerHTML = menu.cats[cur].map(i => `<div class="mi"><div><b>${esc(i.n)}</b>${i.b ? `<small>${esc(i.b)}</small>` : ''}</div><div class="pr">${(i.p || []).map(p => `<span>${p[0] ? `<em>${esc(p[0])}</em> ` : ''}₹${Number(p[1]).toLocaleString('en-IN')}</span>`).join('')}</div></div>`).join('');
+}
+(async () => {
+  try{
+    const s = await getDoc(doc(db, 'pubMenu', 'current'));
+    if (s.exists()){
+      menu = s.data(); minAge = Number(menu.minAge) || 21;
+      document.getElementById('gateAge').textContent = minAge; document.getElementById('gateAge2').textContent = minAge;
+      const ph = String(menu.phone || '').replace(/[^\d+]/g, '');
+      if (ph) document.getElementById('callWrap').innerHTML = ` <a class="btn ghost" href="tel:${esc(ph)}">Call us</a>`;
+    }
+  } catch(e){ console.warn('menu not loaded', e); }
+  draw();
+})();
+</script>
+</body>
+</html>

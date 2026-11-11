@@ -1,0 +1,47 @@
+REBEL DEN — FIRESTORE RULES TO ADD
+===================================
+Firebase console -> Firestore Database -> Rules.
+KEEP all your existing CodeKasa rules. Paste the block below INSIDE
+"match /databases/{database}/documents { ... }", next to the others, then Publish.
+
+    // ---------- Rebel Den (staff app) ----------
+    function pubMe()      { return get(/databases/$(database)/documents/pubUsers/$(request.auth.uid)).data; }
+    function pubOn()      { return request.auth != null && exists(/databases/$(database)/documents/pubUsers/$(request.auth.uid)) && pubMe().active == true; }
+    function pubRole(r)   { return pubOn() && pubMe().role == r; }
+    function pubAdmin()   { return pubRole('admin'); }
+    function pubMoney()   { return pubRole('admin') || pubRole('accountant'); }
+    function pubBiller()  { return pubRole('admin') || pubRole('billing'); }
+    function pubOwner()   { return request.auth != null && request.auth.token.email == 'thirupathi.by@gmail.com'; }
+    function stockOnly()  { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stock', 'cost']); }
+
+    match /pubUsers/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || pubAdmin() || pubOwner());
+      allow create, update: if pubAdmin() || pubOwner();
+      allow delete: if pubAdmin();
+    }
+    match /pubItems/{id} {
+      allow read: if pubOn();
+      allow create, delete: if pubAdmin();
+      allow update: if pubAdmin() || ((pubMoney() || pubBiller()) && stockOnly());
+    }
+    match /pubBills/{id} {
+      allow read: if pubOn();
+      allow create: if pubBiller();
+      allow update: if pubAdmin();          // void
+    }
+    match /pubStockLog/{id} {
+      allow read: if pubMoney();
+      allow create: if pubOn();
+    }
+    match /pubPurchases/{id} { allow read, write: if pubMoney(); }
+    match /pubExpenses/{id}  { allow read, write: if pubMoney(); }
+    match /pubSettings/counter { allow read, write: if pubBiller(); }
+    match /pubSettings/{id}    { allow read: if pubOn(); allow write: if pubAdmin(); }
+    match /pubMenu/{id}        { allow get: if true; allow write: if pubAdmin(); }   // public website menu (no stock or cost)
+
+NOTES
+- The first time thirupathi.by@gmail.com signs in to rebel-den-staff.html it becomes the Rebel Den admin automatically.
+  That sign-in must be an existing Firebase Auth user (it is - it's your CodeKasa admin login).
+- Staff logins are created from Users inside the app (Firebase Authentication -> Email/Password must be enabled; it already is for CodeKasa).
+- Billing role: can bill and view stock, cannot see costs, reports, expenses or void bills.
+- Accountant role: stock in, stock adjustments, expenses, reports. Cannot create bills or change prices.
