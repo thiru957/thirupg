@@ -87,6 +87,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
     <div class="field"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="username" required></div>
     <div class="field"><label for="lgPass">Password</label><input id="lgPass" type="password" autocomplete="current-password" required></div>
     <button class="btn block" id="lgBtn" type="submit">Sign in</button>
+    <div style="text-align:right;margin-top:10px;"><a href="#" onclick="return RD.forgot(event)" style="color:var(--amber);font-size:13px;">Forgot password?</a></div>
     <div class="err" id="lgErr" role="alert"></div>
     <div class="muted small" style="margin-top:10px;">Access is given by the admin. Roles: Admin · Accountant · Billing.</div>
   </form>
@@ -118,7 +119,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, runTransaction }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -172,10 +173,20 @@ function csv(rows, name){
 // ---------- auth ----------
 async function login(e){
   e.preventDefault();
-  const btn = $('lgBtn'), err = $('lgErr'); err.textContent = ''; btn.disabled = true;
+  const btn = $('lgBtn'), err = $('lgErr'); err.textContent = ''; err.style.color = ''; btn.disabled = true;
   try{ await signInWithEmailAndPassword(auth, $('lgEmail').value.trim(), $('lgPass').value); }
   catch(x){ err.textContent = 'Wrong email or password.'; }
   finally { btn.disabled = false; }
+  return false;
+}
+async function forgot(e){
+  e.preventDefault();
+  const err = $('lgErr'), typed = $('lgEmail').value.trim().toLowerCase(), email = typed || OWNER_EMAIL;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.style.color = ''; err.textContent = 'Enter a valid email address first.'; return false; }
+  $('lgEmail').value = email; err.style.color = ''; err.textContent = 'Sending…';
+  try{ await sendPasswordResetEmail(auth, email); }
+  catch(x){ if ((x.code || '').includes('too-many-requests')){ err.textContent = 'Too many attempts. Please wait a few minutes and try again.'; return false; } /* other errors stay silent so the form does not reveal which emails have accounts */ }
+  err.style.color = 'var(--green)'; err.textContent = `If ${email} has a Rebel Den login, a password reset link has been sent there. Check your inbox and spam folder.`;
   return false;
 }
 async function logout(){ unsubs.forEach(u => u()); unsubs = []; await signOut(auth); }
@@ -641,7 +652,7 @@ async function publishMenu(){
   catch(e){ $('sPub').innerHTML = '<span class="err">Could not publish.</span>'; }
 }
 
-Object.assign(window, { RD: { login, logout, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
+Object.assign(window, { RD: { login, logout, forgot, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
   invCat: v => { invCat = v; rInv(); }, exportStock, itemForm, itemKind, saveItem, adjForm, saveAdj, purchUnit, purchRange, savePurch, expRange, saveExp, delExp, runRep, repCsv, addUser, userRole, userActive, saveSet, publishMenu } });
 </script>
 </body>
