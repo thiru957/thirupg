@@ -33,6 +33,10 @@ label{display:block;font-size:12px;color:var(--muted);margin:0 0 4px;letter-spac
 /* login */
 #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(900px 500px at 50% -10%,#3b1217 0,transparent 60%),var(--bg)}
 .login-box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.rolebtn{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;font-family:Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.rolebtn.on{border-color:var(--amber);background:#2a2110;color:var(--amber)}
+.roleinfo{font-size:12.5px;color:var(--muted);min-height:36px;margin:-4px 0 12px}
 .brand{font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.14em;font-size:28px;text-transform:uppercase}
 .brand b{color:var(--red)}
 /* app shell */
@@ -84,12 +88,15 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   <form class="login-box" onsubmit="return RD.login(event)">
     <div class="brand" style="margin-bottom:4px;">Rebel <b>Den</b></div>
     <div class="muted small" style="margin-bottom:22px;">Staff portal · Lulu Mall, Kukatpally</div>
-    <div class="field"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="lgEmail">Username or email</label><input id="lgEmail" type="text" autocapitalize="none" autocomplete="username" required></div>
     <div class="field"><label for="lgPass">Password</label><input id="lgPass" type="password" autocomplete="current-password" required></div>
+    <div class="field"><label for="lgRole">Role</label>
+      <select id="lgRole" onchange="RD.pickRole(this.value)"><option value="">Select your role…</option><option value="admin">Admin</option><option value="accountant">Accountant</option><option value="billing">Billing</option></select></div>
+    <div class="roleinfo" id="roleInfo"></div>
     <button class="btn block" id="lgBtn" type="submit">Sign in</button>
     <div style="text-align:right;margin-top:10px;"><a href="#" onclick="return RD.forgot(event)" style="color:var(--amber);font-size:13px;">Forgot password?</a></div>
     <div class="err" id="lgErr" role="alert"></div>
-    <div class="muted small" style="margin-top:10px;">Access is given by the admin. Roles: Admin · Accountant · Billing.</div>
+    <div class="muted small" style="margin-top:10px;">Logins are created by the admin.</div>
   </form>
 </section>
 
@@ -171,10 +178,20 @@ function csv(rows, name){
 }
 
 // ---------- auth ----------
+const ROLE_INFO = { admin: 'Everything: billing, stock, prices, expenses, reports, users, settings and voiding bills.', accountant: 'Stock in, stock adjustments, expenses, bills and reports.', billing: 'Billing and bills, plus a read-only view of stock.' };
+let pickedRole = null;
+const toEmail = v => { v = String(v).trim().toLowerCase(); return v.includes('@') ? v : v.replace(/[^a-z0-9._-]/g, '') + '@rebelden.staff'; };   // a short username becomes a login id
+function pickRole(r){
+  pickedRole = r || null;
+  $('roleInfo').textContent = r ? ROLE_INFO[r] : ''; $('lgErr').textContent = '';
+}
 async function login(e){
   e.preventDefault();
-  const btn = $('lgBtn'), err = $('lgErr'); err.textContent = ''; err.style.color = ''; btn.disabled = true;
-  try{ await signInWithEmailAndPassword(auth, $('lgEmail').value.trim(), $('lgPass').value); }
+  const btn = $('lgBtn'), err = $('lgErr'); err.textContent = ''; err.style.color = '';
+  pickedRole = $('lgRole').value || null;
+  if (!pickedRole){ err.textContent = 'Please select your role.'; return false; }
+  btn.disabled = true;
+  try{ await signInWithEmailAndPassword(auth, toEmail($('lgEmail').value), $('lgPass').value); }
   catch(x){ err.textContent = 'Wrong email or password.'; }
   finally { btn.disabled = false; }
   return false;
@@ -182,11 +199,25 @@ async function login(e){
 async function forgot(e){
   e.preventDefault();
   const err = $('lgErr'), typed = $('lgEmail').value.trim().toLowerCase(), email = typed || OWNER_EMAIL;
+  if (typed && !typed.includes('@')){ err.style.color = ''; err.textContent = 'Username logins have no email. Ask the admin to set a new password for you.'; return false; }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.style.color = ''; err.textContent = 'Enter a valid email address first.'; return false; }
   $('lgEmail').value = email; err.style.color = ''; err.textContent = 'Sending…';
   try{ await sendPasswordResetEmail(auth, email); }
-  catch(x){ if ((x.code || '').includes('too-many-requests')){ err.textContent = 'Too many attempts. Please wait a few minutes and try again.'; return false; } /* other errors stay silent so the form does not reveal which emails have accounts */ }
-  err.style.color = 'var(--green)'; err.textContent = `If ${email} has a Rebel Den login, a password reset link has been sent there. Check your inbox and spam folder.`;
+  catch(x){
+    console.error('password reset failed', x);
+    const c = String(x.code || '');
+    if (!c.includes('user-not-found')){      // unknown emails stay silent; every other problem is shown so it can be fixed
+      err.style.color = '';
+      err.textContent = c.includes('too-many-requests') ? 'Too many attempts. Please wait a few minutes and try again.'
+        : c.includes('operation-not-allowed') ? 'Email/password sign-in is switched off in Firebase (Authentication → Sign-in method). Switch it on, then try again.'
+        : c.includes('unauthorized-continue-uri') || c.includes('invalid-continue-uri') ? 'This website address is not authorised in Firebase (Authentication → Settings → Authorized domains). Add it there.'
+        : c.includes('invalid-email') ? 'That email address is not valid.'
+        : c.includes('network') ? 'No internet connection. Please try again.'
+        : `Could not send the email (${c || 'unknown error'}). Please tell the developer this code.`;
+      return false;
+    }
+  }
+  err.style.color = 'var(--green)'; err.textContent = `If ${email} has a Rebel Den login, a password reset link has been sent there. Check Inbox, Spam, Promotions and Updates (it comes from noreply@codekasa.firebaseapp.com).`;
   return false;
 }
 async function logout(){ unsubs.forEach(u => u()); unsubs = []; await signOut(auth); }
@@ -197,6 +228,10 @@ onAuthStateChanged(auth, async u => {
     if (!data && (u.email || '').toLowerCase() === OWNER_EMAIL){
       data = { name: 'Owner', email: u.email, role: 'admin', active: true, createdAt: new Date().toISOString() };
       await setDoc(doc(db, 'pubUsers', u.uid), data);
+    }
+    if (data && data.active && pickedRole && data.role !== pickedRole){
+      $('lgErr').textContent = `This login is not a ${pickedRole} account. Choose the right role and sign in again.`;
+      await signOut(auth); return;
     }
     if (!data || !data.active || !TABS[data.role]){
       $('lgErr').textContent = data && !data.active ? 'This account has been switched off. Please ask the admin.' : 'This account has no access to Rebel Den. Please ask the admin.';
@@ -602,7 +637,7 @@ function repCsv(){
 let userMsg = '';
 function rUsers(){
   $('v-users').innerHTML = `<div class="card"><h3>Add staff login</h3><div class="row">
-    <div class="field"><label>Name *</label><input id="uName" maxlength="40"></div><div class="field"><label>Email *</label><input id="uEmail" type="email"></div>
+    <div class="field"><label>Name *</label><input id="uName" maxlength="40"></div><div class="field"><label>Username or email *</label><input id="uEmail" type="text" autocapitalize="none" placeholder="e.g. bar1 or name@mail.com"></div>
     <div class="field"><label>Password * (min 8)</label><input id="uPass" type="text" autocomplete="new-password"></div>
     <div class="field"><label>Role *</label><select id="uRole"><option value="billing">Billing (bills, view stock)</option><option value="accountant">Accountant (stock in, expenses, reports)</option><option value="admin">Admin (everything)</option></select></div></div>
     <div class="err" id="uErr" role="alert">${userMsg}</div><button class="btn" id="uBtn" onclick="RD.addUser()">Create login</button></div>
@@ -611,8 +646,8 @@ function rUsers(){
       <td>${u.active ? '<span class="badge b-ok">Active</span>' : '<span class="badge b-bad">Off</span>'}</td><td>${u.uid === me.uid ? '' : `<button class="btn sec sm" onclick="RD.userActive('${u.uid}',${!u.active})">${u.active ? 'Switch off' : 'Switch on'}</button>`}</td></tr>`).join('')}</tbody></table></div>`;
 }
 async function addUser(){
-  const name = $('uName').value.trim(), email = $('uEmail').value.trim().toLowerCase(), pass = $('uPass').value, r = $('uRole').value, err = $('uErr'), btn = $('uBtn'); err.textContent = ''; userMsg = '';
-  if (name.length < 2){ err.textContent = 'Enter the name.'; return; } if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Enter a valid email.'; return; } if (pass.length < 8){ err.textContent = 'Password must be at least 8 characters.'; return; }
+  const name = $('uName').value.trim(), email = toEmail($('uEmail').value), pass = $('uPass').value, r = $('uRole').value, err = $('uErr'), btn = $('uBtn'); err.textContent = ''; userMsg = '';
+  if (name.length < 2){ err.textContent = 'Enter the name.'; return; } if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Enter a username (letters and numbers) or a valid email.'; return; } if (pass.length < 8){ err.textContent = 'Password must be at least 8 characters.'; return; }
   btn.disabled = true;
   let app2 = null;
   try{
@@ -652,7 +687,7 @@ async function publishMenu(){
   catch(e){ $('sPub').innerHTML = '<span class="err">Could not publish.</span>'; }
 }
 
-Object.assign(window, { RD: { login, logout, forgot, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
+Object.assign(window, { RD: { login, logout, forgot, pickRole, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
   invCat: v => { invCat = v; rInv(); }, exportStock, itemForm, itemKind, saveItem, adjForm, saveAdj, purchUnit, purchRange, savePurch, expRange, saveExp, delExp, runRep, repCsv, addUser, userRole, userActive, saveSet, publishMenu } });
 </script>
 </body>
