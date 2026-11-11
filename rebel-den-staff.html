@@ -96,7 +96,19 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
     <button class="btn block" id="lgBtn" type="submit">Sign in</button>
     <div style="text-align:right;margin-top:10px;"><a href="#" onclick="return RD.forgot(event)" style="color:var(--amber);font-size:13px;">Forgot password?</a></div>
     <div class="err" id="lgErr" role="alert"></div>
-    <div class="muted small" style="margin-top:10px;">Logins are created by the admin.</div>
+    <div class="muted small" style="margin-top:10px;">Logins are created by the admin. <a href="#" onclick="return RD.showSetup(true)" style="color:var(--amber);">First-time setup</a></div>
+  </form>
+  <form class="login-box hidden" id="setupBox" onsubmit="return RD.setup(event)">
+    <div class="brand" style="margin-bottom:4px;">Rebel <b>Den</b></div>
+    <div class="muted small" style="margin-bottom:16px;">First-time setup · create the Rebel Den admin</div>
+    <div class="field"><label for="suName">Your name</label><input id="suName" maxlength="40" required></div>
+    <div class="field"><label for="suUser">Username or email</label><input id="suUser" type="text" autocapitalize="none" required placeholder="e.g. rebeladmin"></div>
+    <div class="field"><label for="suPass">New password (min 8)</label><input id="suPass" type="password" autocomplete="new-password" required></div>
+    <div class="field"><label for="suPass2">Repeat password</label><input id="suPass2" type="password" autocomplete="new-password" required></div>
+    <div class="field"><label for="suCode">Setup code</label><input id="suCode" type="password" autocomplete="off" required><div class="small muted">The code you put in the Firebase rules.</div></div>
+    <button class="btn block" id="suBtn" type="submit">Create admin</button>
+    <div class="err" id="suErr" role="alert"></div>
+    <div style="margin-top:10px;"><a href="#" onclick="return RD.showSetup(false)" style="color:var(--amber);font-size:13px;">← Back to sign in</a></div>
   </form>
 </section>
 
@@ -133,7 +145,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU", authDomain: "codekasa.firebaseapp.com", projectId: "codekasa",
   storageBucket: "codekasa.firebasestorage.app", messagingSenderId: "725605223433", appId: "1:725605223433:web:fd9a635676e810eba57cd8"
 };
-const OWNER_EMAIL = 'thirupathi.by@gmail.com';      // first sign-in of this account becomes the Rebel Den admin
 const fbApp = initializeApp(firebaseConfig), db = getFirestore(fbApp), auth = getAuth(fbApp);
 
 // ---------- constants ----------
@@ -198,7 +209,8 @@ async function login(e){
 }
 async function forgot(e){
   e.preventDefault();
-  const err = $('lgErr'), typed = $('lgEmail').value.trim().toLowerCase(), email = typed || OWNER_EMAIL;
+  const err = $('lgErr'), typed = $('lgEmail').value.trim().toLowerCase(), email = typed;
+  if (!typed){ err.style.color = ''; err.textContent = 'Type your email address in the box above first, then click Forgot password.'; return false; }
   if (typed && !typed.includes('@')){ err.style.color = ''; err.textContent = 'Username logins have no email. Ask the admin to set a new password for you.'; return false; }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.style.color = ''; err.textContent = 'Enter a valid email address first.'; return false; }
   $('lgEmail').value = email; err.style.color = ''; err.textContent = 'Sending…';
@@ -220,15 +232,43 @@ async function forgot(e){
   err.style.color = 'var(--green)'; err.textContent = `If ${email} has a Rebel Den login, a password reset link has been sent there. Check Inbox, Spam, Promotions and Updates (it comes from noreply@codekasa.firebaseapp.com).`;
   return false;
 }
+function showSetup(on){ $('setupBox').classList.toggle('hidden', !on); document.querySelector('#login > form.login-box:not(#setupBox)').classList.toggle('hidden', on); return false; }
+// One-time creation of the first Rebel Den admin. Works only while no setup has been done (enforced by the Firestore rules).
+async function setup(e){
+  e.preventDefault();
+  const err = $('suErr'), btn = $('suBtn'); err.style.color = ''; err.textContent = '';
+  const name = $('suName').value.trim(), email = toEmail($('suUser').value), pass = $('suPass').value, code = $('suCode').value;
+  if (name.length < 2){ err.textContent = 'Enter your name.'; return false; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent = 'Enter a username (letters and numbers) or a valid email.'; return false; }
+  if (pass.length < 8){ err.textContent = 'Password must be at least 8 characters.'; return false; }
+  if (pass !== $('suPass2').value){ err.textContent = 'The two passwords do not match.'; return false; }
+  btn.disabled = true;
+  try{
+    const app2 = initializeApp(firebaseConfig, 'setup-' + Date.now()), a2 = getAuth(app2), db2 = getFirestore(app2);   // separate session, so this page's sign-in state is untouched
+    const cred = await createUserWithEmailAndPassword(a2, email, pass);
+    try{
+      await runTransaction(db2, async tx => {
+        tx.set(doc(db2, 'pubSettings', 'setup'), { setupCode: code, by: email, at: new Date().toISOString() });
+        tx.set(doc(db2, 'pubUsers', cred.user.uid), { name, email, role: 'admin', active: true, createdAt: new Date().toISOString() });
+      });
+    } catch(x){ try{ await cred.user.delete(); }catch(_){} throw x; }                // do not leave a half-made login behind
+    await signOut(a2);
+    $('lgEmail').value = $('suUser').value.trim(); showSetup(false); $('lgPass').value = ''; $('lgRole').value = 'admin'; pickRole('admin');
+    $('lgErr').style.color = 'var(--green)'; $('lgErr').textContent = 'Admin created. Sign in with your new username and password.';
+  } catch(x){
+    console.error(x); const c = String(x.code || x.message || '');
+    err.textContent = c.includes('email-already-in-use') ? 'That username or email is already taken. Choose another.'
+      : c.includes('weak-password') ? 'Choose a stronger password.'
+      : c.includes('permission') ? 'Setup was refused. Either setup was already done, or the setup code is wrong, or the Firebase rules are not published yet.'
+      : 'Could not complete setup. Please try again.';
+  } finally { btn.disabled = false; }
+  return false;
+}
 async function logout(){ unsubs.forEach(u => u()); unsubs = []; await signOut(auth); }
 onAuthStateChanged(auth, async u => {
   if (!u){ me = null; $('app').classList.add('hidden'); $('login').classList.remove('hidden'); return; }
   try{
     let snap = await getDoc(doc(db, 'pubUsers', u.uid)), data = snap.exists() ? snap.data() : null;
-    if (!data && (u.email || '').toLowerCase() === OWNER_EMAIL){
-      data = { name: 'Owner', email: u.email, role: 'admin', active: true, createdAt: new Date().toISOString() };
-      await setDoc(doc(db, 'pubUsers', u.uid), data);
-    }
     if (data && data.active && pickedRole && data.role !== pickedRole){
       $('lgErr').textContent = `This login is not a ${pickedRole} account. Choose the right role and sign in again.`;
       await signOut(auth); return;
@@ -687,7 +727,7 @@ async function publishMenu(){
   catch(e){ $('sPub').innerHTML = '<span class="err">Could not publish.</span>'; }
 }
 
-Object.assign(window, { RD: { login, logout, forgot, pickRole, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
+Object.assign(window, { RD: { login, logout, forgot, pickRole, setup, showSetup, tab, closeModal, posSearch, posCat: posCatSet, pick, addOpt, qty: qtyChg, drawCart, clearCart, makeBill, printBill, billDay: v => { billDay = v; rBills(); }, viewBill, voidBill,
   invCat: v => { invCat = v; rInv(); }, exportStock, itemForm, itemKind, saveItem, adjForm, saveAdj, purchUnit, purchRange, savePurch, expRange, saveExp, delExp, runRep, repCsv, addUser, userRole, userActive, saveSet, publishMenu } });
 </script>
 </body>

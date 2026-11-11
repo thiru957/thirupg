@@ -11,12 +11,13 @@ KEEP all your existing CodeKasa rules. Paste the block below INSIDE
     function pubAdmin()   { return pubRole('admin'); }
     function pubMoney()   { return pubRole('admin') || pubRole('accountant'); }
     function pubBiller()  { return pubRole('admin') || pubRole('billing'); }
-    function pubOwner()   { return request.auth != null && request.auth.token.email == 'thirupathi.by@gmail.com'; }
+    function pubSetupOk() { return request.auth != null && !exists(/databases/$(database)/documents/pubSettings/setup) && getAfter(/databases/$(database)/documents/pubSettings/setup).data.setupCode == '800957tpt'; }
     function stockOnly()  { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stock', 'cost']); }
 
     match /pubUsers/{uid} {
-      allow read: if request.auth != null && (request.auth.uid == uid || pubAdmin() || pubOwner());
-      allow create, update: if pubAdmin() || pubOwner();
+      allow read: if request.auth != null && (request.auth.uid == uid || pubAdmin());
+      allow create: if pubAdmin() || (request.auth.uid == uid && request.resource.data.role == 'admin' && request.resource.data.active == true && pubSetupOk());   // pubSetupOk = the one-time first-admin setup
+      allow update: if pubAdmin();
       allow delete: if pubAdmin();
     }
     match /pubItems/{id} {
@@ -35,13 +36,18 @@ KEEP all your existing CodeKasa rules. Paste the block below INSIDE
     }
     match /pubPurchases/{id} { allow read, write: if pubMoney(); }
     match /pubExpenses/{id}  { allow read, write: if pubMoney(); }
+    match /pubSettings/setup   { allow read: if false; allow create: if request.auth != null && !exists(/databases/$(database)/documents/pubSettings/setup) && request.resource.data.setupCode == '800957tpt'; }
     match /pubSettings/counter { allow read, write: if pubBiller(); }
     match /pubSettings/{id}    { allow read: if pubOn(); allow write: if pubAdmin(); }
     match /pubMenu/{id}        { allow get: if true; allow write: if pubAdmin(); }   // public website menu (no stock or cost)
 
 NOTES
-- The first time thirupathi.by@gmail.com signs in to rebel-den-staff.html it becomes the Rebel Den admin automatically.
-  That sign-in must be an existing Firebase Auth user (it is - it's your CodeKasa admin login).
-- Staff logins are created from Users inside the app (Firebase Authentication -> Email/Password must be enabled; it already is for CodeKasa).
-- Billing role: can bill and view stock, cannot see costs, reports, expenses or void bills.
-- Accountant role: stock in, stock adjustments, expenses, reports. Cannot create bills or change prices.
+- BEFORE publishing, replace REPLACE_WITH_YOUR_SETUP_CODE (it appears more than once: replace every one) with a secret code of your own, e.g. 7 or more random characters.
+  You will type the same code once on the app's "First-time setup" screen. It is not shown anywhere else.
+- First-time setup (login page -> "First-time setup") creates the Rebel Den admin with a NEW username/password,
+  completely separate from your CodeKasa admin. It works only once: after that the rules refuse it.
+- The setup code only lives in these rules (and in the 'pubSettings/setup' record); keep it private.
+- Then sign in with Role = Admin, and create the accountant and billing logins in the Users tab.
+- Firebase Authentication -> Sign-in method -> Email/Password must be enabled (it already is for CodeKasa).
+- Billing role: can bill and view stock; no costs, reports, expenses or void.
+- Accountant role: stock in, adjustments, expenses, reports. Cannot create bills or change prices.
