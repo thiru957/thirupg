@@ -109,6 +109,20 @@ tbody tr:hover td{background:#f9f8f5}
 .mx th:first-child{background:#f7f6f2;z-index:2}
 .mx tr.tot td:first-child{background:#f7f6f2}
 .clickable:hover{text-decoration:underline}
+.sheets{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.sheetlist{position:sticky;top:70px;max-height:calc(100vh - 90px);display:flex;flex-direction:column;gap:8px}
+#shList{overflow:auto;flex:1}
+#shList button{display:flex;justify-content:space-between;gap:6px;width:100%;text-align:left;border:none;background:none;padding:7px 8px;border-radius:6px;cursor:pointer;font-size:13px}
+#shList button:hover{background:#f3f2ee}#shList button.on{background:var(--accent-l);color:var(--accent-d);font-weight:600}
+.xl{border-collapse:collapse;font-size:12.5px}
+.xl th,.xl td{border:1px solid var(--line);padding:4px 8px;vertical-align:top;min-width:96px;max-width:360px;white-space:pre-wrap;overflow-wrap:break-word}
+.xl th:first-child,.xl td.rn{min-width:44px}
+.xl th{background:#f1f0eb;color:var(--ink2);font-weight:600;text-align:center;position:sticky;top:0;z-index:1}
+.xl td.rn{background:#f7f6f2;color:var(--muted);text-align:right;position:sticky;left:0}
+.xl td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.xl tr.hit td{background:#fff6d6}
+.xl mark{background:#ffe08a;padding:0}
+@media(max-width:700px){.sheets{grid-template-columns:1fr}.sheetlist{position:static;max-height:260px}}
 label.check{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink2);font-size:13px;margin-top:14px}
 @media(max-width:700px){
   .top-in{flex-wrap:wrap;gap:8px;padding:8px 12px}
@@ -197,6 +211,8 @@ input[type=email]{width:100%;padding:9px 11px;border:1px solid var(--axis);borde
       <button data-v="list">Expenses</button>
       <button data-v="import">Import Excel</button>
       <button data-v="reports">Reports</button>
+      <button data-v="sheets">Excel sheets</button>
+      <button data-v="vault">Passwords</button>
       <button data-v="settings">Settings</button>
     </nav>
     <div class="who"><span id="sync" class="muted" style="font-size:12px"></span><span id="whoName"></span><button class="btn small" id="logout">Log out</button></div>
@@ -262,7 +278,16 @@ input[type=email]{width:100%;padding:9px 11px;border:1px solid var(--axis);borde
           <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500"><input type="checkbox" id="xReplace" checked> Replace earlier imports of the same sheets (avoids duplicates)</label>
         </div>
         <div class="tablewrap"><table id="xTable"></table></div>
-        <div class="actions"><button class="btn primary" id="xImport">Import selected</button></div>
+        <div class="card" style="margin:16px 0 0;box-shadow:none" id="xFullBox">
+          <h3>Full copy of the Excel</h3>
+          <label class="check" style="margin-top:0"><input type="checkbox" id="xFull" checked> <span id="xFullTxt">Save every sheet, with every row and cell, so you can open it on the Excel sheets page</span></label>
+          <div id="xVaultBox" class="hidden" style="margin-top:12px">
+            <p class="muted" style="margin:0 0 6px">The <b id="xVaultName"></b> sheet is saved <b>encrypted</b> and shown only on the Passwords page. Choose a PIN to lock it (min 6 characters). Without the PIN nobody can read it — keep it safe, it cannot be recovered. Leave blank to skip it.</p>
+            <div class="row2"><div><label>Passwords PIN</label><input type="password" id="xPin" autocomplete="new-password"></div><div><label>Confirm PIN</label><input type="password" id="xPin2" autocomplete="new-password"></div></div>
+          </div>
+        </div>
+        <div class="err" id="xImpErr"></div>
+        <div class="actions"><span class="muted" id="xImpProg" style="align-self:center"></span><button class="btn primary" id="xImport">Import selected</button></div>
       </div>
     </section>
 
@@ -282,6 +307,29 @@ input[type=email]{width:100%;padding:9px 11px;border:1px solid var(--axis);borde
         <div><button class="btn" id="rCsv">Download CSV</button> <button class="btn" onclick="window.print()">Print / PDF</button></div>
       </div>
       <div class="card"><h3 id="rTitle"></h3><div id="rBody"></div></div>
+    </section>
+
+    <!-- Excel sheets -->
+    <section data-view="sheets" class="hidden">
+      <h2>Excel sheets</h2><p class="lead">Every sheet from your Excel, with every row, exactly as in the workbook.</p>
+      <div class="sheets">
+        <div class="card sheetlist"><input type="search" id="shSearch" placeholder="Find a sheet"><div id="shList"></div></div>
+        <div class="card sheetview"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><h3 id="shTitle" style="margin:0">Choose a sheet</h3><input type="search" id="shFind" placeholder="Search in this sheet" style="max-width:240px"></div><div id="shGrid"><div class="empty">Pick a sheet on the left.</div></div></div>
+      </div>
+    </section>
+
+    <!-- Passwords -->
+    <section data-view="vault" class="hidden">
+      <h2>Passwords</h2><p class="lead">The passwords sheet from your Excel. It is stored encrypted and opens only with your Passwords PIN.</p>
+      <div class="card" id="vLock">
+        <div id="vNone" class="hidden empty">No passwords saved yet. On <b>Import Excel</b>, read your workbook and set a Passwords PIN before importing.</div>
+        <form id="vForm" class="hidden" style="max-width:360px" autocomplete="off"><label>Passwords PIN</label><input type="password" id="vPin" autocomplete="off"><div class="actions" style="justify-content:flex-start"><button class="btn primary" type="submit" id="vBtn">Unlock</button></div><div class="err" id="vErr"></div></form>
+      </div>
+      <div class="card hidden" id="vOpen">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><input type="search" id="vFind" placeholder="Search (site, user, bank…)" style="max-width:300px"><button class="btn" id="vLockBtn">Lock</button></div>
+        <div id="vGrid"></div>
+        <p class="note">Locks automatically when you leave this page.</p>
+      </div>
     </section>
 
     <!-- Settings -->
@@ -559,7 +607,7 @@ const HX = (() => {
   async function extract(book, opts = {}) {
     const result = [];
     for (const sh of book.sheets) {
-      if (/password/i.test(sh.name)) continue;     // never even read the passwords sheet
+      if (/password/i.test(sh.name)) continue;     // the passwords sheet is never treated as expenses
       const rows = await book.grid(sh);
       const sm = sheetMonth(sh.name);
       const yearInName = (sh.name.match(/(20\d{2})/) || [])[1] || ((sh.name.match(/[-'_ ](\d{2})$/) || [])[1] ? '20' + sh.name.match(/[-'_ ](\d{2})$/)[1] : null);
@@ -624,11 +672,49 @@ const HX = (() => {
       });
       result.push({
         sheet: sh.name, monthly: isMonthly, month: sm ? iso(sm.y, sm.m, 1).slice(0, 7) : null,
-        defaultOn: isMonthly || !(SKIP.test(sh.name) || /loan|land|transaction/i.test(sh.name)), category: isMonthly ? null : cleanName(sh.name),
+        defaultOn: true, category: isMonthly ? null : cleanName(sh.name),
         yearHint: yearInName, expenses, swapped: items.some(x => x.swapped)
       });
     }
     return result;
+  }
+
+  // Every non-empty cell of every sheet, as shown in Excel (dates as dd-mm-yyyy text).
+  async function grids(book) {
+    const out = [];
+    for (let i = 0; i < book.sheets.length; i++) {
+      const sh = book.sheets[i], rows = await book.grid(sh);
+      let maxCol = 0; const list = [];
+      for (const r of [...rows.keys()].sort((a, b) => a - b)) {
+        const cells = rows.get(r), vals = [];
+        for (let c = 0; c < cells.length; c++) {
+          const x = cells[c]; let v = null;
+          if (x) {
+            if (x.isDate && typeof x.v === 'number') { const d = serialToDate(x.v, book.d1904); v = String(d.d).padStart(2, '0') + '-' + String(d.m).padStart(2, '0') + '-' + d.y; }
+            else v = typeof x.v === 'number' ? Math.round(x.v * 100) / 100 : x.v;
+          }
+          vals.push(v);
+        }
+        while (vals.length && (vals[vals.length - 1] === null || vals[vals.length - 1] === '')) vals.pop();
+        if (!vals.length) continue;
+        maxCol = Math.max(maxCol, vals.length);
+        list.push([r + 1, vals]);
+      }
+      const sm = sheetMonth(sh.name);
+      out.push({ order: i, name: sh.name, month: sm ? iso(sm.y, sm.m, 1).slice(0, 7) : null, isPasswords: /password/i.test(sh.name), maxCol, rows: list });
+    }
+    return out;
+  }
+
+  async function openFull(bytes, password, onProgress) {
+    let data = bytes;
+    const cfb = readCFB(bytes);
+    if (cfb) {
+      if (!password) throw new Error('This Excel file is password protected. Please enter its password.');
+      data = await decryptAgile(cfb, password, onProgress);
+    }
+    const book = await readWorkbook(data);
+    return { tables: await extract(book), sheets: await grids(book) };
   }
 
   async function open(bytes, password, onProgress) {
@@ -642,7 +728,7 @@ const HX = (() => {
     return extract(book);
   }
 
-  return { open, categorize, CATS: CATS.map(c => c[0]).concat(['Other Monthly']) };
+  return { open, openFull, categorize, CATS: CATS.map(c => c[0]).concat(['Other Monthly']) };
 })();
 if (typeof module !== 'undefined') module.exports = HX;
 
@@ -718,13 +804,13 @@ function boot(){
   if(window.HXFB) go2(); else window.addEventListener('hxfb-ready', go2, {once:true});
 }
 async function onAuth(u){
-  if(!u){ AUTHED=false; ME=null; if(unsubMonths){ unsubMonths(); unsubMonths=null; } MONTHS={}; DB={expenses:[],imports:[]}; show('login'); return; }
+  if(!u){ AUTHED=false; ME=null; VAULT=null; SHIDX=null; SHCACHE={}; SHCUR=null; if(unsubMonths){ unsubMonths(); unsubMonths=null; } MONTHS={}; DB={expenses:[],imports:[]}; show('login'); return; }
   try{
     const snap=await FB.getDoc(FB.doc(FB.db,'hxUsers',u.uid)); const data=snap.exists()?snap.data():null;
     if(!data || !data.active){ $('liErr').textContent='This account has no access to Home Expenses.'; await FB.signOut(FB.auth); return; }
     ME=u; PROFILE={...data, email:u.email};
     try{ const m=await FB.getDoc(FB.doc(FB.db,'hxSettings','meta')); DB.imports=(m.exists()&&m.data().imports)||[]; }catch(e){ DB.imports=[]; }
-    subscribeMonths(); enterApp();
+    subscribeMonths(); loadSheetIndex(); enterApp();
   }catch(x){ console.error(x); $('liErr').textContent = String(x.code||'').includes('permission') ? 'Access refused. Check the Home Expenses Firebase rules are published.' : 'Could not sign in. Check your connection and try again.'; await FB.signOut(FB.auth); }
 }
 $('loginForm').onsubmit = async e => {
@@ -778,8 +864,8 @@ function enterApp(){ AUTHED=true; show('app'); $('whoName').textContent = PROFIL
 /* ================= navigation ================= */
 let VIEW='dash';
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
-function go(v){ VIEW=v; document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); document.querySelectorAll('[data-view]').forEach(s=>s.classList.toggle('hidden', s.dataset.view!==v)); render(); window.scrollTo(0,0); }
-function render(){ ({dash:renderDash, list:renderList, import:()=>{}, reports:renderReports, settings:renderSettings})[VIEW](); }
+function go(v){ if(VIEW==='vault' && v!=='vault'){ VAULT=null; $('vGrid').innerHTML=''; $('vFind').value=''; } VIEW=v; document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); document.querySelectorAll('[data-view]').forEach(s=>s.classList.toggle('hidden', s.dataset.view!==v)); render(); window.scrollTo(0,0); }
+function render(){ ({dash:renderDash, list:renderList, import:()=>{}, reports:renderReports, sheets:renderSheets, vault:renderVault, settings:renderSettings})[VIEW](); }
 
 /* ================= dashboard ================= */
 ['dYear','dGroup'].forEach(id=>$(id).onchange=renderDash);
@@ -845,7 +931,8 @@ function renderList(){
     (!q || (e.desc+' '+(e.source||'')+' '+e.category).toLowerCase().includes(q)));
   list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const tot=list.reduce((a,e)=>a+e.amount,0);
-  $('lTable').innerHTML = list.length ? `<div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${list.length.toLocaleString('en-IN')} entries</b><b>${money(tot)}</b></div>`+expTable(list.slice(0,LIMIT),true)+(list.length>LIMIT?`<div style="text-align:center;margin-top:10px"><button class="btn" onclick="LIMIT+=500;renderList()">Show more (${list.length-LIMIT} left)</button></div>`:'') : '<div class="empty">No expenses match these filters.</div>';
+  const msb = (y && m && m!=='none') ? monthSheetButton(`${y}-${m}`) : '';
+  $('lTable').innerHTML = (msb?`<div style="margin-bottom:12px">${msb}</div>`:'') + (list.length ? `<div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${list.length.toLocaleString('en-IN')} entries</b><b>${money(tot)}</b></div>`+expTable(list.slice(0,LIMIT),true)+(list.length>LIMIT?`<div style="text-align:center;margin-top:10px"><button class="btn" onclick="LIMIT+=500;renderList()">Show more (${list.length-LIMIT} left)</button></div>`:'') : '<div class="empty">No expenses match these filters.</div>');
 }
 function expTable(list, actions){
   return `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="col-src">From</th><th class="n">Amount</th>${actions?'<th></th>':''}</tr></thead><tbody>`+
@@ -913,9 +1000,10 @@ $('xRead').onclick=async()=>{
   if(!FILE) return; $('xErr').textContent=''; $('xRead').disabled=true; const pg=$('xProg'); pg.classList.remove('hidden'); pg.firstElementChild.style.width='3%';
   try{
     const bytes=new Uint8Array(await FILE.arrayBuffer());
-    PARSED = await HX.open(bytes, $('xPass').value, p=>pg.firstElementChild.style.width=Math.round(5+p*90)+'%');
+    const full = await HX.openFull(bytes, $('xPass').value, p=>pg.firstElementChild.style.width=Math.round(5+p*90)+'%');
+    PARSED = full.tables; SHEETS = full.sheets;
     pg.firstElementChild.style.width='100%';
-    if(!PARSED.length) throw new Error('No expense tables were found. Each sheet needs a header row with "Description" and "Amount" columns.');
+    if(!PARSED.length && !SHEETS.length) throw new Error('This workbook has no sheets with data.');
     PARSED.forEach(s=>{ s.on=s.defaultOn; s.undatedDate = s.yearHint? s.yearHint+'-01-01' : ''; });
     renderPreview();
   }catch(e){ $('xErr').textContent=e.message||String(e); }
@@ -923,6 +1011,9 @@ $('xRead').onclick=async()=>{
 };
 function renderPreview(){
   $('xPreview').classList.remove('hidden');
+  const pw=SHEETS.find(x=>x.isPasswords), others=SHEETS.filter(x=>!x.isPasswords);
+  $('xFullTxt').textContent=`Save all ${others.length} sheets, with every row and cell (${others.reduce((a,x)=>a+x.rows.length,0).toLocaleString('en-IN')} rows), so you can open any sheet or month exactly as in Excel`;
+  $('xVaultBox').classList.toggle('hidden', !pw); if(pw) $('xVaultName').textContent=pw.name;
   const prev = new Set(DB.imports.map(i=>i.sheet));
   const sum=PARSED.filter(s=>s.on); $('xSummary').textContent=`· ${PARSED.length} sheets with expenses, ${sum.length} selected, ${sum.reduce((a,s)=>a+s.expenses.length,0)} entries`;
   $('xTable').innerHTML='<thead><tr><th></th><th>Sheet</th><th>Type</th><th>Category</th><th class="n">Entries</th><th class="n">Total</th><th>Dates</th></tr></thead><tbody>'+
@@ -943,15 +1034,106 @@ $('xAll').onclick=()=>{ PARSED.forEach(s=>s.on=true); renderPreview(); };
 $('xNone').onclick=()=>{ PARSED.forEach(s=>s.on=false); renderPreview(); };
 $('xMonthly').onclick=()=>{ PARSED.forEach(s=>s.on=s.monthly); renderPreview(); };
 $('xImport').onclick=async()=>{
-  const sel=PARSED.filter(s=>s.on); if(!sel.length) return toast('Select at least one sheet.');
+  const sel=PARSED.filter(s=>s.on), err=$('xImpErr'); err.textContent='';
+  const full=$('xFull').checked, pw=SHEETS.find(x=>x.isPasswords), pin=$('xPin').value;
+  if(!sel.length && !full) return toast('Select at least one sheet.');
+  if(pw && pin && pin.length<6) return err.textContent='The Passwords PIN must be at least 6 characters.';
+  if(pw && pin && pin!==$('xPin2').value) return err.textContent='The two PINs do not match.';
+  $('xImport').disabled=true;
+  try{
   const names=new Set(sel.map(s=>s.sheet)); let removed=0;
   if($('xReplace').checked){ const before=DB.expenses.length; DB.expenses=DB.expenses.filter(e=>!(e.origin==='import' && names.has(e.source))); removed=before-DB.expenses.length; DB.imports=DB.imports.filter(i=>!names.has(i.sheet)); }
   const now=Date.now(); let n=0;
   sel.forEach(s=>{ s.expenses.forEach(x=>{ DB.expenses.push({ id:uid(), date:x.date||s.undatedDate||null, desc:x.desc, amount:x.amount, category:s.monthly?x.category:(s.category||x.category), group:x.group, source:s.sheet, origin:'import', added:now }); n++; });
     DB.imports.push({sheet:s.sheet, file:FILE.name, at:now, count:s.expenses.length}); });
-  await save(); await saveMeta({imports:clone(DB.imports)}); toast(`Imported ${n} expenses from ${sel.length} sheets${removed?` (replaced ${removed} older entries)`:''}.`);
-  $('xPreview').classList.add('hidden'); PARSED=null; $('xPass').value=''; go('dash');
+  $('xImpProg').textContent='Saving expenses…';
+  await save(); await saveMeta({imports:clone(DB.imports)});
+  let sheetsSaved=0, vaultSaved=false;
+  if(full){ sheetsSaved=await saveSheets(SHEETS.filter(x=>!x.isPasswords), (i,t)=>$('xImpProg').textContent=`Saving Excel sheets… ${i} of ${t}`); }
+  if(pw && pin){ $('xImpProg').textContent='Encrypting passwords…'; await saveVault(pw, pin); vaultSaved=true; }
+  toast(`Imported ${n} expenses${sheetsSaved?`, saved ${sheetsSaved} Excel sheets`:''}${vaultSaved?' and the passwords sheet (encrypted)':''}.`);
+  $('xPreview').classList.add('hidden'); PARSED=null; SHEETS=[]; $('xPass').value=''; $('xPin').value=''; $('xPin2').value=''; go('dash');
+  }catch(e){ console.error(e); err.textContent='Import stopped: '+(String(e.code||'').includes('permission')?'the database refused it (check the Firebase rules).':'could not save to the database. Check your connection and try again; it is safe to import again.'); }
+  finally{ $('xImport').disabled=false; $('xImpProg').textContent=''; }
 };
+
+/* ================= full Excel sheets ================= */
+// hxSettings/sheets_index lists the sheets; each sheet's cells are in hxSettings/sheet_<n>_<part> (JSON text, split if large).
+let SHEETS=[], SHIDX=null, SHCACHE={}, SHCUR=null;
+const PART=250000;
+async function loadSheetIndex(){ try{ const d=await FB.getDoc(FB.doc(FB.db,'hxSettings','sheets_index')); SHIDX=d.exists()?(d.data().list||[]):[]; }catch(e){ SHIDX=[]; } return SHIDX; }
+async function saveSheets(list, prog){
+  const old=await loadSheetIndex(); const idx=[]; SHCACHE={};
+  for(let i=0;i<list.length;i++){
+    const sh=list[i], txt=JSON.stringify({maxCol:sh.maxCol, rows:sh.rows}), key='sheet_'+String(i).padStart(3,'0'), parts=Math.max(1,Math.ceil(txt.length/PART));
+    for(let p=0;p<parts;p++) await FB.setDoc(FB.doc(FB.db,'hxSettings',key+'_'+p), {name:sh.name, part:p, data:txt.slice(p*PART,(p+1)*PART)});
+    idx.push({key, name:sh.name, order:sh.order, month:sh.month, rows:sh.rows.length, cols:sh.maxCol, parts});
+    prog(i+1, list.length);
+  }
+  for(const o of old){ const now=idx.find(x=>x.key===o.key); for(let p=(now?now.parts:0); p<o.parts; p++) await FB.deleteDoc(FB.doc(FB.db,'hxSettings',o.key+'_'+p)); }
+  await FB.setDoc(FB.doc(FB.db,'hxSettings','sheets_index'), {list:idx, savedAt:new Date().toISOString(), file:FILE?FILE.name:''});
+  SHIDX=idx; return idx.length;
+}
+async function getSheet(it){
+  if(SHCACHE[it.key]) return SHCACHE[it.key];
+  let txt=''; for(let p=0;p<it.parts;p++){ const d=await FB.getDoc(FB.doc(FB.db,'hxSettings',it.key+'_'+p)); if(!d.exists()) throw new Error('missing part'); txt+=d.data().data; }
+  return SHCACHE[it.key]=JSON.parse(txt);
+}
+const colName=i=>{ let s=''; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26); } return s; };
+function gridHtml(g, q){
+  q=(q||'').trim().toLowerCase();
+  const rows=q? g.rows.filter(([r,v])=>v.some(x=>x!==null&&String(x).toLowerCase().includes(q))) : g.rows;
+  if(!rows.length) return `<div class="empty">${q?'Nothing in this sheet matches “'+esc(q)+'”.':'This sheet is empty.'}</div>`;
+  const mk=x=>{ const t=esc(x); if(!q) return t; const i=t.toLowerCase().indexOf(esc(q)); return i<0?t:t.slice(0,i)+'<mark>'+t.slice(i,i+esc(q).length)+'</mark>'+t.slice(i+esc(q).length); };
+  const fmt=x=> typeof x==='number' ? x.toLocaleString('en-IN',{maximumFractionDigits:2}) : x;
+  return `<div class="tablewrap" style="max-height:72vh"><table class="xl"><thead><tr><th></th>${Array.from({length:g.maxCol},(_,i)=>`<th>${colName(i)}</th>`).join('')}</tr></thead><tbody>`+
+    rows.map(([r,v])=>`<tr${q?' class="hit"':''}><td class="rn">${r}</td>${Array.from({length:g.maxCol},(_,i)=>{ const x=v[i]; return x===null||x===undefined||x===''?'<td></td>':`<td${typeof x==='number'?' class="num"':''}>${mk(fmt(x))}</td>`; }).join('')}</tr>`).join('')+
+    `</tbody></table></div><p class="note">${rows.length.toLocaleString('en-IN')} ${q?'matching ':''}rows · row numbers and column letters are the same as in Excel.</p>`;
+}
+$('shSearch').oninput=()=>renderSheetList();
+$('shFind').oninput=()=>{ clearTimeout(window._sf); window._sf=setTimeout(()=>showSheet(SHCUR,true),200); };
+function renderSheetList(){
+  const q=$('shSearch').value.trim().toLowerCase(); const list=(SHIDX||[]).filter(x=>!q||x.name.toLowerCase().includes(q));
+  $('shList').innerHTML = !SHIDX ? '<div class="muted">Loading…</div>' : !SHIDX.length ? '<div class="empty" style="padding:12px">No sheets saved yet. Import your Excel with “Save every sheet” ticked.</div>' :
+    list.map(x=>`<button data-k="${x.key}" class="${SHCUR&&SHCUR.key===x.key?'on':''}"><span>${esc(x.name)}</span><span class="muted">${x.rows}</span></button>`).join('');
+  $('shList').querySelectorAll('button').forEach(b=>b.onclick=()=>showSheet(SHIDX.find(x=>x.key===b.dataset.k)));
+}
+async function renderSheets(){ if(!SHIDX) { renderSheetList(); await loadSheetIndex(); } renderSheetList(); if(SHCUR) showSheet(SHCUR,true); }
+async function showSheet(it, keepFind){
+  if(!it) return; SHCUR=it; if(!keepFind) $('shFind').value=''; renderSheetList();
+  $('shTitle').textContent=it.name+(it.month?' · '+monthLabel(it.month):'');
+  if(!SHCACHE[it.key]) $('shGrid').innerHTML='<div class="muted">Loading sheet…</div>';
+  try{ const g=await getSheet(it); if(SHCUR===it) $('shGrid').innerHTML=gridHtml(g, $('shFind').value); }
+  catch(e){ $('shGrid').innerHTML='<div class="empty">Could not load this sheet. Check your connection.</div>'; }
+}
+async function openMonthSheet(ym){ if(!SHIDX) await loadSheetIndex(); const it=SHIDX.find(x=>x.month===ym); if(!it) return toast('No Excel sheet for '+monthLabel(ym)+'.'); go('sheets'); showSheet(it); }
+function monthSheetButton(ym){ const it=(SHIDX||[]).find(x=>x.month===ym); return it?`<button class="btn small" onclick="openMonthSheet('${ym}')">See all entries in Excel sheet “${esc(it.name)}”</button>`:''; }
+
+/* ================= passwords (encrypted) ================= */
+let VAULT=null;
+async function vKey(pin, salt, iter){ const enc=new TextEncoder(); const base=await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']); }
+const b64e=u=>{ let s=''; const a=new Uint8Array(u); for(let i=0;i<a.length;i+=0x8000) s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000)); return btoa(s); };
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function saveVault(sh, pin){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12)), iter=250000;
+  const key=await vKey(pin, salt, iter);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify({name:sh.name, maxCol:sh.maxCol, rows:sh.rows})));
+  await FB.setDoc(FB.doc(FB.db,'hxSettings','vault_passwords'), {salt:b64e(salt), iv:b64e(iv), iter, ct:b64e(ct), savedAt:new Date().toISOString()});
+}
+async function renderVault(){
+  $('vOpen').classList.toggle('hidden', !VAULT); $('vLock').classList.toggle('hidden', !!VAULT);
+  if(VAULT){ $('vGrid').innerHTML=gridHtml(VAULT, $('vFind').value); return; }
+  let has=false; try{ has=(await FB.getDoc(FB.doc(FB.db,'hxSettings','vault_passwords'))).exists(); }catch(e){}
+  $('vNone').classList.toggle('hidden', has); $('vForm').classList.toggle('hidden', !has); if(has) $('vPin').focus();
+}
+$('vForm').onsubmit=async e=>{ e.preventDefault(); $('vErr').textContent=''; $('vBtn').disabled=true;
+  try{ const d=(await FB.getDoc(FB.doc(FB.db,'hxSettings','vault_passwords'))).data();
+    const key=await vKey($('vPin').value, b64d(d.salt), d.iter);
+    VAULT=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:b64d(d.iv)}, key, b64d(d.ct))));
+    $('vPin').value=''; renderVault();
+  }catch(x){ $('vErr').textContent='Wrong PIN.'; } finally{ $('vBtn').disabled=false; } };
+$('vFind').oninput=()=>{ if(VAULT) $('vGrid').innerHTML=gridHtml(VAULT, $('vFind').value); };
+$('vLockBtn').onclick=()=>{ VAULT=null; $('vFind').value=''; $('vGrid').innerHTML=''; renderVault(); };
 
 /* ================= reports ================= */
 let RT='month', RDATA=null;
@@ -982,10 +1164,10 @@ function renderReports(){
     const tot=items.reduce((a,e)=>a+e.amount,0);
     RDATA={head:['Category','Date','Description','Sheet','Amount'], rows:[]};
     cats.forEach(([c,l])=>l.forEach(e=>RDATA.rows.push([c,e.date,e.desc,e.source||'',e.amount])));
-    $('rBody').innerHTML = items.length ? `<div class="tablewrap"><table><thead><tr><th>Category / description</th><th>Date</th><th>From</th><th class="n">Amount</th><th class="n">Share</th></tr></thead><tbody>`+
+    $('rBody').innerHTML = `<div style="margin-bottom:12px">${monthSheetButton(ym)}</div>` + (items.length ? `<div class="tablewrap"><table><thead><tr><th>Category / description</th><th>Date</th><th>From</th><th class="n">Amount</th><th class="n">Share</th></tr></thead><tbody>`+
       cats.map(([c,l,t])=>`<tr><td colspan="3"><b>${esc(c)}</b> <span class="muted">(${l.length})</span></td><td class="n"><b>${money(t)}</b></td><td class="n">${Math.round(t/tot*100)}%</td></tr>`+
         l.sort((a,b)=>b.amount-a.amount).map(e=>`<tr><td style="padding-left:26px">${esc(e.desc)}</td><td style="white-space:nowrap">${fmtDate(e.date)}</td><td class="muted" style="font-size:12px">${esc(e.source||'Added here')}</td><td class="n">${money(e.amount)}</td><td></td></tr>`).join('')).join('')+
-      `<tr class="tot"><td colspan="3">Total for ${monthLabel(ym)}</td><td class="n">${money(tot)}</td><td class="n">100%</td></tr></tbody></table></div>` : `<div class="empty">No expenses in ${monthLabel(ym)}.</div>`;
+      `<tr class="tot"><td colspan="3">Total for ${monthLabel(ym)}</td><td class="n">${money(tot)}</td><td class="n">100%</td></tr></tbody></table></div>` : `<div class="empty">No expenses in ${monthLabel(ym)}.</div>`);
   }
 }
 function matrix(rows, cols, colT, onCol){
