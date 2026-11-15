@@ -1,0 +1,113 @@
+COMPLETE FIRESTORE RULES (CodeKasa + Rebel Den + Home Expenses) — 15 Nov 2026
+Firebase console -> Firestore Database -> Rules: replace everything with the text below, then Publish.
+- CodeKasa admin data: only thirupathi.by@gmail.com
+- Rebel Den data: only Rebel Den staff logins (pubUsers)
+- Home Expenses data: only the Home Expenses login (hxUsers), which must use a different email
+========================================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== helpers =====
+    // CodeKasa admin = only this one login
+    function ckAdmin()    { return request.auth != null && request.auth.token.email == 'thirupathi.by@gmail.com'; }
+    function pubMe()      { return get(/databases/$(database)/documents/pubUsers/$(request.auth.uid)).data; }
+    function pubOn()      { return request.auth != null && exists(/databases/$(database)/documents/pubUsers/$(request.auth.uid)) && pubMe().active == true; }
+    function pubRole(r)   { return pubOn() && pubMe().role == r; }
+    function pubAdmin()   { return pubRole('admin'); }
+    function pubMoney()   { return pubRole('admin') || pubRole('accountant'); }
+    function pubBiller()  { return pubRole('admin') || pubRole('billing'); }
+    function pubSetupOk() { return request.auth != null && !exists(/databases/$(database)/documents/pubSettings/setup) && getAfter(/databases/$(database)/documents/pubSettings/setup).data.setupCode == '800957tpt'; }
+    function stockOnly()  { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stock', 'cost']); }
+    // Home Expenses = only the login created by its one-time setup (never the CodeKasa admin email)
+    function hxOn()       { return request.auth != null && !ckAdmin() && exists(/databases/$(database)/documents/hxUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/hxUsers/$(request.auth.uid)).data.active == true; }
+    function hxSetupOk()  { return request.auth != null && !ckAdmin() && !exists(/databases/$(database)/documents/hxSettings/setup) && getAfter(/databases/$(database)/documents/hxSettings/setup).data.setupCode == 'HX-7k4Q9m2T'; }
+
+    // ===== CodeKasa =====
+    match /rooms/{roomId} {
+      allow read: if true;
+      allow write: if ckAdmin();
+    }
+
+    match /enquiries/{enquiryId} {
+      allow create: if enquiryId.matches('[A-Za-z0-9]{1,40}');
+      allow read, update, delete: if ckAdmin();
+    }
+
+    match /availability/{doc} {
+      allow get: if true;
+      allow write: if ckAdmin();
+    }
+
+    match /bookings/{ref} {
+      allow create: if ref.matches('CK[A-Z0-9]{8}') && request.resource.data.status == 'pending_payment' && !request.resource.data.keys().hasAny(['payment', 'confirmedAt', 'roomNumber']);
+      allow get: if true;
+      allow list: if ckAdmin();
+      allow update: if ckAdmin() || (resource.data.status == 'pending_payment' && request.resource.data.status == 'payment_submitted' && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])) || (resource.data.status == 'confirmed' && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['moveIn', 'checkOut', 'months', 'updatedAt']));
+      allow delete: if ckAdmin();
+    }
+
+    match /bookingIds/{ref} {
+      allow create: if ref.matches('CK[A-Z0-9]{8}');
+      allow read, update, delete: if ckAdmin();
+    }
+
+    match /bookingPayments/{ref} {
+      allow create: if ckAdmin() || (ref.matches('CK[A-Z0-9]{8}') && request.resource.data.keys().hasOnly(['utr', 'submittedAt', 'amountDue', 'name', 'phone']));
+      allow update: if ckAdmin() || (get(/databases/$(database)/documents/bookings/$(ref)).data.status in ['pending_payment', 'payment_submitted'] && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['utr', 'submittedAt']));
+      allow read, delete: if ckAdmin();
+    }
+
+    match /bookingLookup/{phone} {
+      allow create: if phone.matches('[0-9]{10}') && request.resource.data.keys().hasOnly(['refs', 'updatedAt']) && request.resource.data.refs.size() == 1;
+      allow get: if true;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['refs', 'updatedAt']) && request.resource.data.refs.hasAll(resource.data.refs) && request.resource.data.refs.size() <= resource.data.refs.size() + 1 && request.resource.data.refs.size() <= 50;
+      allow delete: if ckAdmin();
+    }
+
+    match /tenants/{id}        { allow read, write: if ckAdmin(); }
+    match /staff/{id}          { allow read, write: if ckAdmin(); }
+    match /attendance/{id}     { allow read, write: if ckAdmin(); }
+    match /salaryPayments/{id} { allow read, write: if ckAdmin(); }
+    match /expenses/{id}       { allow read, write: if ckAdmin(); }
+
+    // ===== Rebel Den (staff app) =====
+    match /pubUsers/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || pubAdmin());
+      allow create: if pubAdmin() || (request.auth.uid == uid && request.resource.data.role == 'admin' && request.resource.data.active == true && pubSetupOk());
+      allow update: if pubAdmin();
+      allow delete: if pubAdmin();
+    }
+    match /pubItems/{id} {
+      allow read: if pubOn();
+      allow create, delete: if pubAdmin();
+      allow update: if pubAdmin() || ((pubMoney() || pubBiller()) && stockOnly());
+    }
+    match /pubBills/{id} {
+      allow read: if pubOn();
+      allow create: if pubBiller();
+      allow update: if pubAdmin();
+    }
+    match /pubStockLog/{id} {
+      allow read: if pubMoney();
+      allow create: if pubOn();
+    }
+    match /pubPurchases/{id} { allow read, write: if pubMoney(); }
+    match /pubExpenses/{id}  { allow read, write: if pubMoney(); }
+    match /pubSettings/setup   { allow read: if false; allow create: if request.auth != null && !exists(/databases/$(database)/documents/pubSettings/setup) && request.resource.data.setupCode == '800957tpt'; }
+    match /pubSettings/counter { allow read, write: if pubBiller(); }
+    match /pubSettings/{id}    { allow read: if pubOn(); allow write: if pubAdmin(); }
+    match /pubMenu/{id}        { allow get: if true; allow write: if pubAdmin(); }
+
+    // ===== Home Expenses (personal, separate login) =====
+    match /hxUsers/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && request.resource.data.role == 'owner' && request.resource.data.active == true && hxSetupOk();
+      allow update, delete: if false;
+    }
+    match /hxSettings/setup { allow read: if false; allow create: if request.auth != null && !ckAdmin() && !exists(/databases/$(database)/documents/hxSettings/setup) && request.resource.data.setupCode == 'HX-7k4Q9m2T'; }
+    match /hxSettings/{id}  { allow read, write: if hxOn() && id != 'setup'; }
+    match /hxMonths/{ym}    { allow read, write: if hxOn(); }
+  }
+}
