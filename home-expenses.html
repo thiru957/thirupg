@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#2a78d6">
+<link rel="manifest" href="manifest-home.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Home Expenses">
+<title>Home Expenses — Personal</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f5f1; --surface:#fcfcfb; --line:#e1e0d9; --axis:#c3c2b7;
+  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --accent:#2a78d6; --accent-d:#1c5cab; --accent-l:#cde2fb;
+  --danger:#d03b3b; --good:#006300;
+  --r:10px; --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:14px}
+button,input,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+/* auth */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#fff}
+.brand h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.persona{font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em}
+.auth p.sub{color:var(--ink2);margin:14px 0 20px}
+label{display:block;font-size:12px;color:var(--ink2);margin:12px 0 4px;font-weight:600}
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=month],select,input[type=search]{
+  width:100%;padding:9px 11px;border:1px solid var(--axis);border-radius:8px;background:#fff;outline:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;border:1px solid var(--axis);background:#fff;cursor:pointer;font-weight:600}
+.btn:hover{background:#f3f2ee}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-d)}
+.btn.danger{color:var(--danger);border-color:#ecc}
+.btn.small{padding:5px 9px;font-size:12px}
+.btn.link{border:none;background:none;color:var(--accent);padding:4px}
+.btn[disabled]{opacity:.5;cursor:default}
+.full{width:100%;justify-content:center;margin-top:18px}
+.err{color:var(--danger);font-size:13px;min-height:18px;margin-top:10px}
+.note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}
+/* shell */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:10px 20px}
+.top .brand{margin:0}.top .brand h1{font-size:18px}.top .logo{width:32px;height:32px}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto}
+nav button{border:none;background:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--ink2);font-weight:600;white-space:nowrap}
+nav button.on{background:var(--accent-l);color:var(--accent-d)}
+.who{display:flex;align-items:center;gap:10px;color:var(--ink2);font-size:13px;white-space:nowrap}
+main{max-width:1240px;margin:0 auto;padding:22px 20px 60px}
+h2{font-size:20px;margin:0 0 4px}
+.lead{color:var(--ink2);margin:0 0 18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.card h3{font-size:14px;margin:0 0 12px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px}
+.filters>div{min-width:140px}.filters label{margin-top:0}
+.filters .grow{flex:1;min-width:200px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.kpi .l{font-size:12px;color:var(--ink2);font-weight:600}
+.kpi .v{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.who span{display:none}}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--ink2);font-weight:700;background:#f7f6f2;position:sticky;top:0}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.tot td{font-weight:700;background:#f7f6f2;border-top:2px solid var(--axis)}
+tbody tr:hover td{background:#f9f8f5}
+.tablewrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:#efeee9;color:var(--ink2);white-space:nowrap}
+.pill.m{background:var(--accent-l);color:var(--accent-d)}
+.muted{color:var(--muted)}
+.rowact{white-space:nowrap}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:#0b0b0b;color:#fff;font-size:12px;padding:6px 9px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .1s}
+.hbar{display:grid;grid-template-columns:minmax(110px,180px) 1fr auto;gap:10px;align-items:center;margin:7px 0;font-size:13px;cursor:default}
+.hbar .t{background:#efeee9;border-radius:4px;height:12px;overflow:hidden}
+.hbar .f{height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.hbar .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar .vl{font-variant-numeric:tabular-nums;color:var(--ink2)}
+.tabs2{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs2 button{border:1px solid var(--axis);background:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:600;color:var(--ink2)}
+.tabs2 button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.drop{border:2px dashed var(--axis);border-radius:12px;padding:26px;text-align:center;color:var(--ink2);background:#fff}
+.drop.over{border-color:var(--accent);background:var(--accent-l)}
+.progress{height:6px;background:#efeee9;border-radius:99px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;width:0;background:var(--accent);transition:width .2s}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:20;padding:20px}
+.modal{background:var(--surface);border-radius:14px;padding:22px;width:100%;max-width:460px;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal h3{margin:0 0 6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0b0b0b;color:#fff;padding:10px 16px;border-radius:8px;z-index:30;font-size:13px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.clickable{cursor:pointer;color:var(--accent-d)}
+.mx th,.mx td{padding:7px 8px;font-size:12.5px}
+.mx td:first-child,.mx th:first-child{white-space:nowrap;position:sticky;left:0;background:var(--surface);z-index:1}
+.mx th:first-child{background:#f7f6f2;z-index:2}
+.mx tr.tot td:first-child{background:#f7f6f2}
+.clickable:hover{text-decoration:underline}
+label.check{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink2);font-size:13px;margin-top:14px}
+@media(max-width:700px){
+  .top-in{flex-wrap:wrap;gap:8px;padding:8px 12px}
+  .top .brand{flex:1}
+  nav{order:3;width:100%;flex:none;padding-bottom:2px}
+  nav button{padding:8px 10px}
+  main{padding:16px 12px 80px}
+  .kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .kpi{padding:12px}.kpi .v{font-size:19px}
+  .filters{gap:8px}.filters>div{min-width:calc(50% - 4px);flex:1}
+  .row2{grid-template-columns:1fr}
+  input[type=text],input[type=password],input[type=number],input[type=date],input[type=month],input[type=email],select,input[type=search]{font-size:16px}
+  .btn{min-height:40px}
+  .col-src{display:none}
+  .hbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
+  .card{padding:14px}
+  .auth-card{padding:24px}
+  .who #sync{display:none}
+}
+input[type=email]{width:100%;padding:9px 11px;border:1px solid var(--axis);border-radius:8px;background:#fff;outline:none}
+@media print{
+  header.top,.noprint,.filters,.tabs2{display:none!important}
+  body{background:#fff} .card{box-shadow:none;border:none;padding:0}
+  .tablewrap{max-height:none;overflow:visible;border:none}
+  main{padding:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Loading ===== -->
+<section id="loading" class="auth">
+  <div class="auth-card"><div class="brand"><div class="logo">🏠</div><div><div class="persona">Personal</div><h1>Home Expenses</h1></div></div><p class="sub" id="loadMsg">Connecting to the CodeKasa database…</p></div>
+</section>
+
+<!-- ===== Login ===== -->
+<section id="login" class="auth hidden">
+  <form class="auth-card" id="loginForm">
+    <div class="brand"><div class="logo">🏠</div><div><div class="persona">Personal</div><h1>Home Expenses</h1></div></div>
+    <p class="sub">Sign in to your personal expenses.</p>
+    <label>Email</label><input type="email" id="liUser" required autocomplete="username" autocapitalize="none">
+    <label>Password</label><input type="password" id="liPass" required autocomplete="current-password">
+    <button class="btn primary full" type="submit" id="liBtn">Sign in</button>
+    <div class="err" id="liErr"></div>
+    <div class="note" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <button type="button" class="btn link" id="toForgot">Forgot password?</button>
+      <button type="button" class="btn link" id="toSetup">First-time setup</button>
+    </div>
+  </form>
+</section>
+
+<!-- ===== First-time setup ===== -->
+<section id="setup" class="auth hidden">
+  <form class="auth-card" id="setupForm" autocomplete="off">
+    <div class="brand"><div class="logo">🏠</div><div><div class="persona">Personal</div><h1>Home Expenses</h1></div></div>
+    <p class="sub"><b>First-time setup.</b> Create your Home Expenses login. It is separate from your CodeKasa admin login and can be created only once.</p>
+    <label>Your name</label><input type="text" id="suName" required placeholder="e.g. Thirupathi">
+    <label>Email (its own email, not your CodeKasa admin email; reset links are sent here)</label><input type="email" id="suEmail" required autocomplete="email" autocapitalize="none">
+    <label>Password (min 8 characters)</label><input type="password" id="suPass" required minlength="8" autocomplete="new-password">
+    <label>Confirm password</label><input type="password" id="suPass2" required autocomplete="new-password">
+    <label>Setup code (from the Firebase rules)</label><input type="password" id="suCode" required autocomplete="off">
+    <button class="btn primary full" type="submit" id="suBtn">Create login</button>
+    <div class="err" id="suErr"></div>
+    <div class="note"><button type="button" class="btn link" id="suBack">← Back to sign in</button></div>
+  </form>
+</section>
+
+<!-- ===== Forgot password ===== -->
+<section id="forgot" class="auth hidden">
+  <form class="auth-card" id="forgotForm">
+    <div class="brand"><div class="logo">🏠</div><div><div class="persona">Personal</div><h1>Home Expenses</h1></div></div>
+    <p class="sub"><b>Reset your password.</b> Enter your login email. We'll email you a link to set a new password.</p>
+    <label>Email</label><input type="email" id="fgEmail" required autocomplete="email" autocapitalize="none">
+    <button class="btn primary full" type="submit" id="fgBtn">Send reset link</button>
+    <div class="err" id="fgErr"></div>
+    <div class="note"><button type="button" class="btn link" id="fgBack">← Back to sign in</button></div>
+  </form>
+</section>
+
+<!-- ===== App ===== -->
+<div id="app" class="hidden">
+  <header class="top"><div class="top-in">
+    <div class="brand"><div class="logo">🏠</div><h1>Home Expenses</h1></div>
+    <nav id="nav">
+      <button data-v="dash" class="on">Dashboard</button>
+      <button data-v="list">Expenses</button>
+      <button data-v="import">Import Excel</button>
+      <button data-v="reports">Reports</button>
+      <button data-v="settings">Settings</button>
+    </nav>
+    <div class="who"><span id="sync" class="muted" style="font-size:12px"></span><span id="whoName"></span><button class="btn small" id="logout">Log out</button></div>
+  </div></header>
+
+  <main>
+    <!-- Dashboard -->
+    <section data-view="dash">
+      <div class="filters">
+        <div><label>Year</label><select id="dYear"></select></div>
+        <div><label>Show</label><select id="dGroup" class="groupSel"></select></div>
+        <div class="grow"></div>
+        <div><button class="btn" onclick="openCopy()">Copy a month</button> <button class="btn primary" onclick="openEdit()">+ Add expense</button></div>
+      </div>
+      <div class="kpis" id="dKpis"></div>
+      <div class="grid2">
+        <div class="card"><h3 id="dChartTitle">Spending by month</h3><div class="chart" id="dChart"></div></div>
+        <div class="card"><h3>Top categories</h3><div id="dCats"></div></div>
+      </div>
+      <div class="card"><h3>Latest entries</h3><div id="dRecent"></div></div>
+    </section>
+
+    <!-- Expenses list -->
+    <section data-view="list" class="hidden">
+      <h2>Expenses</h2><p class="lead">Every expense, from your Excel imports and the ones you add here.</p>
+      <div class="filters">
+        <div><label>Year</label><select id="lYear"></select></div>
+        <div><label>Month</label><select id="lMonth"></select></div>
+        <div><label>Category</label><select id="lCat"></select></div>
+        <div><label>Show</label><select id="lGroup" class="groupSel"></select></div>
+        <div class="grow"><label>Search</label><input type="search" id="lSearch" placeholder="Description or sheet name"></div>
+        <div><button class="btn" onclick="openCopy()">Copy a month</button> <button class="btn primary" onclick="openEdit()">+ Add expense</button></div>
+      </div>
+      <div class="card"><div id="lTable"></div></div>
+    </section>
+
+    <!-- Import -->
+    <section data-view="import" class="hidden">
+      <h2>Import from Excel</h2>
+      <p class="lead">Upload your expenses workbook (.xlsx). Password-protected files are unlocked on this device. Only the expense rows you choose are saved to your Home Expenses database. The file itself is not uploaded.</p>
+      <div class="card">
+        <div class="drop" id="drop">
+          <div style="font-size:28px">📄</div>
+          <div><b>Drop your Excel file here</b> or <label for="xFile" class="clickable" style="display:inline;font-size:14px">choose a file</label></div>
+          <input type="file" id="xFile" accept=".xlsx,.xlsm" class="hidden">
+          <div id="xName" class="muted" style="margin-top:6px"></div>
+        </div>
+        <div class="row2" style="margin-top:6px">
+          <div><label>Excel password (leave blank if not protected)</label><input type="password" id="xPass" autocomplete="off"></div>
+          <div style="display:flex;align-items:end"><button class="btn primary" id="xRead" disabled>Read workbook</button></div>
+        </div>
+        <div class="progress hidden" id="xProg"><div></div></div>
+        <div class="err" id="xErr"></div>
+      </div>
+      <div class="card hidden" id="xPreview">
+        <h3>Sheets found <span class="muted" id="xSummary"></span></h3>
+        <p class="muted" style="margin-top:-6px">Monthly sheets (like <i>Nov'26</i>) become monthly household expenses and are put into categories automatically. Every other sheet (trips, functions, construction…) becomes its own category. Untick the sheets you don't want.</p>
+        <div class="filters noprint" style="margin-bottom:10px">
+          <button class="btn small" id="xAll">Select all</button>
+          <button class="btn small" id="xNone">Select none</button>
+          <button class="btn small" id="xMonthly">Only monthly sheets</button>
+          <div class="grow"></div>
+          <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500"><input type="checkbox" id="xReplace" checked> Replace earlier imports of the same sheets (avoids duplicates)</label>
+        </div>
+        <div class="tablewrap"><table id="xTable"></table></div>
+        <div class="actions"><button class="btn primary" id="xImport">Import selected</button></div>
+      </div>
+    </section>
+
+    <!-- Reports -->
+    <section data-view="reports" class="hidden">
+      <h2>Reports</h2><p class="lead">Category-wise totals by month and by year.</p>
+      <div class="tabs2" id="rTabs">
+        <button data-r="month" class="on">Month-wise</button>
+        <button data-r="year">Year-wise</button>
+        <button data-r="detail">Month detail</button>
+      </div>
+      <div class="filters">
+        <div id="rYearBox"><label>Year</label><select id="rYear"></select></div>
+        <div id="rMonthBox" class="hidden"><label>Month</label><input type="month" id="rMonth"></div>
+        <div><label>Show</label><select id="rGroup" class="groupSel"></select></div>
+        <div class="grow"></div>
+        <div><button class="btn" id="rCsv">Download CSV</button> <button class="btn" onclick="window.print()">Print / PDF</button></div>
+      </div>
+      <div class="card"><h3 id="rTitle"></h3><div id="rBody"></div></div>
+    </section>
+
+    <!-- Settings -->
+    <section data-view="settings" class="hidden">
+      <h2>Settings</h2><p class="lead">Your categories, account and password.</p>
+      <div class="grid2">
+        <div class="card"><h3>Categories</h3><p class="muted" style="margin-top:-6px">Rename a category to tidy up. If you rename it to an existing name, the two are merged.</p><div id="sCats"></div></div>
+        <div>
+          <div class="card"><h3>Your account</h3>
+            <p style="margin:0"><b id="sAccName"></b><br><span class="muted" id="sAccEmail"></span></p>
+            <p class="note">Password-reset links are sent to this email. Your data is stored in the CodeKasa Firebase database, separate from the PG data.</p>
+          </div>
+          <div class="card"><h3>Download</h3>
+            <p class="muted" style="margin-top:-6px">All expenses as a CSV file that opens in Excel.</p>
+            <button class="btn" id="sCsvAll">Download all as CSV</button>
+          </div>
+          <div class="card"><h3>Change password</h3>
+            <label>Current password</label><input type="password" id="cpOld">
+            <label>New password (min 8 characters)</label><input type="password" id="cpNew">
+            <label>Confirm new password</label><input type="password" id="cpNew2">
+            <div class="actions"><button class="btn primary" id="cpBtn">Change password</button></div>
+            <div class="err" id="cpErr"></div>
+          </div>
+          <div class="card"><h3>Danger zone</h3>
+            <button class="btn danger" id="sClearImports">Delete all imported data</button>
+            <button class="btn danger" id="sClearAll">Delete everything</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modalRoot"></div>
+
+<script type="module">
+// Same Firebase project as the CodeKasa website.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+const config = {
+  apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU", authDomain: "codekasa.firebaseapp.com", projectId: "codekasa",
+  storageBucket: "codekasa.firebasestorage.app", messagingSenderId: "725605223433", appId: "1:725605223433:web:fd9a635676e810eba57cd8"
+};
+const app = initializeApp(config);
+window.HXFB = { config, initializeApp, getFirestore, getAuth, db:getFirestore(app), auth:getAuth(app), collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, runTransaction,
+  signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider };
+window.dispatchEvent(new Event('hxfb-ready'));
+</script>
+<script>
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+</script>
+
+<script>
+/* ===== Home Expenses: in-browser Excel reader (decrypt + parse) ===== */
+const HX = (() => {
+  const subtle = globalThis.crypto.subtle;
+  const ENDCHAIN = 0xFFFFFFFA;
+
+  /* ---------- OLE compound file ---------- */
+  function readCFB(buf) {
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+    const u32 = o => dv.getUint32(o, true);
+    if (u32(0) !== 0xE011CFD0) return null;
+    const ss = 1 << dv.getUint16(30, true), mss = 1 << dv.getUint16(32, true);
+    const nfat = u32(44), dirStart = u32(48), miniCut = u32(56), mfStart = u32(60);
+    let difat = []; for (let i = 0; i < 109; i++) difat.push(u32(76 + i * 4));
+    let s = u32(68);
+    while (s < ENDCHAIN) {
+      const off = 512 + s * ss, n = ss / 4;
+      for (let i = 0; i < n - 1; i++) difat.push(u32(off + i * 4));
+      s = u32(off + (n - 1) * 4);
+    }
+    difat = difat.filter(d => d < ENDCHAIN).slice(0, nfat);
+    const fat = [];
+    for (const d of difat) { const off = 512 + d * ss; for (let i = 0; i < ss / 4; i++) fat.push(u32(off + i * 4)); }
+    const chain = start => {
+      const parts = []; let x = start, guard = 0;
+      while (x < ENDCHAIN && guard++ < 1e6) { parts.push(buf.subarray(512 + x * ss, 512 + (x + 1) * ss)); x = fat[x]; }
+      return concat(parts);
+    };
+    const dir = chain(dirStart), ddv = new DataView(dir.buffer, dir.byteOffset, dir.byteLength);
+    const entries = [];
+    for (let i = 0; i < dir.length / 128; i++) {
+      const o = i * 128, nl = ddv.getUint16(o + 64, true);
+      let name = ''; for (let k = 0; k < Math.max(nl - 2, 0); k += 2) name += String.fromCharCode(ddv.getUint16(o + k, true));
+      entries.push({ name, type: dir[o + 66], start: ddv.getUint32(o + 116, true), size: Number(ddv.getBigUint64(o + 120, true)) });
+    }
+    const mini = chain(entries[0].start);
+    let minifat = [];
+    if (mfStart < ENDCHAIN) { const m = chain(mfStart), mdv = new DataView(m.buffer, m.byteOffset, m.byteLength); for (let i = 0; i < m.length / 4; i++) minifat.push(mdv.getUint32(i * 4, true)); }
+    const streams = {};
+    for (const e of entries.slice(1)) {
+      if (e.type !== 2) continue;
+      if (e.size < miniCut) {
+        const parts = []; let x = e.start, g = 0;
+        while (x < ENDCHAIN && g++ < 1e6) { parts.push(mini.subarray(x * mss, (x + 1) * mss)); x = minifat[x]; }
+        streams[e.name] = concat(parts).subarray(0, e.size);
+      } else streams[e.name] = chain(e.start).subarray(0, e.size);
+    }
+    return streams;
+  }
+  function concat(parts) { let n = 0; for (const p of parts) n += p.length; const out = new Uint8Array(n); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; } return out; }
+  const le32 = i => new Uint8Array([i & 255, (i >>> 8) & 255, (i >>> 16) & 255, (i >>> 24) & 255]);
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const algName = a => ({ SHA512: 'SHA-512', SHA384: 'SHA-384', SHA256: 'SHA-256', SHA1: 'SHA-1' })[a.toUpperCase().replace('-', '')];
+  async function H(alg, ...parts) { return new Uint8Array(await subtle.digest(alg, concat(parts))); }
+
+  // AES-CBC decrypt with no padding (WebCrypto insists on PKCS7, so append a crafted pad block)
+  async function aesCbcNoPad(keyBytes, iv, data) {
+    const key = await subtle.importKey('raw', keyBytes, 'AES-CBC', false, ['encrypt', 'decrypt']);
+    const last = data.subarray(data.length - 16);
+    const pad = new Uint8Array(16).fill(16);
+    const extra = new Uint8Array(await subtle.encrypt({ name: 'AES-CBC', iv: last }, key, pad)).subarray(0, 16);
+    return new Uint8Array(await subtle.decrypt({ name: 'AES-CBC', iv }, key, concat([data, extra])));
+  }
+
+  async function decryptAgile(streams, password, onProgress) {
+    const info = streams['EncryptionInfo'], pkg = streams['EncryptedPackage'];
+    if (!info || !pkg) throw new Error('This file is protected in a format that is not supported.');
+    const vMaj = info[0] | (info[1] << 8), vMin = info[2] | (info[3] << 8);
+    if (!(vMaj === 4 && vMin === 4)) throw new Error('Only Excel 2010+ (AES) password protection is supported. Re-save the file in a recent Excel.');
+    const xml = new TextDecoder().decode(info.subarray(8));
+    const attr = (tag, name) => { const m = xml.match(new RegExp('<(?:\\w+:)?' + tag + '\\b[^>]*\\b' + name + '="([^"]+)"')); return m && m[1]; };
+    const kdSalt = b64(attr('keyData', 'saltValue')), kdBlock = +attr('keyData', 'blockSize'), kdAlg = algName(attr('keyData', 'hashAlgorithm'));
+    const salt = b64(attr('encryptedKey', 'saltValue')), spin = +attr('encryptedKey', 'spinCount'), bits = +attr('encryptedKey', 'keyBits');
+    const alg = algName(attr('encryptedKey', 'hashAlgorithm')), encKey = b64(attr('encryptedKey', 'encryptedKeyValue'));
+    const pw = new Uint8Array(password.length * 2); for (let i = 0; i < password.length; i++) { const c = password.charCodeAt(i); pw[i * 2] = c & 255; pw[i * 2 + 1] = c >> 8; }
+    let h = await H(alg, salt, pw);
+    for (let i = 0; i < spin; i++) { h = await H(alg, le32(i), h); if (onProgress && i % 5000 === 0) onProgress(i / spin * 0.8); }
+    const k = (await H(alg, h, new Uint8Array([0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6]))).subarray(0, bits / 8);
+    const secret = (await aesCbcNoPad(k, salt, encKey)).subarray(0, bits / 8);
+    const size = Number(new DataView(pkg.buffer, pkg.byteOffset).getBigUint64(0, true));
+    const body = pkg.subarray(8), out = [];
+    for (let i = 0, seg = 0; i < body.length; i += 4096, seg++) {
+      const iv = (await H(kdAlg, kdSalt, le32(seg))).subarray(0, kdBlock);
+      let chunk = body.subarray(i, i + 4096);
+      if (chunk.length % 16) { const c = new Uint8Array(chunk.length + 16 - chunk.length % 16); c.set(chunk); chunk = c; }
+      out.push(await aesCbcNoPad(secret, iv, chunk));
+      if (onProgress && seg % 50 === 0) onProgress(0.8 + 0.2 * i / body.length);
+    }
+    const plain = concat(out).subarray(0, size);
+    if (plain[0] !== 0x50 || plain[1] !== 0x4B) throw new Error('Wrong Excel password.');
+    return plain;
+  }
+
+  /* ---------- zip ---------- */
+  async function unzip(buf) {
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+    let eocd = -1;
+    for (let i = buf.length - 22; i >= Math.max(0, buf.length - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error('Not a valid .xlsx file.');
+    const n = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+    const files = {};
+    for (let i = 0; i < n; i++) {
+      const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+      const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), loff = dv.getUint32(p + 42, true);
+      const name = new TextDecoder().decode(buf.subarray(p + 46, p + 46 + nlen));
+      files[name] = { method, csize, loff };
+      p += 46 + nlen + elen + clen;
+    }
+    return {
+      names: Object.keys(files),
+      async read(name) {
+        const f = files[name]; if (!f) return null;
+        const start = f.loff + 30 + dv.getUint16(f.loff + 26, true) + dv.getUint16(f.loff + 28, true);
+        const data = buf.subarray(start, start + f.csize);
+        if (f.method === 0) return new TextDecoder().decode(data);
+        const ds = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+        return await new Response(ds).text();
+      }
+    };
+  }
+
+  /* ---------- xlsx ---------- */
+  const ent = s => s.replace(/&(lt|gt|amp|quot|apos|#\d+|#x[0-9a-f]+);/gi, (m, e) => ({ lt: '<', gt: '>', amp: '&', quot: '"', apos: "'" })[e] || (e[1] === 'x' || e[1] === 'X' ? String.fromCodePoint(parseInt(e.slice(2), 16)) : String.fromCodePoint(+e.slice(1))));
+  const getAttr = (s, n) => { const m = s.match(new RegExp('\\b' + n + '="([^"]*)"')); return m ? ent(m[1]) : null; };
+  const textOf = s => { let t = ''; s.replace(/<t\b[^>]*>([\s\S]*?)<\/t>/g, (m, x) => { t += x; }); return ent(t); };
+  const colNum = ref => { let n = 0; for (const ch of ref.match(/^[A-Z]+/)[0]) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
+
+  async function readWorkbook(bytes) {
+    const z = await unzip(bytes);
+    const wb = await z.read('xl/workbook.xml'); if (!wb) throw new Error('Not an Excel workbook.');
+    const rels = (await z.read('xl/_rels/workbook.xml.rels')) || '';
+    const relMap = {}; rels.replace(/<Relationship\b[^>]*>/g, r => { relMap[getAttr(r, 'Id')] = { t: getAttr(r, 'Target'), type: getAttr(r, 'Type') }; });
+    const d1904 = /date1904="(1|true)"/.test(wb);
+    const ssx = (await z.read('xl/sharedStrings.xml')) || '';
+    const shared = []; ssx.replace(/<si>([\s\S]*?)<\/si>/g, (m, x) => { shared.push(textOf(x.replace(/<rPh\b[\s\S]*?<\/rPh>/g, ''))); });
+    const sty = (await z.read('xl/styles.xml')) || '';
+    const customDate = {}; sty.replace(/<numFmt\b[^>]*>/g, f => { const code = (getAttr(f, 'formatCode') || '').replace(/"[^"]*"|\[[^\]]*\]|\\./g, ''); if (/[dmy]/i.test(code) && !/^[#0.,%\s]*$/.test(code)) customDate[getAttr(f, 'numFmtId')] = 1; });
+    const xfsBlock = (sty.match(/<cellXfs\b[\s\S]*?<\/cellXfs>/) || [''])[0];
+    const xfDate = []; xfsBlock.replace(/<xf\b[^>]*>/g, x => { const id = +getAttr(x, 'numFmtId'); xfDate.push((id >= 14 && id <= 22) || (id >= 45 && id <= 47) || !!customDate[id]); });
+    const sheets = [];
+    wb.replace(/<sheet\b[^>]*>/g, s => {
+      const rel = relMap[getAttr(s, 'r:id')]; if (!rel || !/worksheet$/.test(rel.type || '')) return;
+      let t = rel.t.replace(/^\/?xl\//, ''); t = t.startsWith('/') ? t.slice(1) : 'xl/' + t;
+      sheets.push({ name: getAttr(s, 'name'), path: t.replace(/^xl\/xl\//, 'xl/') });
+    });
+    return {
+      d1904, sheets,
+      async grid(sheet) {
+        const xml = await z.read(sheet.path) || '';
+        const rows = new Map();
+        const re = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g; let m;
+        while ((m = re.exec(xml))) {
+          const a = m[1], inner = m[2] || '', ref = getAttr(a, 'r'); if (!ref) continue;
+          const t = getAttr(a, 't'), s = +(getAttr(a, 's') || 0);
+          const vm = inner.match(/<v>([\s\S]*?)<\/v>/); let v = null, isDate = false;
+          if (t === 's') v = vm ? shared[+vm[1]] : null;
+          else if (t === 'inlineStr') v = textOf(inner);
+          else if (t === 'str') v = vm ? ent(vm[1]) : null;
+          else if (t === 'b' || t === 'e') v = null;
+          else if (vm) { v = +vm[1]; isDate = !!xfDate[s]; }
+          if (v === null || v === '') continue;
+          const r = +ref.match(/\d+/)[0] - 1, c = colNum(ref);
+          if (!rows.has(r)) rows.set(r, []);
+          rows.get(r)[c] = { v, isDate };
+        }
+        return rows;
+      }
+    };
+  }
+
+  /* ---------- interpretation ---------- */
+  const MONTHS = [['jan'], ['feb'], ['mar'], ['apr'], ['may'], ['jun'], ['jul'], ['aug'], ['sep', 'seplt'], ['oct', 'octo'], ['nov', 'no'], ['dec']];
+  function sheetMonth(name) {
+    const m = name.trim().toLowerCase().match(/^([a-z]+)\s*['’_\-\s]?\s*(\d{2}|\d{4})$/);
+    if (!m) return null;
+    const w = m[1]; let mi = -1;
+    MONTHS.forEach((alts, i) => { if (alts.includes(w) || (w.length >= 3 && alts.some(a => a.length === 3 && w.startsWith(a)))) mi = i; });
+    if (mi < 0) return null;
+    let y = +m[2]; if (y < 100) y += 2000;
+    if (y < 1990 || y > 2100) return null;
+    return { y, m: mi + 1 };
+  }
+  const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  function serialToDate(n, d1904) { const ms = (n - (d1904 ? 24107 : 25569)) * 864e5; const dt = new Date(ms); return { y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate() }; }
+  const MON3 = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+  function parseTextDate(s) {
+    s = String(s).trim().toLowerCase();
+    let m = s.match(/^(\d{1,2})(?:st|nd|rd|th)?[\/\-. ](\d{1,2})[\/\-. ](\d{2,4})$/);
+    if (m) { let [d, mo, y] = [+m[1], +m[2], +m[3]]; if (y < 100) y += 2000; if (mo > 12 && d <= 12) [d, mo] = [mo, d]; if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return { y, m: mo, d, dmy: +m[1] > 12 }; }
+    m = s.match(/^(\d{1,2})(?:st|nd|rd|th)?[\s\-]*([a-z]{3})[a-z]*[\s\-',]*(\d{2,4})$/);
+    if (m && MON3[m[2]]) { let y = +m[3]; if (y < 100) y += 2000; return { y, m: MON3[m[2]], d: +m[1] }; }
+    return null;
+  }
+  const parseAmount = v => {
+    if (typeof v === 'number') return v;
+    const s = String(v).replace(/[,₹\s]|rs\.?|inr|\/-/gi, '');
+    return /^-?\d+(\.\d+)?$/.test(s) ? +s : NaN;
+  };
+  const CATS = [
+    ['Credit Card Bills', /credit ?card|cr\.? ?card|crcard|\bcard\b/],
+    ['Insurance', /insurance|\blic\b|policy|max ?life|lombard|term plan|mediclaim/],
+    ['Loans & EMIs', /\bemis?\b|loan|mortgage/],
+    ['Investments & Savings', /mutual|\bsip\b|\bfd\b|fixed deposit|\bppf\b|\bnps\b|\bgold\b|chit|deposit/],
+    ['Rent & Maintenance', /\brent|maintain|maintenance|maintainence/],
+    ['Kids & Education', /school|\bfees?\b|tution|tuition|\bvan\b|kids|education|euro ?kids|bhavan|vivero|oakridge|college|books/],
+    ['Household Staff', /maid|\bcook\b|driver|servant|watchman|nanny|mestri/],
+    ['Utilities & Bills', /electric|current bill|\bpower\b|water|\bgas\b|cylinder|internet|broadband|wifi|mobile|phone|recharge|\bdth\b|\btv\b|airtel|jio/],
+    ['Medical & Health', /hospital|medic|pharma|doctor|\blab\b|clinic|health/],
+    ['Car & Transport', /\bcar\b|petrol|diesel|fuel|\bbike\b|vehicle|toll|cab|uber|ola\b/],
+    ['Groceries & Daily', /grocer|vegetable|\bmilk\b|daily|supermarket|dmart|ration|food/],
+    ['Tax', /\btax\b|\bitr\b|\bgst\b|income tax/],
+  ];
+  function categorize(desc) { const d = (desc || '').toLowerCase(); for (const [c, re] of CATS) if (re.test(d)) return c; return 'Other Monthly'; }
+  const cleanName = n => n.replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\w/g, c => c.toUpperCase());
+  const SKIP = /password|reg ?wise|plotwise|plots|emp_details|offers?\b|^sheet\d*$|^chart\d*$|land issue|properties|service history|cases|\bpf\b/i;
+  const DESC_H = /^(description|descripiton|desc|particulars|items?|details|expense|expenses|narration)$/i;
+  const AMT_H = /^(amount|amt|amount\s*\(.*\)|cost|price|total amount|paid|amount paid)$/i;
+  const DATE_H = /^(date|dt|paid date|payment date)\b/i;
+
+  function cellStr(c) { return c && typeof c.v === 'string' ? c.v.trim() : ''; }
+
+  async function extract(book, opts = {}) {
+    const result = [];
+    for (const sh of book.sheets) {
+      if (/password/i.test(sh.name)) continue;     // never even read the passwords sheet
+      const rows = await book.grid(sh);
+      const sm = sheetMonth(sh.name);
+      const yearInName = (sh.name.match(/(20\d{2})/) || [])[1] || ((sh.name.match(/[-'_ ](\d{2})$/) || [])[1] ? '20' + sh.name.match(/[-'_ ](\d{2})$/)[1] : null);
+      const rowIdx = [...rows.keys()].sort((a, b) => a - b);
+      const tables = [];
+      for (const r of rowIdx) {
+        const cells = rows.get(r);
+        for (let c = 0; c < cells.length; c++) {
+          if (!DESC_H.test(cellStr(cells[c]))) continue;
+          let ac = -1; for (let k = c + 1; k <= c + 5; k++) if (AMT_H.test(cellStr(cells[k]))) { ac = k; break; }
+          if (ac < 0) continue;
+          let dc = -1; for (let k = c - 1; k >= Math.max(0, c - 3); k--) if (DATE_H.test(cellStr(cells[k]))) { dc = k; break; }
+          tables.push({ r, dc, desc: c, amt: ac });
+        }
+      }
+      if (!tables.length) continue;
+      const items = [];
+      for (const t of tables) {
+        const raw = []; let empty = 0;
+        for (let r = t.r + 1; r <= t.r + 2000; r++) {
+          const cells = rows.get(r) || [];
+          const dcell = cells[t.desc], acell = cells[t.amt];
+          const dtxt = dcell ? String(dcell.v).trim() : '';
+          if (DESC_H.test(dtxt) && AMT_H.test(cellStr(cells[t.amt]))) break;
+          if (/^(grand\s*)?total\b/i.test(dtxt) || (t.dc >= 0 && /^(grand\s*)?total\b/i.test(cellStr(cells[t.dc])))) break;
+          if (!dtxt && !acell) { if (++empty >= 6) break; continue; }
+          empty = 0;
+          const amt = acell ? parseAmount(acell.v) : NaN;
+          if (!(amt > 0)) continue;
+          let date = null, kind = null;
+          const dcl = t.dc >= 0 ? cells[t.dc] : null;
+          if (dcl) {
+            if (typeof dcl.v === 'number' && (dcl.isDate || (dcl.v > 32000 && dcl.v < 60000))) { date = serialToDate(dcl.v, book.d1904); kind = 'serial'; }
+            else if (typeof dcl.v === 'string') { const p = parseTextDate(dcl.v); if (p) { date = p; kind = p.dmy ? 'dmy' : 'text'; } }
+          }
+          raw.push({ desc: dtxt || '(no description)', amount: Math.round(amt * 100) / 100, date, kind, row: r + 1 });
+        }
+        // Excel (US locale) turns typed DD/MM into MM/DD when day<=12; if this table has unparsed DD/MM text, swap the serial dates back.
+        const swap = raw.some(x => x.kind === 'dmy') && raw.some(x => x.kind === 'serial');
+        let last = null;
+        for (const x of raw) {
+          let d = x.date;
+          if (d && x.kind === 'serial' && swap && d.d <= 12) d = { y: d.y, m: d.d, d: d.m };
+          if (d) last = d; else d = last;
+          items.push({ ...x, date: d, swapped: !!(swap && x.kind === 'serial') });
+        }
+      }
+      if (!items.length) continue;
+      const isMonthly = !!sm;
+      const expenses = items.map(x => {
+        let date = null;
+        if (isMonthly) {
+          // monthly sheets: the expense belongs to the sheet's month
+          date = iso(sm.y, sm.m, 1);
+        } else if (x.date && x.date.y > 1990 && x.date.y < 2100) date = iso(x.date.y, x.date.m, x.date.d);
+        return {
+          date, desc: x.desc, amount: x.amount,
+          category: isMonthly ? categorize(x.desc) : cleanName(sh.name),
+          group: isMonthly ? 'Monthly' : 'Events & Projects',
+          source: sh.name
+        };
+      });
+      result.push({
+        sheet: sh.name, monthly: isMonthly, month: sm ? iso(sm.y, sm.m, 1).slice(0, 7) : null,
+        defaultOn: isMonthly || !(SKIP.test(sh.name) || /loan|land|transaction/i.test(sh.name)), category: isMonthly ? null : cleanName(sh.name),
+        yearHint: yearInName, expenses, swapped: items.some(x => x.swapped)
+      });
+    }
+    return result;
+  }
+
+  async function open(bytes, password, onProgress) {
+    let data = bytes;
+    const cfb = readCFB(bytes);
+    if (cfb) {
+      if (!password) throw new Error('This Excel file is password protected. Please enter its password.');
+      data = await decryptAgile(cfb, password, onProgress);
+    }
+    const book = await readWorkbook(data);
+    return extract(book);
+  }
+
+  return { open, categorize, CATS: CATS.map(c => c[0]).concat(['Other Monthly']) };
+})();
+if (typeof module !== 'undefined') module.exports = HX;
+
+</script>
+<script>
+"use strict";
+/* ================= database (CodeKasa Firebase) ================= */
+// Collections: hxUsers/{uid} (the login), hxMonths/{YYYY-MM | undated} ({items:[...]}), hxSettings/meta (import log).
+const clone = o => JSON.parse(JSON.stringify(o));
+let FB=null, ME=null, PROFILE=null, MONTHS={}, AUTHED=false, MONTHS_READY=false, unsubMonths=null;
+let DB={expenses:[], imports:[]};
+const monthKey = e => e.date ? e.date.slice(0,7) : 'undated';
+function setSync(t){ const el=$('sync'); if(el) el.textContent=t; }
+async function saveMeta(fields){ await FB.setDoc(FB.doc(FB.db,'hxSettings','meta'), fields, {merge:true}); }
+// Writes only the month documents whose contents changed.
+let saving=Promise.resolve();
+function save(){ saving = saving.then(doSave, doSave); return saving; }
+async function doSave(){
+  const groups={}; DB.expenses.forEach(e=>(groups[monthKey(e)] ||= []).push(e));
+  const keys=new Set([...Object.keys(groups), ...Object.keys(MONTHS)]);
+  let n=0;
+  try{
+    for(const k of keys){
+      const a=groups[k]||[], b=MONTHS[k]||[];
+      if(JSON.stringify(a)===JSON.stringify(b)) continue;
+      if(!n++) setSync('Saving…');
+      const ref=FB.doc(FB.db,'hxMonths',k);
+      if(a.length){ await FB.setDoc(ref,{items:clone(a), updated:new Date().toISOString()}); MONTHS[k]=clone(a); }
+      else { await FB.deleteDoc(ref); delete MONTHS[k]; }
+    }
+    if(n) setSync('All changes saved');
+  }catch(e){
+    console.error(e); setSync('Not saved');
+    toast(String(e.code||'').includes('permission') ? 'The database refused the change. Check the Home Expenses Firebase rules are published.' : 'Could not save to the database. Check your connection and try again.');
+    throw e;
+  }
+}
+function subscribeMonths(){
+  if(unsubMonths) unsubMonths();
+  unsubMonths = FB.onSnapshot(FB.collection(FB.db,'hxMonths'), snap=>{
+    const m={}; snap.docs.forEach(d=>{ m[d.id]=clone(d.data().items||[]); });
+    MONTHS=m; MONTHS_READY=true;
+    DB.expenses = Object.values(m).flat();
+    if(AUTHED && !document.querySelector('.modal-bg')) render();
+  }, err=>{ console.error(err); setSync('Offline: changes may not be up to date'); });
+}
+
+/* ================= helpers ================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const INR = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
+const money = n => INR.format(Math.round(n||0));
+const short = n => { n=Math.round(n||0); if(n>=1e7) return '₹'+(n/1e7).toFixed(n>=1e8?0:2).replace(/\.?0+$/,'')+' Cr'; if(n>=1e5) return '₹'+(n/1e5).toFixed(n>=1e6?1:2).replace(/\.?0+$/,'')+' L'; if(n>=1e3) return '₹'+(n/1e3).toFixed(0)+'k'; return '₹'+n; };
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabel = ym => { const [y,m]=ym.split('-'); return MN[+m-1]+' '+y; };
+const fmtDate = d => { if(!d) return '<span class="muted">No date</span>'; const [y,m,dd]=d.split('-'); return `${+dd} ${MN[+m-1]} ${y}`; };
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3200); }
+function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
+const csvCell = v => { const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+function filterGroup(list, g){ return g && g!=='all' ? list.filter(e=>e.group===g) : list; }
+const years = () => [...new Set(DB.expenses.filter(e=>e.date).map(e=>+e.date.slice(0,4)))].sort((a,b)=>b-a);
+const categories = () => [...new Set(DB.expenses.map(e=>e.category))].sort((a,b)=>a.localeCompare(b));
+function fillGroupSelects(){ document.querySelectorAll('.groupSel').forEach(s=>{ const v=s.value||'all'; s.innerHTML='<option value="all">All expenses</option><option value="Monthly">Monthly household</option><option value="Events & Projects">Events & projects</option><option value="Manual">Added manually</option>'; s.value=v; }); }
+function fillYear(sel, withAll){ const v=sel.value; const ys=years(); const cur=new Date().getFullYear(); if(!ys.includes(cur)) ys.unshift(cur); ys.sort((a,b)=>b-a); sel.innerHTML=(withAll?'<option value="">All years</option>':'')+ys.map(y=>`<option>${y}</option>`).join(''); if(v && [...sel.options].some(o=>o.value===v)) sel.value=v; else if(!withAll){ const withData=years(); sel.value=String(withData.includes(cur)?cur:(withData[0]||cur)); } }
+
+/* ================= auth (Firebase Authentication) ================= */
+function show(id){ ['loading','setup','login','forgot','app'].forEach(x=>$(x).classList.toggle('hidden', x!==id)); }
+const fbErr = (x, fallback) => { const c=String(x && (x.code||x.message)||''); return c.includes('network') ? 'No internet connection. Please try again.' : c.includes('too-many-requests') ? 'Too many attempts. Please wait a few minutes and try again.' : fallback; };
+function boot(){
+  const slow=setTimeout(()=>$('loadMsg').textContent='Still connecting… check your internet connection.', 10000);
+  const go2=()=>{ clearTimeout(slow); FB=window.HXFB; FB.onAuthStateChanged(FB.auth, onAuth); };
+  if(window.HXFB) go2(); else window.addEventListener('hxfb-ready', go2, {once:true});
+}
+async function onAuth(u){
+  if(!u){ AUTHED=false; ME=null; if(unsubMonths){ unsubMonths(); unsubMonths=null; } MONTHS={}; DB={expenses:[],imports:[]}; show('login'); return; }
+  try{
+    const snap=await FB.getDoc(FB.doc(FB.db,'hxUsers',u.uid)); const data=snap.exists()?snap.data():null;
+    if(!data || !data.active){ $('liErr').textContent='This account has no access to Home Expenses.'; await FB.signOut(FB.auth); return; }
+    ME=u; PROFILE={...data, email:u.email};
+    try{ const m=await FB.getDoc(FB.doc(FB.db,'hxSettings','meta')); DB.imports=(m.exists()&&m.data().imports)||[]; }catch(e){ DB.imports=[]; }
+    subscribeMonths(); enterApp();
+  }catch(x){ console.error(x); $('liErr').textContent = String(x.code||'').includes('permission') ? 'Access refused. Check the Home Expenses Firebase rules are published.' : 'Could not sign in. Check your connection and try again.'; await FB.signOut(FB.auth); }
+}
+$('loginForm').onsubmit = async e => {
+  e.preventDefault(); const err=$('liErr'); err.textContent=''; err.style.color=''; $('liBtn').disabled=true;
+  try{ await FB.signInWithEmailAndPassword(FB.auth, $('liUser').value.trim().toLowerCase(), $('liPass').value); $('liPass').value=''; }
+  catch(x){ err.textContent=fbErr(x,'Wrong email or password.'); }
+  finally{ $('liBtn').disabled=false; }
+};
+$('toSetup').onclick=()=>{ $('suErr').textContent=''; show('setup'); $('suName').focus(); };
+$('suBack').onclick=()=>show('login');
+$('setupForm').onsubmit = async e => {
+  e.preventDefault(); const err=$('suErr'); err.textContent='';
+  const name=$('suName').value.trim(), email=$('suEmail').value.trim().toLowerCase(), p=$('suPass').value, code=$('suCode').value;
+  if(name.length<2) return err.textContent='Enter your name.';
+  if(p.length<8) return err.textContent='Password must be at least 8 characters.';
+  if(p!==$('suPass2').value) return err.textContent='The two passwords do not match.';
+  $('suBtn').disabled=true;
+  try{
+    // a separate Firebase session, so a half-finished setup never signs this page in
+    const app2=FB.initializeApp(FB.config,'hxsetup-'+Date.now()), a2=FB.getAuth(app2), db2=FB.getFirestore(app2);
+    const cred=await FB.createUserWithEmailAndPassword(a2, email, p);
+    try{
+      await FB.runTransaction(db2, async tx=>{
+        tx.set(FB.doc(db2,'hxSettings','setup'), {setupCode:code, by:email, at:new Date().toISOString()});
+        tx.set(FB.doc(db2,'hxUsers',cred.user.uid), {name, email, role:'owner', active:true, createdAt:new Date().toISOString()});
+      });
+    }catch(x){ try{ await cred.user.delete(); }catch(_){} throw x; }
+    await FB.signOut(a2);
+    $('liUser').value=email; $('liPass').value=''; show('login');
+    $('liErr').style.color='var(--good)'; $('liErr').textContent='Login created. Sign in with your email and password.';
+  }catch(x){
+    console.error(x); const c=String(x.code||x.message||'');
+    err.textContent = c.includes('email-already-in-use') ? 'That email is already used by a CodeKasa or Rebel Den login. Home Expenses needs its own email, so its data stays separate.'
+      : c.includes('permission') ? 'Setup was refused: it was already done, the setup code is wrong, or the Firebase rules are not published yet.'
+      : c.includes('weak-password') ? 'Choose a stronger password.' : fbErr(x,'Could not complete setup. Please try again.');
+  }finally{ $('suBtn').disabled=false; }
+};
+$('toForgot').onclick=()=>{ $('fgErr').textContent=''; $('fgEmail').value=$('liUser').value.trim(); show('forgot'); $('fgEmail').focus(); };
+$('fgBack').onclick=()=>show('login');
+$('forgotForm').onsubmit=async e=>{
+  e.preventDefault(); const err=$('fgErr'), email=$('fgEmail').value.trim().toLowerCase(); err.style.color=''; err.textContent='Sending…'; $('fgBtn').disabled=true;
+  try{ await FB.sendPasswordResetEmail(FB.auth, email); }
+  catch(x){ const c=String(x.code||''); if(!c.includes('user-not-found')){ console.error(x); err.textContent = c.includes('invalid-email') ? 'That email address is not valid.' : c.includes('unauthorized') ? 'This website address is not authorised in Firebase (Authentication → Settings → Authorized domains).' : fbErr(x,`Could not send the email (${c||'unknown error'}).`); $('fgBtn').disabled=false; return; } }
+  $('fgBtn').disabled=false; err.style.color='var(--good)';
+  err.textContent=`If ${email} has a Home Expenses login, a reset link has been sent. Check Inbox and Spam (it comes from noreply@codekasa.firebaseapp.com).`;
+};
+async function logout(){ await FB.signOut(FB.auth); }
+$('logout').onclick = logout;
+function enterApp(){ AUTHED=true; show('app'); $('whoName').textContent = PROFILE.name; fillGroupSelects(); go(DB.expenses.length||!MONTHS_READY?'dash':'import'); }
+
+/* ================= navigation ================= */
+let VIEW='dash';
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){ VIEW=v; document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); document.querySelectorAll('[data-view]').forEach(s=>s.classList.toggle('hidden', s.dataset.view!==v)); render(); window.scrollTo(0,0); }
+function render(){ ({dash:renderDash, list:renderList, import:()=>{}, reports:renderReports, settings:renderSettings})[VIEW](); }
+
+/* ================= dashboard ================= */
+['dYear','dGroup'].forEach(id=>$(id).onchange=renderDash);
+function renderDash(){
+  fillYear($('dYear')); const y=$('dYear').value, g=$('dGroup').value;
+  const all = filterGroup(DB.expenses, g);
+  const yr = all.filter(e=>e.date && e.date.startsWith(y));
+  const byM = Array(12).fill(0); yr.forEach(e=>byM[+e.date.slice(5,7)-1]+=e.amount);
+  const tot = byM.reduce((a,b)=>a+b,0);
+  const now=new Date(), curYM=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const thisM = all.filter(e=>e.date && e.date.startsWith(curYM)).reduce((a,e)=>a+e.amount,0);
+  const active = byM.filter(v=>v>0).length;
+  const lastY = all.filter(e=>e.date && e.date.startsWith(String(+y-1))).reduce((a,e)=>a+e.amount,0);
+  const undated = all.filter(e=>!e.date).length;
+  $('dKpis').innerHTML = [
+    ['Total in '+y, money(tot), lastY? (tot>=lastY?'▲ ':'▼ ')+Math.abs(Math.round((tot-lastY)/lastY*100))+'% vs '+(+y-1) : (yr.length+' entries')],
+    ['This month ('+monthLabel(curYM)+')', money(thisM), all.filter(e=>e.date && e.date.startsWith(curYM)).length+' entries'],
+    ['Average per month', money(active? tot/active : 0), active+' month'+(active===1?'':'s')+' with spending in '+y],
+    ['All entries', all.length.toLocaleString('en-IN'), undated? undated+' without a date' : 'across '+years().length+' years'],
+  ].map(([l,v,s])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+  $('dChartTitle').textContent='Spending by month, '+y;
+  barChart($('dChart'), MN, byM, i=>{ $('rMonth').value=`${y}-${String(i+1).padStart(2,'0')}`; $('rGroup').value=g; RT='detail'; go('reports'); });
+  const byC={}; yr.forEach(e=>byC[e.category]=(byC[e.category]||0)+e.amount);
+  const cats=Object.entries(byC).sort((a,b)=>b[1]-a[1]); const top=cats.slice(0,8); const rest=cats.slice(8).reduce((a,c)=>a+c[1],0);
+  if(rest>0) top.push(['Everything else ('+(cats.length-8)+')', rest]);
+  const mx=Math.max(1,...top.map(c=>c[1]));
+  $('dCats').innerHTML = top.length? top.map(([c,v])=>`<div class="hbar" title="${esc(c)}: ${money(v)} (${Math.round(v/tot*100)}%)"><div class="nm">${esc(c)}</div><div class="t"><div class="f" style="width:${Math.max(1,v/mx*100)}%"></div></div><div class="vl">${short(v)}</div></div>`).join('') : '<div class="empty">No expenses in '+y+'.</div>';
+  const recent=[...all].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.added||0)-(a.added||0)).slice(0,8);
+  $('dRecent').innerHTML = recent.length? expTable(recent,false) : `<div class="empty">No expenses yet. <span class="clickable" onclick="go('import')">Import your Excel file</span> or add one.</div>`;
+}
+function barChart(el, labels, vals, onClick){
+  const W=640,Hh=260,pl=54,pr=8,pt=12,pb=26, iw=W-pl-pr, ih=Hh-pt-pb;
+  const mx=Math.max(...vals); const step = niceStep(mx||1); const top=Math.ceil((mx||1)/step)*step;
+  const bw=iw/labels.length, w=Math.min(34,bw*0.62);
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Monthly spending bar chart">`;
+  for(let v=0; v<=top+1e-6; v+=step){ const y=pt+ih-(v/top)*ih; s+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="${v===0?'#c3c2b7':'#e1e0d9'}" stroke-width="1"/><text x="${pl-8}" y="${y+4}" text-anchor="end" font-size="11" fill="#898781">${short(v)}</text>`; }
+  vals.forEach((v,i)=>{ const x=pl+bw*i+(bw-w)/2, h=v/top*ih, y=pt+ih-h; const r=Math.min(4,h);
+    if(h>0) s+=`<path d="M${x},${pt+ih} V${y+r} Q${x},${y} ${x+r},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${pt+ih} Z" fill="#2a78d6"/>`;
+    s+=`<text x="${pl+bw*i+bw/2}" y="${Hh-8}" text-anchor="middle" font-size="11" fill="#898781">${labels[i]}</text>`;
+    s+=`<rect x="${pl+bw*i}" y="${pt}" width="${bw}" height="${ih}" fill="transparent" data-i="${i}" style="cursor:pointer"/>`; });
+  s+='</svg><div class="tip"></div>';
+  el.innerHTML=s; const tip=el.querySelector('.tip');
+  el.querySelectorAll('rect[data-i]').forEach(r=>{ const i=+r.dataset.i;
+    r.onmouseenter=()=>{ const b=el.getBoundingClientRect(), rb=r.getBoundingClientRect(); const h=vals[i]/top*ih; tip.innerHTML=`<b>${labels[i]}</b> · ${money(vals[i])}`; tip.style.left=(rb.left-b.left+rb.width/2)+'px'; tip.style.top=((pt+ih-h)/Hh*b.height)+'px'; tip.style.opacity=1; r.setAttribute('fill','rgba(42,120,214,.08)'); };
+    r.onmouseleave=()=>{ tip.style.opacity=0; r.setAttribute('fill','transparent'); };
+    r.onclick=()=>onClick&&onClick(i); });
+}
+function niceStep(mx){ const raw=mx/4, p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p; return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p; }
+
+/* ================= expenses list ================= */
+['lYear','lMonth','lCat','lGroup'].forEach(id=>$(id).onchange=renderList);
+$('lSearch').oninput=()=>{ clearTimeout(window._st); window._st=setTimeout(renderList,200); };
+let LIMIT=300;
+function renderList(){
+  fillYear($('lYear'), true);
+  const mv=$('lMonth').value; $('lMonth').innerHTML='<option value="">All months</option>'+MN.map((m,i)=>`<option value="${String(i+1).padStart(2,'0')}">${m}</option>`).join('')+'<option value="none">No date</option>'; $('lMonth').value=mv;
+  const cv=$('lCat').value; $('lCat').innerHTML='<option value="">All categories</option>'+categories().map(c=>`<option>${esc(c)}</option>`).join(''); $('lCat').value=[...$('lCat').options].some(o=>o.value===cv)?cv:'';
+  const y=$('lYear').value, m=$('lMonth').value, c=$('lCat').value, q=$('lSearch').value.trim().toLowerCase();
+  let list=filterGroup(DB.expenses, $('lGroup').value).filter(e=>
+    (!y || (e.date && e.date.startsWith(y))) &&
+    (!m || (m==='none' ? !e.date : (e.date && e.date.slice(5,7)===m))) &&
+    (!c || e.category===c) &&
+    (!q || (e.desc+' '+(e.source||'')+' '+e.category).toLowerCase().includes(q)));
+  list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const tot=list.reduce((a,e)=>a+e.amount,0);
+  $('lTable').innerHTML = list.length ? `<div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${list.length.toLocaleString('en-IN')} entries</b><b>${money(tot)}</b></div>`+expTable(list.slice(0,LIMIT),true)+(list.length>LIMIT?`<div style="text-align:center;margin-top:10px"><button class="btn" onclick="LIMIT+=500;renderList()">Show more (${list.length-LIMIT} left)</button></div>`:'') : '<div class="empty">No expenses match these filters.</div>';
+}
+function expTable(list, actions){
+  return `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="col-src">From</th><th class="n">Amount</th>${actions?'<th></th>':''}</tr></thead><tbody>`+
+    list.map(e=>`<tr><td style="white-space:nowrap">${e.group==='Monthly'&&e.date?monthLabel(e.date.slice(0,7)):fmtDate(e.date)}</td><td>${esc(e.desc)}${e.notes?`<div class="muted" style="font-size:12px">${esc(e.notes)}</div>`:''}</td><td><span class="pill ${e.group==='Monthly'?'m':''}">${esc(e.category)}</span></td><td class="muted col-src" style="font-size:12px">${e.source?'Sheet: '+esc(e.source):'Added here'}</td><td class="n">${money(e.amount)}</td>${actions?`<td class="rowact"><button class="btn small" onclick="openEdit('${e.id}')">Edit</button> <button class="btn small danger" onclick="delExp('${e.id}')">Delete</button></td>`:''}</tr>`).join('')+'</tbody></table></div>';
+}
+function delExp(id){ const e=DB.expenses.find(x=>x.id===id); confirmBox('Delete this expense?', `${esc(e.desc)} · ${money(e.amount)}`, 'Delete', async()=>{ DB.expenses=DB.expenses.filter(x=>x.id!==id); await save(); render(); toast('Deleted.'); }, true); }
+function openEdit(id){
+  const e = id ? DB.expenses.find(x=>x.id===id) : {date:new Date().toISOString().slice(0,10), desc:'', amount:'', category:'', group:'Manual'};
+  const cats=[...new Set([...categories(), ...HX.CATS])].sort((a,b)=>a.localeCompare(b));
+  modal(`<h3>${id?'Edit expense':'Add expense'}</h3>
+    <label>Description</label><input type="text" id="eDesc" value="${esc(e.desc)}" placeholder="e.g. Electricity bill">
+    <div class="row2"><div><label>Date</label><input type="date" id="eDate" value="${e.date||''}"></div><div><label>Amount (₹)</label><input type="number" id="eAmt" min="0" step="0.01" value="${e.amount}"></div></div>
+    <label>Category</label><input type="text" id="eCat" list="catList" value="${esc(e.category)}" placeholder="Pick or type a new one"><datalist id="catList">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    <label>Type</label><select id="eGroup"><option>Monthly</option><option>Events & Projects</option><option>Manual</option></select>
+    <label>Notes (optional)</label><input type="text" id="eNotes" value="${esc(e.notes||'')}">
+    <div class="err" id="eErr"></div>
+    <div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="eSave">Save</button></div>`);
+  $('eGroup').value=e.group||'Manual';
+  if(!id) $('eDesc').oninput=()=>{ if(!$('eCat').dataset.touched) $('eCat').value=HX.categorize($('eDesc').value)==='Other Monthly'?'':HX.categorize($('eDesc').value); };
+  $('eCat').oninput=()=>$('eCat').dataset.touched=1;
+  $('eDesc').focus();
+  $('eSave').onclick=async()=>{
+    const d=$('eDesc').value.trim(), a=parseFloat($('eAmt').value), c=$('eCat').value.trim()||'Other Monthly';
+    if(!d) return $('eErr').textContent='Please enter a description.';
+    if(!(a>0)) return $('eErr').textContent='Please enter an amount greater than zero.';
+    const rec={...e, desc:d, amount:Math.round(a*100)/100, date:$('eDate').value||null, category:c, group:$('eGroup').value, notes:$('eNotes').value.trim()};
+    if(id){ Object.assign(DB.expenses.find(x=>x.id===id), rec, {edited:true}); }
+    else DB.expenses.push({...rec, id:uid(), origin:'manual', added:Date.now()});
+    await save(); closeModal(); render(); toast('Saved.');
+  };
+}
+
+/* ================= copy a month ================= */
+function openCopy(){
+  const d=new Date(); let cur=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  if(DB.expenses.some(e=>e.group==='Monthly'&&e.date&&e.date.startsWith(cur))){ const n=new Date(d.getFullYear(), d.getMonth()+1, 1); cur=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`; }
+  const months=[...new Set(DB.expenses.filter(e=>e.group==='Monthly'&&e.date).map(e=>e.date.slice(0,7)))].sort();
+  const from=months.filter(m=>m<cur).pop()||months.pop()||cur;
+  modal(`<h3>Copy a month's monthly expenses</h3><p class="muted" style="margin-top:0">Start a new month from an earlier one, then adjust the amounts.</p>
+    <div class="row2"><div><label>Copy from</label><input type="month" id="cpFrom" value="${from}"></div><div><label>Into</label><input type="month" id="cpTo" value="${cur}"></div></div>
+    <div id="cpList" style="max-height:45vh;overflow:auto;margin-top:12px"></div>
+    <div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="cpGo">Add to month</button></div>`);
+  const list=()=>{ const f=$('cpFrom').value; const items=DB.expenses.filter(e=>e.group==='Monthly'&&e.date&&e.date.startsWith(f));
+    $('cpList').innerHTML = items.length ? '<table><tbody>'+items.map((e,i)=>`<tr><td style="width:28px"><input type="checkbox" class="cpOn" data-i="${i}" checked></td><td>${esc(e.desc)}<div class="muted" style="font-size:12px">${esc(e.category)}</div></td><td class="n" style="width:130px"><input type="number" class="cpAmt" data-i="${i}" value="${e.amount}" min="0" step="0.01" style="padding:5px 8px;text-align:right"></td></tr>`).join('')+'</tbody></table>' : '<div class="empty">No monthly expenses in that month.</div>';
+    $('cpList')._items=items; };
+  $('cpFrom').onchange=list; list();
+  $('cpGo').onclick=async()=>{ const items=$('cpList')._items||[], to=$('cpTo').value; if(!to) return;
+    const now=Date.now(); let n=0;
+    document.querySelectorAll('.cpOn').forEach(c=>{ if(!c.checked) return; const e=items[+c.dataset.i]; const amt=parseFloat(document.querySelector(`.cpAmt[data-i="${c.dataset.i}"]`).value);
+      if(amt>0){ DB.expenses.push({id:uid(), date:to+'-01', desc:e.desc, amount:Math.round(amt*100)/100, category:e.category, group:'Monthly', origin:'manual', notes:'', added:now}); n++; } });
+    if(!n) return toast('Nothing selected.');
+    try{ await save(); closeModal(); render(); toast(`Added ${n} expenses to ${monthLabel(to)}.`); }catch(e){}
+  };
+}
+
+/* ================= import ================= */
+let FILE=null, PARSED=null;
+const drop=$('drop');
+drop.ondragover=e=>{e.preventDefault(); drop.classList.add('over');}; drop.ondragleave=()=>drop.classList.remove('over');
+drop.ondrop=e=>{ e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files[0]) pick(e.dataTransfer.files[0]); };
+$('xFile').onchange=e=>e.target.files[0]&&pick(e.target.files[0]);
+function pick(f){ FILE=f; $('xName').textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB'; $('xRead').disabled=false; $('xErr').textContent=''; $('xPreview').classList.add('hidden'); }
+$('xPass').onkeydown=e=>{ if(e.key==='Enter' && FILE) $('xRead').click(); };
+$('xRead').onclick=async()=>{
+  if(!FILE) return; $('xErr').textContent=''; $('xRead').disabled=true; const pg=$('xProg'); pg.classList.remove('hidden'); pg.firstElementChild.style.width='3%';
+  try{
+    const bytes=new Uint8Array(await FILE.arrayBuffer());
+    PARSED = await HX.open(bytes, $('xPass').value, p=>pg.firstElementChild.style.width=Math.round(5+p*90)+'%');
+    pg.firstElementChild.style.width='100%';
+    if(!PARSED.length) throw new Error('No expense tables were found. Each sheet needs a header row with "Description" and "Amount" columns.');
+    PARSED.forEach(s=>{ s.on=s.defaultOn; s.undatedDate = s.yearHint? s.yearHint+'-01-01' : ''; });
+    renderPreview();
+  }catch(e){ $('xErr').textContent=e.message||String(e); }
+  finally{ $('xRead').disabled=false; setTimeout(()=>pg.classList.add('hidden'),600); }
+};
+function renderPreview(){
+  $('xPreview').classList.remove('hidden');
+  const prev = new Set(DB.imports.map(i=>i.sheet));
+  const sum=PARSED.filter(s=>s.on); $('xSummary').textContent=`· ${PARSED.length} sheets with expenses, ${sum.length} selected, ${sum.reduce((a,s)=>a+s.expenses.length,0)} entries`;
+  $('xTable').innerHTML='<thead><tr><th></th><th>Sheet</th><th>Type</th><th>Category</th><th class="n">Entries</th><th class="n">Total</th><th>Dates</th></tr></thead><tbody>'+
+    PARSED.map((s,i)=>{ const tot=s.expenses.reduce((a,e)=>a+e.amount,0); const ds=s.expenses.map(e=>e.date).filter(Boolean).sort(); const und=s.expenses.length-ds.length;
+      return `<tr><td><input type="checkbox" data-i="${i}" class="xOn" ${s.on?'checked':''}></td>
+      <td><b>${esc(s.sheet)}</b>${prev.has(s.sheet)?' <span class="pill">imported before</span>':''}</td>
+      <td>${s.monthly?'<span class="pill m">Monthly</span>':'<span class="pill">Event / project</span>'}</td>
+      <td>${s.monthly?'<span class="muted">Auto (by description)</span>':`<input type="text" class="xCat" data-i="${i}" value="${esc(s.category)}" style="padding:4px 8px;min-width:170px">`}</td>
+      <td class="n">${s.expenses.length}</td><td class="n">${money(tot)}</td>
+      <td style="font-size:12px">${s.monthly?monthLabel(s.month):(ds.length?fmtDate(ds[0])+(ds.length>1&&ds[0]!==ds[ds.length-1]?' – '+fmtDate(ds[ds.length-1]):''):'')}
+        ${s.swapped?'<div class="muted" title="Some dates in this sheet were typed as DD/MM and Excel read them as MM/DD. They were corrected.">day/month corrected</div>':''}
+        ${und?`<div style="margin-top:4px">${und} without a date → <input type="date" class="xUD" data-i="${i}" value="${s.undatedDate}" style="padding:2px 6px;width:auto"></div>`:''}</td></tr>`; }).join('')+'</tbody>';
+  document.querySelectorAll('.xOn').forEach(c=>c.onchange=()=>{ PARSED[c.dataset.i].on=c.checked; renderPreview(); });
+  document.querySelectorAll('.xCat').forEach(c=>c.onchange=()=>PARSED[c.dataset.i].category=c.value.trim()||PARSED[c.dataset.i].sheet);
+  document.querySelectorAll('.xUD').forEach(c=>c.onchange=()=>PARSED[c.dataset.i].undatedDate=c.value);
+}
+$('xAll').onclick=()=>{ PARSED.forEach(s=>s.on=true); renderPreview(); };
+$('xNone').onclick=()=>{ PARSED.forEach(s=>s.on=false); renderPreview(); };
+$('xMonthly').onclick=()=>{ PARSED.forEach(s=>s.on=s.monthly); renderPreview(); };
+$('xImport').onclick=async()=>{
+  const sel=PARSED.filter(s=>s.on); if(!sel.length) return toast('Select at least one sheet.');
+  const names=new Set(sel.map(s=>s.sheet)); let removed=0;
+  if($('xReplace').checked){ const before=DB.expenses.length; DB.expenses=DB.expenses.filter(e=>!(e.origin==='import' && names.has(e.source))); removed=before-DB.expenses.length; DB.imports=DB.imports.filter(i=>!names.has(i.sheet)); }
+  const now=Date.now(); let n=0;
+  sel.forEach(s=>{ s.expenses.forEach(x=>{ DB.expenses.push({ id:uid(), date:x.date||s.undatedDate||null, desc:x.desc, amount:x.amount, category:s.monthly?x.category:(s.category||x.category), group:x.group, source:s.sheet, origin:'import', added:now }); n++; });
+    DB.imports.push({sheet:s.sheet, file:FILE.name, at:now, count:s.expenses.length}); });
+  await save(); await saveMeta({imports:clone(DB.imports)}); toast(`Imported ${n} expenses from ${sel.length} sheets${removed?` (replaced ${removed} older entries)`:''}.`);
+  $('xPreview').classList.add('hidden'); PARSED=null; $('xPass').value=''; go('dash');
+};
+
+/* ================= reports ================= */
+let RT='month', RDATA=null;
+document.querySelectorAll('#rTabs button').forEach(b=>b.onclick=()=>{ RT=b.dataset.r; renderReports(); });
+['rYear','rGroup','rMonth'].forEach(id=>$(id).onchange=renderReports);
+function renderReports(){
+  document.querySelectorAll('#rTabs button').forEach(b=>b.classList.toggle('on', b.dataset.r===RT));
+  fillYear($('rYear'));
+  if(!$('rMonth').value){ const ys=years(); const d=new Date(); $('rMonth').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+  $('rYearBox').classList.toggle('hidden', RT!=='month'); $('rMonthBox').classList.toggle('hidden', RT!=='detail');
+  const list=filterGroup(DB.expenses, $('rGroup').value).filter(e=>e.date);
+  const gname = $('rGroup').selectedOptions[0]?.text || 'All expenses';
+  if(RT==='month'){
+    const y=$('rYear').value; const rows={}; const colT=Array(12).fill(0);
+    list.filter(e=>e.date.startsWith(y)).forEach(e=>{ const m=+e.date.slice(5,7)-1; (rows[e.category] ||= Array(12).fill(0))[m]+=e.amount; colT[m]+=e.amount; });
+    $('rTitle').textContent=`Month-wise report, ${y} · ${gname}`;
+    matrix(Object.entries(rows), MN, colT, (c,i)=>{ $('rMonth').value=`${y}-${String(i+1).padStart(2,'0')}`; RT='detail'; renderReports(); });
+  } else if(RT==='year'){
+    const ys=[...new Set(list.map(e=>e.date.slice(0,4)))].sort(); const rows={}; const colT=ys.map(()=>0);
+    list.forEach(e=>{ const i=ys.indexOf(e.date.slice(0,4)); (rows[e.category] ||= ys.map(()=>0))[i]+=e.amount; colT[i]+=e.amount; });
+    $('rTitle').textContent=`Year-wise report · ${gname}`;
+    matrix(Object.entries(rows), ys, colT, (c,i)=>{ $('rYear').value=ys[i]; RT='month'; renderReports(); });
+  } else {
+    const ym=$('rMonth').value; const items=list.filter(e=>e.date.startsWith(ym));
+    $('rTitle').textContent=`${monthLabel(ym)} in detail · ${gname}`;
+    const by={}; items.forEach(e=>(by[e.category] ||= []).push(e));
+    const cats=Object.entries(by).map(([c,l])=>[c,l,l.reduce((a,e)=>a+e.amount,0)]).sort((a,b)=>b[2]-a[2]);
+    const tot=items.reduce((a,e)=>a+e.amount,0);
+    RDATA={head:['Category','Date','Description','Sheet','Amount'], rows:[]};
+    cats.forEach(([c,l])=>l.forEach(e=>RDATA.rows.push([c,e.date,e.desc,e.source||'',e.amount])));
+    $('rBody').innerHTML = items.length ? `<div class="tablewrap"><table><thead><tr><th>Category / description</th><th>Date</th><th>From</th><th class="n">Amount</th><th class="n">Share</th></tr></thead><tbody>`+
+      cats.map(([c,l,t])=>`<tr><td colspan="3"><b>${esc(c)}</b> <span class="muted">(${l.length})</span></td><td class="n"><b>${money(t)}</b></td><td class="n">${Math.round(t/tot*100)}%</td></tr>`+
+        l.sort((a,b)=>b.amount-a.amount).map(e=>`<tr><td style="padding-left:26px">${esc(e.desc)}</td><td style="white-space:nowrap">${fmtDate(e.date)}</td><td class="muted" style="font-size:12px">${esc(e.source||'Added here')}</td><td class="n">${money(e.amount)}</td><td></td></tr>`).join('')).join('')+
+      `<tr class="tot"><td colspan="3">Total for ${monthLabel(ym)}</td><td class="n">${money(tot)}</td><td class="n">100%</td></tr></tbody></table></div>` : `<div class="empty">No expenses in ${monthLabel(ym)}.</div>`;
+  }
+}
+function matrix(rows, cols, colT, onCol){
+  rows.sort((a,b)=>b[1].reduce((x,y)=>x+y,0)-a[1].reduce((x,y)=>x+y,0));
+  const grand=colT.reduce((a,b)=>a+b,0);
+  RDATA={head:['Category',...cols,'Total'], rows:rows.map(([c,v])=>[c,...v.map(Math.round),Math.round(v.reduce((a,b)=>a+b,0))]).concat([['Total',...colT.map(Math.round),Math.round(grand)]])};
+  if(!rows.length){ $('rBody').innerHTML='<div class="empty">No expenses for this selection.</div>'; return; }
+  $('rBody').innerHTML=`<div class="tablewrap"><table class="mx"><thead><tr><th>Category</th>${cols.map((c,i)=>`<th class="n"><span class="clickable" data-c="${i}" title="Open">${c}</span></th>`).join('')}<th class="n">Total</th><th class="n">Share</th></tr></thead><tbody>`+
+    rows.map(([c,v])=>{ const t=v.reduce((a,b)=>a+b,0); return `<tr><td>${esc(c)}</td>${v.map(x=>`<td class="n">${x?money(x):'<span class="muted">–</span>'}</td>`).join('')}<td class="n"><b>${money(t)}</b></td><td class="n">${grand?Math.round(t/grand*100):0}%</td></tr>`; }).join('')+
+    `<tr class="tot"><td>Total</td>${colT.map(x=>`<td class="n">${x?money(x):'–'}</td>`).join('')}<td class="n">${money(grand)}</td><td class="n">100%</td></tr></tbody></table></div>`+
+    `<p class="note">Click a ${cols.length===12?'month':'year'} heading to drill down.</p>`;
+  $('rBody').querySelectorAll('[data-c]').forEach(s=>s.onclick=()=>onCol(null,+s.dataset.c));
+}
+$('rCsv').onclick=()=>{ if(!RDATA||!RDATA.rows.length) return toast('Nothing to export.'); download(($('rTitle').textContent||'report').replace(/[^\w]+/g,'_')+'.csv', [RDATA.head,...RDATA.rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv'); };
+
+/* ================= settings ================= */
+function renderSettings(){
+  $('sAccName').textContent = PROFILE.name; $('sAccEmail').textContent = PROFILE.email;
+  const by={}; DB.expenses.forEach(e=>{ by[e.category] ||= [0,0]; by[e.category][0]++; by[e.category][1]+=e.amount; });
+  const list=Object.entries(by).sort((a,b)=>a[0].localeCompare(b[0]));
+  $('sCats').innerHTML = list.length? `<div class="tablewrap" style="max-height:60vh"><table><thead><tr><th>Category</th><th class="n">Entries</th><th class="n">Total</th><th></th></tr></thead><tbody>`+
+    list.map(([c,[n,t]])=>`<tr><td>${esc(c)}</td><td class="n">${n}</td><td class="n">${money(t)}</td><td><button class="btn small" data-c="${esc(c)}">Rename</button></td></tr>`).join('')+'</tbody></table></div>' : '<div class="empty">No categories yet.</div>';
+  $('sCats').querySelectorAll('button[data-c]').forEach(b=>b.onclick=()=>{ const old=b.dataset.c;
+    modal(`<h3>Rename category</h3><label>New name</label><input type="text" id="rnName" value="${esc(old)}"><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="rnOk">Rename</button></div>`);
+    $('rnName').select(); $('rnOk').onclick=async()=>{ const nn=$('rnName').value.trim(); if(!nn) return; DB.expenses.forEach(e=>{ if(e.category===old) e.category=nn; }); await save(); closeModal(); renderSettings(); toast('Category renamed.'); }; });
+}
+$('sCsvAll').onclick=()=>{ const rows=[...DB.expenses].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(e=>[e.date||'',e.desc,e.category,e.group,e.source||'',e.amount,e.notes||'']); download('home-expenses-all.csv', [['Date','Description','Category','Type','Sheet','Amount','Notes'],...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv'); };
+$('sClearImports').onclick=()=>confirmBox('Delete all imported data?', 'Expenses you added by hand are kept.', 'Delete imported', async()=>{ DB.expenses=DB.expenses.filter(e=>e.origin!=='import'); DB.imports=[]; await save(); await saveMeta({imports:[]}); render(); toast('Imported data deleted.'); }, true);
+$('sClearAll').onclick=()=>confirmBox('Delete everything?', 'All expenses will be deleted from the database. Your login stays.', 'Delete everything', async()=>{ DB.expenses=[]; DB.imports=[]; await save(); await saveMeta({imports:[]}); render(); toast('All expenses deleted.'); }, true);
+$('cpBtn').onclick=async()=>{ const err=$('cpErr'); err.style.color=''; err.textContent='';
+  const p=$('cpNew').value; if(p.length<8) return err.textContent='New password must be at least 8 characters.'; if(p!==$('cpNew2').value) return err.textContent='New passwords do not match.';
+  try{ await FB.reauthenticateWithCredential(ME, FB.EmailAuthProvider.credential(ME.email, $('cpOld').value)); }catch(e){ return err.textContent=fbErr(e,'Current password is wrong.'); }
+  try{ await FB.updatePassword(ME, p); }catch(e){ return err.textContent=fbErr(e,'Could not change the password. Try again.'); }
+  ['cpOld','cpNew','cpNew2'].forEach(i=>$(i).value=''); toast('Password changed.'); };
+
+/* ================= modal ================= */
+function modal(html){ $('modalRoot').innerHTML=`<div class="modal-bg"><div class="modal">${html}</div></div>`; $('modalRoot').querySelector('.modal-bg').onclick=e=>{ if(e.target.classList.contains('modal-bg')) closeModal(); }; }
+function closeModal(){ $('modalRoot').innerHTML=''; }
+function confirmBox(title, text, okLabel, onOk, danger){ modal(`<h3>${title}</h3><p class="muted">${text}</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn ${danger?'danger':'primary'}" id="cfOk">${okLabel}</button></div>`); $('cfOk').onclick=async()=>{ closeModal(); await onOk(); }; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+boot();
+</script>
+</body>
+</html>
