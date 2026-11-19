@@ -1510,16 +1510,21 @@
     btn.textContent = 'Sending…';
 
     const enquiry = { name, phone, email, guests, roomType, moveIn, message, source: 'website', submittedAt: new Date().toISOString() };
-    let saved = false, emailed = false;
+    let saved = false, emailed = false, saveErr = '';
 
     // 1) Save to the admin dashboard (Firebase)
     try{
       const { initializeApp, getApps, getApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
       const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js');
       const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
-      await addDoc(collection(getFirestore(app), 'enquiries'), enquiry);
-      saved = true;
-    } catch(e){ console.error('Could not save enquiry to database', e); }
+      const col = collection(getFirestore(app), 'enquiries');
+      for (let i = 0; i < 3 && !saved; i++){           // retry on a flaky connection
+        try{
+          await Promise.race([ addDoc(col, enquiry), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 12000)) ]);
+          saved = true;
+        } catch(e){ saveErr = String(e.code || e.message || e); console.error('Could not save enquiry to database (try ' + (i+1) + ')', e); if (/permission/i.test(saveErr)) break; }
+      }
+    } catch(e){ saveErr = String(e.code || e.message || e); console.error('Could not save enquiry to database', e); }
 
     // 2) Email info@codekasa.com (via form service)
     if (EMAIL_ENDPOINT){
@@ -1528,7 +1533,8 @@
           _subject: `New enquiry from ${name} — ${roomType}`,
           name, phone, guests, roomType,
           checkInDate: moveIn || 'Not specified',
-          message: message || '(none)'
+          message: message || '(none)',
+          savedToAdminDashboard: saved ? 'yes' : ('NO - ' + saveErr)
         };
         if (email) payload.email = email;
         const res = await fetch(EMAIL_ENDPOINT, {
