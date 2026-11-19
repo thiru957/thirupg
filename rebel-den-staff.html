@@ -145,7 +145,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCsFkU5tr0chaJdt5GlVF5W7VYI_8I6pxU", authDomain: "codekasa.firebaseapp.com", projectId: "codekasa",
   storageBucket: "codekasa.firebasestorage.app", messagingSenderId: "725605223433", appId: "1:725605223433:web:fd9a635676e810eba57cd8"
 };
-const fbApp = initializeApp(firebaseConfig), db = getFirestore(fbApp), auth = getAuth(fbApp);
+const fbApp = initializeApp(firebaseConfig, 'rebelden'), db = getFirestore(fbApp), auth = getAuth(fbApp);
 
 // ---------- constants ----------
 const CATS = ['Beer','Whisky','Vodka','Rum','Tequila','Gin','Brandy','Wine','Cocktails','Soft Drinks & Mixers','Food'];
